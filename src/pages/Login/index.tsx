@@ -1,8 +1,12 @@
 import React from "react";
+import TitleBar from "@/components/TitleBar";
 
 function Login() {
     return <>
-        <h1>Login</h1>
+        <TitleBar title={"Login"} />
+        <div className="content">
+            <p>Lorem ipsum</p>
+        </div>
     </>
 }
 

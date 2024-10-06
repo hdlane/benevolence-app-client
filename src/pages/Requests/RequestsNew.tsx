@@ -1,8 +1,12 @@
 import React from "react";
+import TitleBar from "@/components/TitleBar";
 
 function RequestsNew() {
     return <>
-        <h1>New Request</h1>
+        <TitleBar title={"New Request"} />
+        <div className="content">
+            <p>Lorem ipsum</p>
+        </div>
     </>
 }
 

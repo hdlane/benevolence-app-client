@@ -8,19 +8,21 @@ import Requests from "./pages/Requests";
 
 function App() {
     return (
-        <div className="app">
+        <>
             <BrowserRouter>
                 <Navbar />
-                <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/admin" element={<Admin />} />
-                    <Route path="/requests" element={<Requests />}>
-                        <Route path=":id" element={<Requests />} />
-                    </Route>
-                </Routes>
+                <div className="content">
+                    <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/admin" element={<Admin />} />
+                        <Route path="/requests" element={<Requests />}>
+                            <Route path=":id" element={<Requests />} />
+                        </Route>
+                    </Routes>
+                </div>
             </BrowserRouter>
-        </div>
+        </>
     )
 }
 

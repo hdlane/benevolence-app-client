@@ -45,7 +45,7 @@ function Login() {
     return <>
         <TitleBar title={"Login"} />
         <div className="content">
-            <div>
+            <div className="flex flex-col items-center justify-center h-full">
                 {message ? <span className="p-3 bg-orange-200">{message}</span> : ""}
                 <p><strong>To get started, enter your email address.</strong><br />
                     We'll send you a link you can use to login. </p>

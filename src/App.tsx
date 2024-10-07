@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 import Requests from "./pages/Requests";
+import Verify from "./pages/Login/Verify";
 
 function App() {
     return (
@@ -13,10 +14,9 @@ function App() {
             <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/login/verify" element={<Verify />} />
                 <Route path="/admin" element={<Admin />} />
-                <Route path="/requests" element={<Requests />}>
-                    <Route path=":id" element={<Requests />} />
-                </Route>
+                <Route path="/requests/:id" element={<Requests />} />
             </Routes>
         </>
     )

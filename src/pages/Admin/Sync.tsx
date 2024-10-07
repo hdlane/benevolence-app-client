@@ -1,8 +1,12 @@
 import React from "react";
+import TitleBar from "@/components/TitleBar";
 
 function Sync() {
     return <>
-        <h1>Sync</h1>
+        <TitleBar title={"Admin"} />
+        <div className="content">
+            <p>Lorem ipsum</p>
+        </div>
     </>
 }
 

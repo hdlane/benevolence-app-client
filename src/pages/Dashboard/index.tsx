@@ -1,9 +1,8 @@
-import RequestsTable from "@/components/RequestsTable";
 import TitleBar from "@/components/TitleBar";
 import React, { useEffect, useState } from "react";
+import RequestsTable from "@/components/RequestsTable";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Search } from 'lucide-react';
-import { fetchWrapper, HttpMethod } from "@/lib/fetchData";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
@@ -18,9 +17,9 @@ function Dashboard() {
             try {
                 const response = await fetch(
                     "http://localhost:3000/api/v1/requests", {
+                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json",
-                        "credentials": "include"
                     },
                     signal: controller.signal,
                 });
@@ -32,7 +31,7 @@ function Dashboard() {
                     navigate("/login");
                 } else {
                     const json = await response.json();
-                    setRequests(json);
+                    setRequests(json.data);
                 }
             } catch (error) {
                 setError((error as Error).message)
@@ -42,36 +41,10 @@ function Dashboard() {
         getData();
 
         return () => {
-            controller.abort();
+            controller.abort("Page Refresh");
+            setError(null);
         }
     }, []);
-
-    // const requests = [
-    //     {
-    //         id: 1,
-    //         name: "Meals for Mouse",
-    //         start_date: "Oct 7, 2024",
-    //         end_date: "Oct 11, 2024",
-    //         help_needed: 5,
-    //         request_type: "Meal",
-    //     },
-    //     {
-    //         id: 2,
-    //         name: "School Supplies for Roosevelt",
-    //         start_date: "Oct 12, 2024",
-    //         end_date: "Oct 12, 2024",
-    //         help_needed: 5,
-    //         request_type: "Donation",
-    //     },
-    //     {
-    //         id: 3,
-    //         name: "Meals for Seymours",
-    //         start_date: "Oct 13, 2024",
-    //         end_date: "Oct 19, 2024",
-    //         help_needed: 7,
-    //         request_type: "Meal",
-    //     },
-    // ]
 
     return <>
         <TitleBar title={"Dashboard"} />
@@ -87,7 +60,7 @@ function Dashboard() {
             <h2 className="m-5 text-xl">{requests ? `${requests.length} active requests` : "Loading..."}</h2>
             <hr />
             {error && <p>Error: {error}</p>}
-            {requests ? <pre>{requests}</pre> : <p>Loading...</p>}
+            {requests ? <RequestsTable requests={requests} /> : <p>Loading...</p>}
         </div>
     </>
 }

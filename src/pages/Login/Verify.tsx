@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import TitleBar from "@/components/TitleBar";
+import VerifyOrganization from "@/pages/Login/VerifyOrganization";
 
 function Verify() {
     const [searchParams, setSearchParams] = useSearchParams();
-    const [message, setMessage] = useState<string | null>(null)
-    const [error, setError] = useState<string | null>(null)
+    const [organizations, setOrganizations] = useState([]);
+    const [message, setMessage] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const token = searchParams.get('token');
 
     useEffect(() => {
@@ -16,12 +18,12 @@ function Verify() {
                 const response = await fetch(
                     `http://localhost:3000/api/v1/login/verify?token=${token}`,
                     {
+                        credentials: "include",
                         headers: {
-                            "Content-Type": "application/json"
+                            "Content-Type": "application/json",
                         },
                         signal: controller.signal,
                     });
-                console.log(response)
                 if (response.status == 404) {
                     setMessage("Login link has expired, please login again.");
                 } else if (!response.ok) {
@@ -29,6 +31,7 @@ function Verify() {
                 } else {
                     const json = await response.json();
                     console.log(json);
+                    setOrganizations(json.data);
                 }
             } catch (error) {
                 setError((error as Error).message)
@@ -46,6 +49,7 @@ function Verify() {
         <TitleBar title={"Login"} />
         <div className="content">
             {message ? <div className="message"><span>{message}</span><br /><Link to="/login">Login</Link></div> : ""}
+            {organizations ? <VerifyOrganization organizations={organizations} /> : ""}
         </div>
     </>
 }

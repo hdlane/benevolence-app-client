@@ -6,11 +6,11 @@ function Login() {
     const [email, setEmail] = useState<string>("");
     const [message, setMessage] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
+    const submitButton = document.getElementById("submit-button");
 
     async function handleSubmit(e) {
         e.preventDefault();
-        const submitButton = document.getElementById("submit-button");
-        submitButton.disabled = true;
+
         const controller = new AbortController();
 
         try {

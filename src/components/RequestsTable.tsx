@@ -22,10 +22,10 @@ function RequestsTable({ requests }) {
         <TableBody>
             {requests.map((request) => (
                 <TableRow key={request.id}>
-                    <TableCell className="font-medium">{request.name}</TableCell>
+                    <TableCell className="font-medium">{request.title}</TableCell>
                     <TableCell>{request.start_date}</TableCell>
                     <TableCell>{request.end_date}</TableCell>
-                    <TableCell>{request.help_needed}</TableCell>
+                    <TableCell>{request.num_resources}</TableCell>
                     <TableCell>{request.request_type}</TableCell>
                 </TableRow>
             ))}

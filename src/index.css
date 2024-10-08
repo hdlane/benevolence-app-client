@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .button-primary {
+    @apply bg-[#bc6c25] text-white font-semibold py-2 px-4 rounded 
+           hover:bg-[#dda15e] focus:outline-none focus:ring-2 
+           focus:ring-blue-400 focus:ring-opacity-75;
+  }
+}
+
 body {
   --primary-color: #bc6c25;
   --secondary-color: #dda15e;
@@ -64,6 +72,11 @@ button {
   background-color: var(--tertiary-color);
   padding: 1rem;
   color: var(--primary-color);
+}
+
+.login-box {
+  /* max-width: 500px; */
+  border: none;
 }
 
 .search-input {

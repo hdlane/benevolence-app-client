@@ -51,17 +51,19 @@ function VerifyOrganization({ organizations }) {
     }
     return <>
         <p><strong>We found {organizations.length} church{organizations.length > 1 ? "es" : ""} that match{organizations.length < 2 ? "es" : ""} that email address.</strong><br />Login to:</p>
-        {message ? <span className="p-3 bg-orange-200">{message}</span> : ""}
-        {organizations.map((organization, index) => (
-            <Card key={index}>
-                <CardHeader>
-                    <CardTitle>{organization.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Button type="button" onClick={() => { handleSelect(organization.id) }}>Select</Button>
-                </CardContent>
-            </Card>
-        ))}
+        <div className="flex flex-wrap gap-4 p-6 rounded text-center w-full max-w-md">
+            {message ? <span className="p-3 bg-orange-200">{message}</span> : ""}
+            {organizations.map((organization, index) => (
+                <Card key={index}>
+                    <CardHeader>
+                        <CardTitle>{organization.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <button className="button-primary" type="button" onClick={() => { handleSelect(organization.id) }}>Select</button>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
         {people ? <VerifyPerson people={people} /> : ""}
     </>
 }

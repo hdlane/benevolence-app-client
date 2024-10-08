@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import TitleBar from "@/components/TitleBar";
-import { fetchWrapper, HttpMethod } from "@/lib/fetchData";
 
 function Login() {
     const [email, setEmail] = useState<string>("");

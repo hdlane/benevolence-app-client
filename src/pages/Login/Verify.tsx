@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useAppSelector, useAppDispatch } from "@/app/hooks";
+import {
+    setOrganizations,
+} from "@/features/organizations/organizationsSlice";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import TitleBar from "@/components/TitleBar";
 import VerifyOrganization from "@/pages/Login/VerifyOrganization";
 
 function Verify() {
+    const organizations = useAppSelector((state) => state.organizations)
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [organizations, setOrganizations] = useState([]);
     const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const token = searchParams.get('token');
@@ -31,7 +37,8 @@ function Verify() {
                 } else {
                     const json = await response.json();
                     console.log(json);
-                    setOrganizations(json.data);
+                    dispatch(setOrganizations(json.data));
+                    navigate("/login/verify/organization");
                 }
             } catch (error) {
                 setError((error as Error).message)
@@ -47,10 +54,6 @@ function Verify() {
 
     return <>
         <TitleBar title={"Login"} />
-        <div className="content">
-            {message ? <div className="message"><span>{message}</span><br /><Link to="/login">Login</Link></div> : ""}
-            {organizations ? <VerifyOrganization organizations={organizations} /> : ""}
-        </div>
     </>
 }
 

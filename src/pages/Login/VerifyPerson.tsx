@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+import { useAppSelector, useAppDispatch } from "@/app/hooks";
+import {
+    setPersonId,
+} from "@/features/people/peopleSlice";
 import { useNavigate } from "react-router-dom";
 import {
     Card,
@@ -8,15 +12,16 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 
-function VerifyPerson({ people }) {
-    const [person, setPerson] = useState<number | null>(null);
+function VerifyPerson() {
+    const people = useAppSelector((state) => state.people.people)
+    const dispatch = useAppDispatch();
     const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     async function handleSelect(person_id: number) {
         const controller = new AbortController();
-        setPerson(person_id);
+        dispatch(setPersonId({ id: person_id }));
         try {
             const response = await fetch(
                 "http://localhost:3000/api/v1/login/verify/person",
@@ -49,18 +54,26 @@ function VerifyPerson({ people }) {
         }
     }
     return <>
-        <p><strong>We found {people.length} {people.length > 1 ? "people" : "person"} that match{people.length < 2 ? "es" : ""} that email address.</strong><br />Login as:</p>
-        {message ? <span className="p-3 bg-orange-200">{message}</span> : ""}
-        {people.map((person, index) => (
-            <Card key={index}>
-                <CardHeader>
-                    <CardTitle>{person.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Button type="button" onClick={() => { handleSelect(person.id) }}>Select</Button>
-                </CardContent>
-            </Card>
-        ))}
+        <div className="content flex items-center justify-center h-full">
+            <div className="flex flex-col space-y-4 bg-white p-6 rounded text-center w-full max-w-md">
+                <p><strong>We found {people.length} {people.length > 1 ? "people" : "person"} that match{people.length < 2 ? "es" : ""} that email address.</strong><br />Login as:</p>
+                <div className="flex flex-wrap gap-4 p-6 rounded text-center w-full max-w-md">
+                    {message ? <span className="p-3 bg-orange-200">{message}</span> : ""}
+                    {people.map((person, index) => (
+                        <div key={index} className="w-full">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>{person.name}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <button className="button-primary" type="button" onClick={() => { handleSelect(person.id) }}>Select</button>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
     </>
 }
 

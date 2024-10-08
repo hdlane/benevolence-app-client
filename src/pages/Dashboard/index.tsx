@@ -4,10 +4,15 @@ import RequestsTable from "@/components/RequestsTable";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Search } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { setError } from "@/features/errors/errorsSlice";
+import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
 
 function Dashboard() {
+    const error = useAppSelector((state) => state.errors.currentError);
+    const dispatch = useAppDispatch();
+
     const [requests, setRequests] = useState<any>(null);
-    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -24,17 +29,18 @@ function Dashboard() {
                     signal: controller.signal,
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Response status: ${response.status}`);
-                } else if (response.status == 401) {
-                    console.log("Unauthorized");
+                if (response.status == 401) {
+                    const json = await response.json();
+                    dispatch(setMessage({ message: json.errors.detail, background: MessageColors.WARNING }));
                     navigate("/login");
+                } else if (!response.ok) {
+                    dispatch(setError({ message: `Response status: ${response.status}` }));
                 } else {
                     const json = await response.json();
                     setRequests(json.data);
                 }
             } catch (error) {
-                setError((error as Error).message)
+                dispatch(setError({ message: (error as Error).message }))
             }
         }
 
@@ -42,7 +48,6 @@ function Dashboard() {
 
         return () => {
             controller.abort("Page Refresh");
-            setError(null);
         }
     }, []);
 
@@ -59,7 +64,6 @@ function Dashboard() {
             <hr />
             <h2 className="m-5 text-xl">{requests ? `${requests.length} active requests` : "Loading..."}</h2>
             <hr />
-            {error && <p>Error: {error}</p>}
             {requests ? <RequestsTable requests={requests} /> : <p>Loading...</p>}
         </div>
     </>

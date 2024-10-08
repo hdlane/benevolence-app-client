@@ -34,5 +34,5 @@ export const errorsSlice = createSlice({
     },
 });
 
-export const { setErrors: setMessages, setError: setMessage, clearError: clearMessage, clearErrors: clearMessages } = errorsSlice.actions;
+export const { setErrors, setError, clearError, clearErrors } = errorsSlice.actions;
 export default errorsSlice.reducer;

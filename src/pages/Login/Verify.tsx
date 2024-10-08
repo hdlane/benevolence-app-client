@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { useAppSelector, useAppDispatch } from "@/app/hooks";
+import React, { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import {
     setOrganizations,
 } from "@/features/organizations/organizationsSlice";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import TitleBar from "@/components/TitleBar";
-import VerifyOrganization from "@/pages/Login/VerifyOrganization";
+import { setToken } from "@/features/token/tokenSlice";
+import { setMessage } from "@/features/messages/messagesSlice";
+import { setError } from "@/features/errors/errorsSlice";
 
 function Verify() {
-    const organizations = useAppSelector((state) => state.organizations)
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [message, setMessage] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const token = searchParams.get('token');
+    const [searchParams,] = useSearchParams();
+    // create slice for token
+    dispatch(setToken({ token: searchParams.get('token') }));
+    const token = useAppSelector((state) => state.token.token);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -31,9 +32,10 @@ function Verify() {
                         signal: controller.signal,
                     });
                 if (response.status == 404) {
-                    setMessage("Login link has expired, please login again.");
+                    dispatch(setMessage({ message: "Login link has expired, please login again." }));
+                    navigate("/login");
                 } else if (!response.ok) {
-                    throw new Error(`Response status: ${response.status}`);
+                    dispatch(setError({ message: `Response status: ${response.status}` }));
                 } else {
                     const json = await response.json();
                     console.log(json);
@@ -41,11 +43,16 @@ function Verify() {
                     navigate("/login/verify/organization");
                 }
             } catch (error) {
-                setError((error as Error).message)
+                dispatch(setError({ message: (error as Error).message }));
             }
         }
 
-        verifyToken();
+        if (token == null) {
+            dispatch(setMessage({ message: "Token from login link not provided. Please follow the link sent to your email." }));
+            navigate("/login");
+        } else {
+            verifyToken();
+        }
 
         return () => {
             controller.abort();

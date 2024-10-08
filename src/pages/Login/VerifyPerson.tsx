@@ -3,6 +3,8 @@ import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import {
     setPersonId,
 } from "@/features/people/peopleSlice";
+import { setError } from "@/features/errors/errorsSlice";
+import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
 import { useNavigate } from "react-router-dom";
 import {
     Card,
@@ -10,13 +12,10 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Button } from "@/components/ui/button";
 
 function VerifyPerson() {
     const people = useAppSelector((state) => state.people.people)
     const dispatch = useAppDispatch();
-    const [message, setMessage] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     async function handleSelect(person_id: number) {
@@ -36,21 +35,21 @@ function VerifyPerson() {
                 });
 
             if (response.status == 400) {
-                setMessage("400 status")
+                dispatch(setMessage({ message: "400 status", background: MessageColors.WARNING }));
             }
             else if (response.status == 404) {
-                setMessage("404 status")
+                dispatch(setMessage({ message: "404 status", background: MessageColors.WARNING }));
             }
             else if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
+                dispatch(setError({ message: `Response status: ${response.status}` }));
             } else {
                 const json = await response.json();
                 console.log(json);
-                setMessage(json.message);
-                window.location.href = json.redirect_url;
+                dispatch(setMessage({ message: json.message, background: MessageColors.SUCCESS }));
+                navigate("/");
             }
-        } catch (e) {
-            setError((error as Error).message)
+        } catch (error) {
+            dispatch(setError({ message: (error as Error).message }));
         }
     }
     return <>
@@ -58,7 +57,6 @@ function VerifyPerson() {
             <div className="flex flex-col space-y-4 bg-white p-6 rounded text-center w-full max-w-md">
                 <p><strong>We found {people.length} {people.length > 1 ? "people" : "person"} that match{people.length < 2 ? "es" : ""} that email address.</strong><br />Login as:</p>
                 <div className="flex flex-wrap gap-4 p-6 rounded text-center w-full max-w-md">
-                    {message ? <span className="p-3 bg-orange-200">{message}</span> : ""}
                     {people.map((person, index) => (
                         <div key={index} className="w-full">
                             <Card>

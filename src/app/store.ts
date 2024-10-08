@@ -4,11 +4,13 @@ import organizationsReducer from "../features/organizations/organizationsSlice";
 import requestsReducer from "../features/requests/requestsSlice";
 import messagesReducer from "../features/messages/messagesSlice";
 import errorsReducer from "../features/errors/errorsSlice";
+import tokenReducer from "../features/token/tokenSlice";
 
 export const store = configureStore({
     reducer: {
         people: peopleReducer,
         organizations: organizationsReducer,
+        token: tokenReducer,
         requests: requestsReducer,
         messages: messagesReducer,
         errors: errorsReducer,

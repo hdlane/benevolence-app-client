@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import {
     setOrganizationId,
 } from "@/features/organizations/organizationsSlice";
 import { setPeople } from "@/features/people/peopleSlice";
+import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
+import { setError } from "@/features/errors/errorsSlice";
 import { useNavigate } from "react-router-dom";
 import {
     Card,
@@ -13,12 +15,48 @@ import {
 } from "@/components/ui/card"
 
 function VerifyOrganization() {
-    const organizations = useAppSelector((state) => state.organizations.organizations)
+    const token = useAppSelector((state) => state.token.token);
+    const organizations = useAppSelector((state) => state.organizations.organizations);
+    const message = useAppSelector((state) => state.messages.currentMessage);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const [message, setMessage] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
+    useEffect(() => {
+        const controller = new AbortController();
+
+        async function verifyToken() {
+            try {
+                const response = await fetch(
+                    `http://localhost:3000/api/v1/login/verify?token=${token}`,
+                    {
+                        credentials: "include",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        signal: controller.signal,
+                    });
+                if (response.status == 404) {
+                    dispatch(setMessage({ message: "Login link has expired, please login again." }));
+                    navigate("/login");
+                } else if (!response.ok) {
+                    dispatch(setError({ message: `Response status: ${response.status}` }));
+                }
+            } catch (error) {
+                dispatch(setError({ message: (error as Error).message }));
+            }
+        }
+
+        if (token == null) {
+            dispatch(setMessage({ message: "Token from login link not provided. Please follow the link sent to your email." }));
+            navigate("/login");
+        } else {
+            verifyToken();
+        }
+
+        return () => {
+            controller.abort();
+        }
+    }, []);
 
     async function handleSelect(organization_id: number) {
         const controller = new AbortController();
@@ -37,13 +75,13 @@ function VerifyOrganization() {
                 });
 
             if (response.status == 400) {
-                setMessage("400 status")
+                dispatch(setMessage({ message: "400 status", background: MessageColors.WARNING }));
             }
             else if (response.status == 404) {
-                setMessage("404 status")
+                dispatch(setMessage({ message: "404 status", background: MessageColors.WARNING }));
             }
             else if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
+                dispatch(setError({ message: `Response status: ${response.status}` }));
             } else {
                 const json = await response.json();
                 dispatch(setPeople(json.data));
@@ -52,7 +90,7 @@ function VerifyOrganization() {
                 navigate("/login/verify/person");
             }
         } catch (error) {
-            setError((error as Error).message)
+            dispatch(setError({ message: (error as Error).message }));
         }
     }
     return <>

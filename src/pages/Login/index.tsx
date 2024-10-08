@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import TitleBar from "@/components/TitleBar";
+import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
+import { setError } from "@/features/errors/errorsSlice";
+import { useAppDispatch } from "@/app/hooks";
 
 function Login() {
+    const dispatch = useAppDispatch();
+
     const [email, setEmail] = useState<string>("");
-    const [message, setMessage] = useState<string>("");
-    const [background, setBackground] = useState<string>("#FED7AA");
-    const [error, setError] = useState<string | null>(null);
-    const submitButton = document.getElementById("submit-button");
 
     async function handleSubmit(e) {
         e.preventDefault();
 
         if (email.trim().length === 0) {
-            setMessage("Enter an email address.")
+            dispatch(setMessage({ message: "Enter an email address.", background: MessageColors.SUCCESS }));
             return
         }
 
@@ -31,22 +32,19 @@ function Login() {
                 });
 
             if (response.status == 400) {
-                setBackground("#FED7AA")
-                setMessage("Enter an email address.")
+                dispatch(setMessage({ message: "Enter an email address.", background: MessageColors.WARNING }));
             }
             else if (response.status == 404) {
-                setBackground("#FED7AA")
-                setMessage("Account not found with that email.")
+                dispatch(setMessage({ message: "Account not found with that email.", background: MessageColors.WARNING }));
             }
             else if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
+                dispatch(setError({ message: `Response status: ${response.status}` }));
             } else {
-                setBackground("#A7F3D0")
                 const json = await response.json();
-                setMessage(json.message);
+                dispatch(setMessage({ message: json.message, background: MessageColors.SUCCESS }));
             }
         } catch (error) {
-            setError((error as Error).message)
+            dispatch(setError({ message: (error as Error).message }));
         }
     }
 
@@ -54,7 +52,6 @@ function Login() {
         <TitleBar title={"Login"} />
         <div className="content flex items-center justify-center h-full">
             <div className="flex flex-col space-y-4 bg-white p-6 rounded text-center w-full max-w-md">
-                {message ? <span style={{ backgroundColor: `${background}` }} className={`p-1 w-full`}>{message}</span> : ""}
                 <p className="text-lg font-semibold">To get started, enter your email address.</p>
                 <p>We'll send you a link you can use to login.</p>
                 <form action="submit">

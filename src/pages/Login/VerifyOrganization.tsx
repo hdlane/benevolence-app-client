@@ -36,7 +36,7 @@ function VerifyOrganization() {
                         signal: controller.signal,
                     });
                 if (response.status == 404) {
-                    dispatch(setMessage({ message: "Login link has expired, please login again." }));
+                    dispatch(setMessage({ message: "Login link has expired, please login again.", background: MessageColors.WARNING }));
                     navigate("/login");
                 } else if (!response.ok) {
                     dispatch(setError({ message: `Response status: ${response.status}` }));
@@ -47,7 +47,7 @@ function VerifyOrganization() {
         }
 
         if (token == null) {
-            dispatch(setMessage({ message: "Token from login link not provided. Please follow the link sent to your email." }));
+            dispatch(setMessage({ message: "Token from login link not provided. Please follow the link sent to your email.", background: MessageColors.WARNING }));
             navigate("/login");
         } else {
             verifyToken();

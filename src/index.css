@@ -97,12 +97,15 @@ a:hover {
 }
 
 .title-bar {
-  font-size: 2rem;
   display: flex;
   align-items: center;
   background-color: var(--tertiary-color);
   padding: 1rem;
   color: white;
+}
+
+.title-bar h1 {
+  font-size: 2rem;
 }
 
 .login-box {

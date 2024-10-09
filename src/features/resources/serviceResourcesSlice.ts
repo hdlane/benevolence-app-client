@@ -6,6 +6,8 @@ interface ServiceResource {
     provider_names: string[];
     name: string;
     quantity: number;
+    owned: boolean;
+    available: boolean;
 }
 
 interface ServiceResourcesState {

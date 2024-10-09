@@ -6,6 +6,8 @@ interface DonationResource {
     provider_names: string[];
     name: string;
     quantity: number;
+    owned: boolean;
+    available: boolean;
 }
 
 interface DonationResourcesState {

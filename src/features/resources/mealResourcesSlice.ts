@@ -6,6 +6,8 @@ interface MealResource {
     date: string;
     provider_name: string;
     name: string;
+    owned: boolean;
+    available: boolean;
 }
 
 interface MealResourcesState {

@@ -2,10 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .button-primary {
+    @apply bg-[#bc6c25] text-white font-semibold py-2 px-4 rounded 
+           hover:bg-[#dbcbb3] focus:outline-none focus:ring-2 
+           focus:ring-blue-400 focus:ring-opacity-75;
+  }
+}
+
 body {
   --primary-color: #bc6c25;
   --secondary-color: #dda15e;
-  --tertiary-color: #fefae0;
+  --tertiary-color: #dbcbb3;/*#9CA874;*/ /*#fefae0;*/
   --text-primary-color: #333333;
   --text-secondary-color: #666666;
 
@@ -16,6 +24,14 @@ body {
 
 button {
   max-width: 100px;
+}
+
+a {
+  color: var(--primary-color);
+}
+
+a:hover {
+  color: var(--tertiary-color);
 }
 
 #root {
@@ -47,8 +63,16 @@ button {
   margin: 1rem;
 }
 
+.navbar a {
+    color: white;
+}
+
 .navbar-links a {
   padding: 0.5rem;
+}
+
+.navbar-links a:hover {
+  color: var(--primary-color);
 }
 
 #logo {
@@ -57,13 +81,33 @@ button {
   margin-right: 15px;
 }
 
+.message-success {
+  background-color: #D4EDDA;
+  color: #155724;
+}
+
+.message-warning {
+  background-color: #FED7AA;
+  color: #7C3D07;
+}
+
+.message-error {
+  background-color: #F8D7DA;
+  color: #721C24;
+}
+
 .title-bar {
   font-size: 2rem;
   display: flex;
   align-items: center;
   background-color: var(--tertiary-color);
   padding: 1rem;
-  color: var(--primary-color);
+  color: white;
+}
+
+.login-box {
+  /* max-width: 500px; */
+  border: none;
 }
 
 .search-input {

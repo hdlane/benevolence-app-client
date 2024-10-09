@@ -1,16 +1,24 @@
 import React, { useState } from "react";
 import TitleBar from "@/components/TitleBar";
-import { fetchWrapper, HttpMethod } from "@/lib/fetchData";
+import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
+import { setError } from "@/features/errors/errorsSlice";
+import { useAppDispatch } from "@/app/hooks";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
     const [email, setEmail] = useState<string>("");
-    const [message, setMessage] = useState<string>("");
-    const [error, setError] = useState<string | null>(null);
 
     async function handleSubmit(e) {
         e.preventDefault();
-        const submitButton = document.getElementById("submit-button");
-        submitButton.disabled = true;
+
+        if (email.trim().length === 0) {
+            dispatch(setMessage({ message: "Enter an email address.", background: MessageColors.WARNING }));
+            return
+        }
+
         const controller = new AbortController();
 
         try {
@@ -18,6 +26,7 @@ function Login() {
                 "http://localhost:3000/api/v1/login",
                 {
                     method: "POST",
+                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json",
                     },
@@ -26,32 +35,51 @@ function Login() {
                 });
 
             if (response.status == 400) {
-                setMessage("Enter an email address.")
+                dispatch(setMessage({ message: "Enter an email address.", background: MessageColors.WARNING }));
             }
             else if (response.status == 404) {
-                setMessage("Account not found with that email.")
+                dispatch(setMessage({ message: "Account not found with that email.", background: MessageColors.WARNING }));
             }
             else if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
+                dispatch(setError({ message: `Response status: ${response.status}` }));
             } else {
                 const json = await response.json();
-                setMessage(json.message);
+                dispatch(setMessage({ message: json.message, background: MessageColors.SUCCESS }));
+                if (json.redirect_url) {
+                    navigate("/");
+                }
             }
-        } catch (e) {
-            console.log("An error occurred:", e);
+        } catch (error) {
+            dispatch(setError({ message: (error as Error).message }));
         }
     }
 
     return <>
         <TitleBar title={"Login"} />
-        <div className="content">
-            <div>
-                {message ? <span className="p-3 bg-orange-200">{message}</span> : ""}
-                <p><strong>To get started, enter your email address.</strong><br />
-                    We'll send you a link you can use to login. </p>
+        <div className="content flex items-center justify-center h-full">
+            <div className="flex flex-col space-y-4 bg-white p-6 rounded text-center w-full max-w-md">
+                <p className="text-lg font-semibold">To get started, enter your email address.</p>
+                <p>We'll send you a link you can use to login.</p>
                 <form action="submit">
-                    <input type="email" name="email" id="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} required /><br />
-                    <button type="submit" id="submit-button" onClick={handleSubmit}>Sign In</button>
+                    <input
+                        type="email"
+                        name="email"
+                        id="email"
+                        placeholder="Email"
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="border border-gray-300 rounded px-3 py-2 w-full"
+                    />
+                    <div className="flex justify-end py-2">
+                        <button
+                            className="button-primary"
+                            type="submit"
+                            id="submit-button"
+                            onClick={handleSubmit}
+                        >
+                            Sign In
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

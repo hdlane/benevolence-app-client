@@ -79,7 +79,6 @@ function VerifyPerson() {
                 dispatch(setError({ message: `Response status: ${response.status}` }));
             } else {
                 const json = await response.json();
-                console.log(json);
                 dispatch(setMessage({ message: json.message, background: MessageColors.SUCCESS }));
                 navigate("/");
             }

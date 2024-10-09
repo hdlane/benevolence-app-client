@@ -87,7 +87,6 @@ function VerifyOrganization() {
             } else {
                 const json = await response.json();
                 dispatch(setPeople(json.data));
-                console.log(json);
                 setMessage(json.message);
                 navigate("/login/verify/person");
             }

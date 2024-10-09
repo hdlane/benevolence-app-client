@@ -23,12 +23,12 @@ function RequestsTable() {
 
     return <Table>
         <TableHeader>
-            <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Start Date</TableHead>
-                <TableHead>End Date</TableHead>
-                <TableHead>Help Needed</TableHead>
-                <TableHead>Category</TableHead>
+            <TableRow className="bg-gray-100">
+                <TableHead>NAME</TableHead>
+                <TableHead>START DATE</TableHead>
+                <TableHead>END DATE</TableHead>
+                <TableHead>HELP NEEDED</TableHead>
+                <TableHead>CATEGORY</TableHead>
             </TableRow>
         </TableHeader>
         <TableBody>

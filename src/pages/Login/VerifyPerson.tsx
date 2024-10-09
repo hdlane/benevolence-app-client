@@ -5,17 +5,19 @@ import {
 } from "@/features/people/peopleSlice";
 import { setError } from "@/features/errors/errorsSlice";
 import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
     Card,
     CardContent,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import { ChevronLeft } from "lucide-react";
 
 function VerifyPerson() {
     const token = useAppSelector((state) => state.token.token);
     const people = useAppSelector((state) => state.people.people);
+    const organization = useAppSelector((state) => state.organizations.selectedOrganizationName);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -88,7 +90,11 @@ function VerifyPerson() {
     return <>
         <div className="content flex items-center justify-center h-full">
             <div className="flex flex-col space-y-4 bg-white p-6 rounded text-center w-full max-w-md">
-                <p><strong>We found {people.length} {people.length > 1 ? "people" : "person"} that match{people.length < 2 ? "es" : ""} that email address.</strong><br />Login as:</p>
+                <p><strong>We found {people.length} {people.length > 1 ? "people" : "person"} that match{people.length < 2 ? "es" : ""} that email address at {organization}.</strong></p>
+                <div className="flex items-center justify-center">
+                    <Link className="flex" to="/login/verify/organization"><ChevronLeft />Go Back</Link>
+                </div>
+                <p>Login as:</p>
                 <div className="flex flex-wrap gap-4 p-6 rounded text-center w-full max-w-md">
                     {people.map((person, index) => (
                         <div key={index} className="w-full">

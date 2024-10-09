@@ -3,9 +3,11 @@ import TitleBar from "@/components/TitleBar";
 import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
 import { setError } from "@/features/errors/errorsSlice";
 import { useAppDispatch } from "@/app/hooks";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState<string>("");
 
@@ -24,6 +26,7 @@ function Login() {
                 "http://localhost:3000/api/v1/login",
                 {
                     method: "POST",
+                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json",
                     },
@@ -42,6 +45,9 @@ function Login() {
             } else {
                 const json = await response.json();
                 dispatch(setMessage({ message: json.message, background: MessageColors.SUCCESS }));
+                if (json.redirect_url) {
+                    navigate("/");
+                }
             }
         } catch (error) {
             dispatch(setError({ message: (error as Error).message }));

@@ -26,6 +26,14 @@ button {
   max-width: 100px;
 }
 
+a {
+  color: var(--primary-color);
+}
+
+a:hover {
+  color: var(--tertiary-color);
+}
+
 #root {
   display: flex;
   flex-direction: column;
@@ -55,8 +63,16 @@ button {
   margin: 1rem;
 }
 
+.navbar a {
+    color: white;
+}
+
 .navbar-links a {
   padding: 0.5rem;
+}
+
+.navbar-links a:hover {
+  color: var(--primary-color);
 }
 
 #logo {

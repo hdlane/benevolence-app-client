@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import {
     setOrganizationId,
+    setOrganizationName,
 } from "@/features/organizations/organizationsSlice";
 import { setPeople } from "@/features/people/peopleSlice";
 import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
@@ -58,9 +59,10 @@ function VerifyOrganization() {
         }
     }, []);
 
-    async function handleSelect(organization_id: number) {
+    async function handleSelect(organization_id: number, organization_name: string) {
         const controller = new AbortController();
         dispatch(setOrganizationId({ id: organization_id }));
+        dispatch(setOrganizationName({ name: organization_name }));
         try {
             const response = await fetch(
                 "http://localhost:3000/api/v1/login/verify/organization",
@@ -96,7 +98,8 @@ function VerifyOrganization() {
     return <>
         <div className="content flex items-center justify-center h-full">
             <div className="flex flex-col space-y-4 bg-white p-6 rounded text-center w-full max-w-md">
-                <p><strong>We found {organizations.length} church{organizations.length > 1 ? "es" : ""} that match{organizations.length < 2 ? "es" : ""} that email address.</strong><br />Login to:</p>
+                <p><strong>We found {organizations.length} church{organizations.length > 1 ? "es" : ""} that match{organizations.length < 2 ? "es" : ""} that email address.</strong></p>
+                <p>Login to:</p>
                 <div className="flex flex-wrap gap-4 p-6 rounded text-center w-full max-w-md">
                     {message ? <span className="p-3 bg-orange-200">{message}</span> : ""}
                     {organizations.map((organization, index) => (
@@ -106,7 +109,7 @@ function VerifyOrganization() {
                                     <CardTitle>{organization.name}</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <button className="button-primary" type="button" onClick={() => { handleSelect(organization.id) }}>Select</button>
+                                    <button className="button-primary" type="button" onClick={() => { handleSelect(organization.id, organization.name) }}>Select</button>
                                 </CardContent>
                             </Card>
                         </div>

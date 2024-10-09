@@ -2,9 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "@/app/store";
 
 export const enum MessageColors {
-    "SUCCESS" = "#A7F3D0",
-    "WARNING" = "#FED7AA",
-    "ERROR" = "#FECACA",
+    "SUCCESS" = "success",
+    "WARNING" = "warning",
+    "ERROR" = "error",
 }
 
 interface Message {

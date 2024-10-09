@@ -13,7 +13,7 @@ function Login() {
         e.preventDefault();
 
         if (email.trim().length === 0) {
-            dispatch(setMessage({ message: "Enter an email address.", background: MessageColors.SUCCESS }));
+            dispatch(setMessage({ message: "Enter an email address.", background: MessageColors.WARNING }));
             return
         }
 

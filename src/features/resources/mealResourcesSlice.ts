@@ -6,6 +6,7 @@ interface MealResource {
     date: string;
     provider_name: string;
     name: string;
+    quantity: number;
     owned: boolean;
     available: boolean;
 }

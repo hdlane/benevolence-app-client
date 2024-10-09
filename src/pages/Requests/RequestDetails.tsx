@@ -52,10 +52,37 @@ function RequestDetails() {
         getData();
     }, []);
 
+    // create table(?) for the request details
+    // definition list <dl> for details and table for resources needed
     return <>
         <TitleBar title={"Request Details"} />
         <div className="content">
-            <p>{request ? request.title : "Loading..."}</p>
+            <dl className="flex flex-col md:flex-row p-3">
+                <dt className="w-32 font-semibold">Coordinator</dt>
+                <dd className="flex-1">{request?.coordinator_name}</dd>
+            </dl>
+            <dl className="flex flex-col md:flex-row p-3">
+                <dt className="w-32 font-semibold">Recipient</dt>
+                <dd className="flex-1">{request?.recipient_name}</dd>
+            </dl>
+            <dl className="flex flex-col md:flex-row p-3">
+                <dt className="w-32 font-semibold">Date</dt>
+                <dd className="flex-1">{request?.start_date}{request?.end_date ? ` to  ${request?.end_date}` : ""}</dd>
+            </dl>
+            <dl className="flex flex-col md:flex-row p-3">
+                <dt className="w-32 font-semibold">Address</dt>
+                <dd className="flex-1">{`${request?.street_line}, ${request?.city}, ${request?.state} ${request?.zip_code}`}</dd>
+            </dl>
+            <dl className="flex flex-col md:flex-row p-3">
+                <dt className="w-32 font-semibold">Notes</dt>
+                <dd className="flex-1">{request?.notes}</dd>
+            </dl>
+            {request?.request_type == "Meal" ? (
+                <dl className="flex flex-col md:flex-row p-3">
+                    <dt className="w-32 font-semibold">Allergies</dt>
+                    <dd className="flex-1">{request?.allergies}</dd>
+                </dl>
+            ) : (null)}
         </div>
     </>
 }

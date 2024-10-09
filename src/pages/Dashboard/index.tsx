@@ -1,18 +1,18 @@
 import TitleBar from "@/components/TitleBar";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import RequestsTable from "@/components/RequestsTable";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Search } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { setRequests } from "@/features/requests/requestsSlice";
 import { setError } from "@/features/errors/errorsSlice";
 import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
 
 function Dashboard() {
-    const error = useAppSelector((state) => state.errors.currentError);
+    const requests = useAppSelector((state) => state.requests.requests);
     const dispatch = useAppDispatch();
 
-    const [requests, setRequests] = useState<any>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -37,7 +37,7 @@ function Dashboard() {
                     dispatch(setError({ message: `Response status: ${response.status}` }));
                 } else {
                     const json = await response.json();
-                    setRequests(json.data);
+                    dispatch(setRequests(json.data));
                 }
             } catch (error) {
                 dispatch(setError({ message: (error as Error).message }))
@@ -64,7 +64,7 @@ function Dashboard() {
             <hr />
             <h2 className="m-5 text-xl">{requests ? `${requests.length} active requests` : "Loading..."}</h2>
             <hr />
-            {requests ? <RequestsTable requests={requests} /> : <p>Loading...</p>}
+            {requests ? <RequestsTable /> : <p>Loading...</p>}
         </div>
     </>
 }

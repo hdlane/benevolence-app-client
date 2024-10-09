@@ -38,10 +38,10 @@ export const requestDetailsSlice = createSlice({
     initialState,
     reducers: {
         setRequest(state, action: PayloadAction<RequestDetails>) {
-            state.request = action.payload;
+            state.request = { ...action.payload };
         },
         setRequestId(state, action: PayloadAction<{ id: number }>) {
-            state.selectedRequestId = action.payload;
+            state.selectedRequestId = action.payload.id;
         },
         clearRequest(state) {
             state.request = null;

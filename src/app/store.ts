@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import peopleReducer from "../features/people/peopleSlice";
 import organizationsReducer from "../features/organizations/organizationsSlice";
 import requestsReducer from "../features/requests/requestsSlice";
+import requestDetailsReducer from "../features/requests/requestDetailsSlice";
 import messagesReducer from "../features/messages/messagesSlice";
 import errorsReducer from "../features/errors/errorsSlice";
 import tokenReducer from "../features/token/tokenSlice";
@@ -11,6 +12,7 @@ export const store = configureStore({
         people: peopleReducer,
         organizations: organizationsReducer,
         token: tokenReducer,
+        request: requestDetailsReducer,
         requests: requestsReducer,
         messages: messagesReducer,
         errors: errorsReducer,

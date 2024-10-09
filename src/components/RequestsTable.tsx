@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setRequestId } from "@/features/requests/requestDetailsSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function RequestsTable() {
     const dispatch = useAppDispatch();

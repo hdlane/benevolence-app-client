@@ -3,6 +3,9 @@ import peopleReducer from "../features/people/peopleSlice";
 import organizationsReducer from "../features/organizations/organizationsSlice";
 import requestsReducer from "../features/requests/requestsSlice";
 import requestDetailsReducer from "../features/requests/requestDetailsSlice";
+import donationResourcesReducer from "../features/resources/donationResourcesSlice";
+import mealResourcesReducer from "../features/resources/mealResourcesSlice";
+import serviceResourcesReducer from "../features/resources/serviceResourcesSlice";
 import messagesReducer from "../features/messages/messagesSlice";
 import errorsReducer from "../features/errors/errorsSlice";
 import tokenReducer from "../features/token/tokenSlice";
@@ -14,6 +17,9 @@ export const store = configureStore({
         token: tokenReducer,
         request: requestDetailsReducer,
         requests: requestsReducer,
+        donationResources: donationResourcesReducer,
+        mealResources: mealResourcesReducer,
+        serviceResources: serviceResourcesReducer,
         messages: messagesReducer,
         errors: errorsReducer,
     },

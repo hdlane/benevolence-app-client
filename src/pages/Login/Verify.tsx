@@ -38,7 +38,6 @@ function Verify() {
                     dispatch(setError({ message: `Response status: ${response.status}` }));
                 } else {
                     const json = await response.json();
-                    console.log(json);
                     dispatch(setOrganizations(json.data));
                     navigate("/login/verify/organization");
                 }

@@ -3,7 +3,11 @@ import type { RootState } from "@/app/store";
 
 interface Request {
     id: number;
-    name: string;
+    title: string;
+    start_date: string;
+    end_date: string;
+    num_resources: number;
+    request_type: string;
 }
 
 interface RequestState {
@@ -25,19 +29,11 @@ export const requestsSlice = createSlice({
         setRequests(state, action: PayloadAction<Request[]>) {
             state.requests = action.payload;
         },
-        setRequest(state, action: PayloadAction<{ id: number, name: string }>) {
-            state.selectedRequestId = action.payload.id;
-            state.selectedRequestName = action.payload.name;
-        },
-        clearRequest(state) {
-            state.selectedRequestId = null;
-            state.selectedRequestName = null;
-        },
         clearRequests(state) {
             state.requests = [];
         },
     },
 });
 
-export const { setRequest, setRequests, clearRequest, clearRequests } = requestsSlice.actions;
+export const { setRequests, clearRequests } = requestsSlice.actions;
 export default requestsSlice.reducer;

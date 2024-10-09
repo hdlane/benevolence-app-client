@@ -4,10 +4,10 @@ import Navbar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
-import Requests from "./pages/Requests";
 import Verify from "./pages/Login/Verify";
 import VerifyPerson from "./pages/Login/VerifyPerson";
 import VerifyOrganization from "./pages/Login/VerifyOrganization";
+import RequestDetails from "./pages/Requests/RequestDetails";
 
 function App() {
     return (
@@ -20,7 +20,7 @@ function App() {
                 <Route path="/login/verify/organization" element={<VerifyOrganization />} />
                 <Route path="/login/verify/person" element={<VerifyPerson />} />
                 <Route path="/admin" element={<Admin />} />
-                <Route path="/requests/:id" element={<Requests />} />
+                <Route path="/requests/:requestId" element={<RequestDetails />} />
             </Routes>
         </>
     )

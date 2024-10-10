@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,12 +8,18 @@ import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import {
     Popover,
     PopoverContent,
@@ -22,27 +28,28 @@ import {
 import { Calendar } from "./ui/calendar";
 import { Input } from "@/components/ui/input"
 import { CalendarIcon } from "lucide-react";
+import TimePicker from "./TimePicker";
+import { Textarea } from "./ui/textarea";
 
 const RequestTypeEnum = z.enum(["Donation", "Meal", "Service"]);
 type RequestTypeEnum = z.infer<typeof RequestTypeEnum>;
+const zipCodeRegex = /^[0-9]{5}(?:-[0-9]{4})?$/;
 
 const requestFormSchema = z.object({
     request_type: RequestTypeEnum,
-    title: z.string().max(100),
-    notes: z.string().max(1000),
-    allergies: z.string().max(250),
-    start_date: z.string().date(),
-    start_time: z.string().date(),
-    end_date: z.string().date(),
-    end_time: z.string().date(),
-    street_line: z.string().max(100),
-    city: z.string().max(50),
-    state: z.string().max(2),
-    zip_code: z.string().length(5).or(z.string().length(10)),
+    title: z.string().min(1, { message: "Enter a Title" }).max(100, { message: "Title max length 100 characters" }),
+    notes: z.string().min(1, { message: "Enter Notes" }).max(500, { message: "Notes max length 1000 characters" }),
+    allergies: z.string().max(100, { message: "Allergies max length 100 characters" }),
+    start_datetime: z.date(),
+    end_datetime: z.date(),
+    street_line: z.string().min(1, { message: "Enter a Street Address" }).max(100, { message: "Street Address max length 100 characters" }),
+    city: z.string().min(1, { message: "Enter a City" }).max(50, { message: "City max length 50 characters" }),
+    state: z.string().length(2, { message: "Use State abbreviation of 2 characters" }).transform((val) => val.toUpperCase()),
+    zip_code: z.string().refine((val) => zipCodeRegex.test(val), { message: "Invalid ZIP code format (12345 / 12345-1234)" }),
 });
 
 function RequestNewForm() {
-    const today = new Date();
+    const today = new Date(new Date().setHours(0, 0, 0, 0));
     const form = useForm<z.infer<typeof requestFormSchema>>({
         resolver: zodResolver(requestFormSchema),
         defaultValues: {
@@ -50,10 +57,8 @@ function RequestNewForm() {
             title: "",
             notes: "",
             allergies: "",
-            start_date: today.toLocaleDateString(),
-            start_time: today.toLocaleTimeString(),
-            end_date: today.toLocaleDateString(),
-            end_time: today.toLocaleTimeString(),
+            start_datetime: today,
+            end_datetime: today,
             street_line: "",
             city: "",
             state: "",
@@ -61,17 +66,25 @@ function RequestNewForm() {
         }
     });
     function onSubmit(values: z.infer<typeof requestFormSchema>) {
-        console.log("hello")
         console.log(values);
     }
     return <>
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 justify-center">
                 <FormField control={form.control} name="request_type" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Type</FormLabel>
                         <FormControl>
-                            <Input placeholder="" {...field} />
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Select a Category" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Donation">Donation</SelectItem>
+                                    <SelectItem value="Meal">Meal</SelectItem>
+                                    <SelectItem value="Service">Service</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -81,7 +94,7 @@ function RequestNewForm() {
                     <FormItem>
                         <FormLabel>Title</FormLabel>
                         <FormControl>
-                            <Input placeholder="" {...field} />
+                            <Input maxLength={100} placeholder="" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -91,7 +104,7 @@ function RequestNewForm() {
                     <FormItem>
                         <FormLabel>Notes</FormLabel>
                         <FormControl>
-                            <Input placeholder="" {...field} />
+                            <Textarea maxLength={500} placeholder="" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -101,34 +114,30 @@ function RequestNewForm() {
                     <FormItem>
                         <FormLabel>Allergies</FormLabel>
                         <FormControl>
-                            <Input placeholder="" {...field} />
+                            <Input maxLength={100} placeholder="" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
                 )}
                 />
                 <FormField
-                    control={form.control}
-                    name="start_date"
-                    render={({ field }) => (
+                    control={form.control} name="start_datetime" render={({ field }) => (
                         <FormItem className="flex flex-col">
                             <FormLabel>Start Date</FormLabel>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <FormControl>
-                                        <Button
-                                            variant={"outline"}
-                                            className={cn(
-                                                "w-[240px] pl-3 text-left font-normal",
-                                                !field.value && "text-muted-foreground"
-                                            )}
+                                        <Button variant={"outline"} className={cn(
+                                            "w-[240px] justify-between pl-3 text-left font-normal",
+                                            !field.value && "text-muted-foreground"
+                                        )}
                                         >
                                             {field.value ? (
-                                                format(field.value, "PPP")
+                                                format(field.value, "Pp")
                                             ) : (
                                                 <span>Pick a date</span>
                                             )}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                            <CalendarIcon className="h-4 w-4" />
                                         </Button>
                                     </FormControl>
                                 </PopoverTrigger>
@@ -141,44 +150,33 @@ function RequestNewForm() {
                                             date > new Date() || date < new Date("1900-01-01")
                                         }
                                     />
+                                    <div className="p-3 border-t border-border">
+                                        <TimePicker date={field.value} setDate={field.onChange} />
+                                    </div>
                                 </PopoverContent>
                             </Popover>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <FormField control={form.control} name="start_time" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Start Time</FormLabel>
-                        <FormControl>
-                            <Input placeholder="" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-                />
                 <FormField
-                    control={form.control}
-                    name="end_date"
-                    render={({ field }) => (
+                    control={form.control} name="end_datetime" render={({ field }) => (
                         <FormItem className="flex flex-col">
                             <FormLabel>End Date</FormLabel>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <FormControl>
-                                        <Button
-                                            variant={"outline"}
-                                            className={cn(
-                                                "w-[240px] pl-3 text-left font-normal",
-                                                !field.value && "text-muted-foreground"
-                                            )}
+                                        <Button variant={"outline"} className={cn(
+                                            "w-[240px] justify-between pl-3 text-left font-normal",
+                                            !field.value && "text-muted-foreground"
+                                        )}
                                         >
                                             {field.value ? (
-                                                format(field.value, "PPP")
+                                                format(field.value, "Pp")
                                             ) : (
                                                 <span>Pick a date</span>
                                             )}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                            <CalendarIcon className="h-4 w-4" />
                                         </Button>
                                     </FormControl>
                                 </PopoverTrigger>
@@ -191,27 +189,20 @@ function RequestNewForm() {
                                             date > new Date() || date < new Date("1900-01-01")
                                         }
                                     />
+                                    <div className="p-3 border-t border-border">
+                                        <TimePicker date={field.value} setDate={field.onChange} />
+                                    </div>
                                 </PopoverContent>
                             </Popover>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <FormField control={form.control} name="end_time" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>End Time</FormLabel>
-                        <FormControl>
-                            <Input placeholder="" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-                />
                 <FormField control={form.control} name="street_line" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Street Address</FormLabel>
                         <FormControl>
-                            <Input placeholder="" {...field} />
+                            <Input maxLength={100} placeholder="" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -221,7 +212,7 @@ function RequestNewForm() {
                     <FormItem>
                         <FormLabel>City</FormLabel>
                         <FormControl>
-                            <Input placeholder="" {...field} />
+                            <Input maxLength={50} placeholder="" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -231,7 +222,7 @@ function RequestNewForm() {
                     <FormItem>
                         <FormLabel>State</FormLabel>
                         <FormControl>
-                            <Input placeholder="" {...field} />
+                            <Input maxLength={2} placeholder="" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -241,7 +232,7 @@ function RequestNewForm() {
                     <FormItem>
                         <FormLabel>ZIP Code</FormLabel>
                         <FormControl>
-                            <Input placeholder="" {...field} />
+                            <Input maxLength={10} placeholder="" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>

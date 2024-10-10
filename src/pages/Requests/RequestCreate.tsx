@@ -4,7 +4,6 @@ import RequestNewForm from "@/components/RequestNewForm";
 
 function RequestCreate() {
     // require is_admin
-    // form on own page
     // when created, show message and redirect to home
     return <>
         <TitleBar title={"New Request"} />

@@ -4,22 +4,30 @@ import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
 import { setError } from "@/features/errors/errorsSlice";
 import { useAppDispatch } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
+import { z } from "zod";
 
 function Login() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const [email, setEmail] = useState<string>("");
+    const [loginMessage, setLoginMessage] = useState<string | null>(null);
+    const [loginMessageBackground, setLoginMessageBackground] = useState<MessageColors>(MessageColors.WARNING);
 
     async function handleSubmit(e) {
         e.preventDefault();
 
-        if (email.trim().length === 0) {
-            dispatch(setMessage({ message: "Enter an email address.", background: MessageColors.WARNING }));
-            return
-        }
+        // disable button
 
         const controller = new AbortController();
+        const parsedEmail = z.string().email().safeParse(email);
+
+        if (!parsedEmail.success) {
+            const message = parsedEmail.error.format();
+            setLoginMessageBackground(MessageColors.WARNING);
+            setLoginMessage(message._errors[0]);
+            return
+        }
 
         try {
             const response = await fetch(
@@ -35,16 +43,19 @@ function Login() {
                 });
 
             if (response.status == 400) {
-                dispatch(setMessage({ message: "Enter an email address.", background: MessageColors.WARNING }));
+                setLoginMessageBackground(MessageColors.WARNING);
+                setLoginMessage("Email address invalid");
             }
             else if (response.status == 404) {
-                dispatch(setMessage({ message: "Account not found with that email.", background: MessageColors.WARNING }));
+                setLoginMessageBackground(MessageColors.WARNING);
+                setLoginMessage("Account not found with that email.");
             }
             else if (!response.ok) {
                 dispatch(setError({ message: `Response status: ${response.status}` }));
             } else {
                 const json = await response.json();
-                dispatch(setMessage({ message: json.message, background: MessageColors.SUCCESS }));
+                setLoginMessageBackground(MessageColors.SUCCESS);
+                setLoginMessage(json.message);
                 if (json.redirect_url) {
                     navigate("/");
                 }
@@ -60,6 +71,9 @@ function Login() {
             <div className="flex flex-col space-y-4 bg-white p-6 rounded text-center w-full max-w-md">
                 <p className="text-lg font-semibold">To get started, enter your email address.</p>
                 <p>We'll send you a link you can use to login.</p>
+                {loginMessage ? (
+                    <div className={`flex justify-between p-1 message-${loginMessageBackground}`}> <span className="flex-1">{loginMessage}</span></div>
+                ) : null}
                 <form action="submit">
                     <input
                         type="email"

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import TitleBar from "@/components/TitleBar";
-import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
+import { MessageColors } from "@/features/messages/messagesSlice";
 import { setError } from "@/features/errors/errorsSlice";
 import { useAppDispatch } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
@@ -14,10 +14,10 @@ function Login() {
     const [loginMessage, setLoginMessage] = useState<string | null>(null);
     const [loginMessageBackground, setLoginMessageBackground] = useState<MessageColors>(MessageColors.WARNING);
 
+    const submitButton = document.getElementById("submit-button");
+
     async function handleSubmit(e) {
         e.preventDefault();
-
-        // disable button
 
         const controller = new AbortController();
         const parsedEmail = z.string().email().safeParse(email);
@@ -53,6 +53,7 @@ function Login() {
             else if (!response.ok) {
                 dispatch(setError({ message: `Response status: ${response.status}` }));
             } else {
+                submitButton?.setAttribute("disabled", "true");
                 const json = await response.json();
                 setLoginMessageBackground(MessageColors.SUCCESS);
                 setLoginMessage(json.message);
@@ -74,7 +75,7 @@ function Login() {
                 {loginMessage ? (
                     <div className={`flex justify-between p-1 message-${loginMessageBackground}`}> <span className="flex-1">{loginMessage}</span></div>
                 ) : null}
-                <form action="submit">
+                <form>
                     <input
                         type="email"
                         name="email"

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import {
     setPersonId,
+    setPersonName,
 } from "@/features/people/peopleSlice";
 import { setError } from "@/features/errors/errorsSlice";
 import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
@@ -53,9 +54,10 @@ function VerifyPerson() {
         }
     }, []);
 
-    async function handleSelect(person_id: number) {
+    async function handleSelect(person_id: number, person_name: string) {
         const controller = new AbortController();
         dispatch(setPersonId({ id: person_id }));
+        dispatch(setPersonName({ name: person_name }));
         try {
             const response = await fetch(
                 "http://localhost:3000/api/v1/login/verify/person",
@@ -102,7 +104,7 @@ function VerifyPerson() {
                                     <CardTitle>{person.name}</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <button className="button-primary" type="button" onClick={() => { handleSelect(person.id) }}>Select</button>
+                                    <button className="button-primary" type="button" onClick={() => { handleSelect(person.id, person.name) }}>Select</button>
                                 </CardContent>
                             </Card>
                         </div>

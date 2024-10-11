@@ -18,6 +18,7 @@ import {
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -50,10 +51,10 @@ const zipCodeRegex = /^[0-9]{5}(?:-[0-9]{4})?$/;
 const requestFormSchema = z.object({
     request_type: RequestTypeEnum,
     title: z.string().min(1, { message: "Enter a Title" }).max(100, { message: "Title max length 100 characters" }),
-    recipient_id: z.number(),
-    coordinator_id: z.number(),
+    recipient_id: z.number({ message: "Select a Recipient" }),
+    coordinator_id: z.number({ message: "Select a Coordinator" }),
     notes: z.string().min(1, { message: "Enter Notes" }).max(500, { message: "Notes max length 1000 characters" }),
-    allergies: z.string().max(100, { message: "Allergies max length 100 characters" }),
+    allergies: z.string().max(100, { message: "Allergies max length 100 characters" }).optional(),
     start_datetime: z.date(),
     end_datetime: z.date(),
     street_line: z.string().min(1, { message: "Enter a Street Address" }).max(100, { message: "Street Address max length 100 characters" }),
@@ -86,9 +87,13 @@ function RequestNewForm() {
             city: "",
             state: "",
             zip_code: "",
-        }
+        },
+        shouldUnregister: true,
     });
+    const { watch } = form;
+    const watchRequestTypeSelect = watch("request_type");
 
+    // get current list of people in organization
     useEffect(() => {
         const controller = new AbortController();
 
@@ -160,26 +165,67 @@ function RequestNewForm() {
                 )}
                 />
                 <FormField control={form.control} name="recipient_id" render={({ field }) => (
-                    <Popover open={openRecipientSearch} onOpenChange={setOpenRecipientSearch}>
-                        <PopoverTrigger asChild>
-                            <FormControl>
-                                <Button variant={"outline"} role={"combobox"} >
-                                    {selectedRecipient ? selectedRecipient.name : "Select Recipient"}
-                                </Button>
-                            </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                            <Command>
-                                <CommandInput placeholder="Search for Recipient" />
-                                <CommandList>
-                                    <CommandEmpty>No results found.</CommandEmpty>
-                                    {
-                                        people.map((person, index) => (
-                                            <div key={index} >
-                                                <CommandItem className="py-3" onSelect={() => {
-                                                    form.setValue("recipient_id", person.id);
-                                                    setSelectedRecipient(person)
-                                                    setOpenRecipientSearch(false)
+                    <FormItem>
+                        <Popover open={openRecipientSearch} onOpenChange={setOpenRecipientSearch}>
+                            <PopoverTrigger asChild>
+                                <FormControl>
+                                    <Button variant={"outline"} role={"combobox"} >
+                                        {selectedRecipient ? selectedRecipient.name : "Select Recipient"}
+                                    </Button>
+                                </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <Command>
+                                    <CommandInput placeholder="Search for Recipient" />
+                                    <CommandList>
+                                        <CommandEmpty>No results found.</CommandEmpty>
+                                        {
+                                            people.map((person, index) => (
+                                                <div key={index} >
+                                                    <CommandItem className="py-3" onSelect={() => {
+                                                        form.setValue("recipient_id", person.id);
+                                                        setSelectedRecipient(person)
+                                                        setOpenRecipientSearch(false)
+                                                    }}>
+                                                        <>
+                                                            {person.name}
+                                                            <br />
+                                                            {person.email && person.email}
+                                                            {person.phone_number && <><br />{person.phone_number}</>}
+                                                        </>
+                                                    </CommandItem>
+                                                    <CommandSeparator />
+                                                </div>
+                                            ))}
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField control={form.control} name="coordinator_id" render={({ field }) => (
+                    <FormItem>
+                        <Popover open={openCoordinatorSearch} onOpenChange={setOpenCoordinatorSearch}>
+                            <PopoverTrigger asChild>
+                                <FormControl>
+                                    <Button variant={"outline"} role={"combobox"} >
+                                        {selectedCoordinator ? selectedCoordinator.name : "Select Coordinator"}
+                                    </Button>
+                                </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <Command>
+                                    <CommandInput placeholder="Search for Coordinator" />
+                                    <CommandList>
+                                        <CommandEmpty>No results found.</CommandEmpty>
+                                        {
+                                            people.map((person, index) => (
+                                                <CommandItem className="py-3" key={index} onSelect={() => {
+                                                    form.setValue("coordinator_id", person.id);
+                                                    setSelectedCoordinator(person)
+                                                    setOpenCoordinatorSearch(false)
                                                 }}>
                                                     <>
                                                         {person.name}
@@ -188,48 +234,13 @@ function RequestNewForm() {
                                                         {person.phone_number && <><br />{person.phone_number}</>}
                                                     </>
                                                 </CommandItem>
-                                                <CommandSeparator />
-                                            </div>
-                                        ))}
-                                </CommandList>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
-                )}
-                />
-                <FormField control={form.control} name="coordinator_id" render={({ field }) => (
-                    <Popover open={openCoordinatorSearch} onOpenChange={setOpenCoordinatorSearch}>
-                        <PopoverTrigger asChild>
-                            <FormControl>
-                                <Button variant={"outline"} role={"combobox"} >
-                                    {selectedCoordinator ? selectedCoordinator.name : "Select Coordinator"}
-                                </Button>
-                            </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                            <Command>
-                                <CommandInput placeholder="Search for Coordinator" />
-                                <CommandList>
-                                    <CommandEmpty>No results found.</CommandEmpty>
-                                    {
-                                        people.map((person, index) => (
-                                            <CommandItem className="py-3" key={index} onSelect={() => {
-                                                form.setValue("coordinator_id", person.id);
-                                                setSelectedCoordinator(person)
-                                                setOpenCoordinatorSearch(false)
-                                            }}>
-                                                <>
-                                                    {person.name}
-                                                    <br />
-                                                    {person.email && person.email}
-                                                    {person.phone_number && <><br />{person.phone_number}</>}
-                                                </>
-                                            </CommandItem>
-                                        ))}
-                                </CommandList>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
+                                            ))}
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                    </FormItem>
                 )}
                 />
                 <FormField control={form.control} name="title" render={({ field }) => (
@@ -252,16 +263,18 @@ function RequestNewForm() {
                     </FormItem>
                 )}
                 />
-                <FormField control={form.control} name="allergies" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Allergies</FormLabel>
-                        <FormControl>
-                            <Input maxLength={100} placeholder="" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
+                {watchRequestTypeSelect == "Meal" && (
+                    <FormField control={form.control} name="allergies" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Allergies</FormLabel>
+                            <FormControl>
+                                <Input maxLength={100} placeholder="" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
                 )}
-                />
                 <FormField
                     control={form.control} name="start_datetime" render={({ field }) => (
                         <FormItem className="flex flex-col">

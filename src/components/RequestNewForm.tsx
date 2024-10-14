@@ -6,36 +6,34 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
 import { setError } from "@/features/errors/errorsSlice";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
     Command,
     CommandEmpty,
     CommandInput,
     CommandItem,
     CommandList,
-    CommandSeparator,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import { Calendar } from "./ui/calendar";
 import { Input } from "@/components/ui/input"
 import { CalendarIcon } from "lucide-react";
@@ -43,6 +41,7 @@ import TimePicker from "./TimePicker";
 import { Textarea } from "./ui/textarea";
 import { useAppDispatch } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
+import { Checkbox } from "./ui/checkbox";
 
 const RequestTypeEnum = z.enum(["Donation", "Meal", "Service"]);
 type RequestTypeEnum = z.infer<typeof RequestTypeEnum>;
@@ -50,17 +49,46 @@ const zipCodeRegex = /^[0-9]{5}(?:-[0-9]{4})?$/;
 
 const requestFormSchema = z.object({
     request_type: RequestTypeEnum,
-    title: z.string().min(1, { message: "Enter a Title" }).max(100, { message: "Title max length 100 characters" }),
+    title: z.string()
+        .min(1, { message: "Enter a Title" })
+        .max(100, { message: "Title max length 100 characters" }),
     recipient_id: z.number({ message: "Select a Recipient" }),
     coordinator_id: z.number({ message: "Select a Coordinator" }),
-    notes: z.string().min(1, { message: "Enter Notes" }).max(500, { message: "Notes max length 1000 characters" }),
-    allergies: z.string().max(100, { message: "Allergies max length 100 characters" }).optional(),
-    start_datetime: z.date(),
-    end_datetime: z.date(),
-    street_line: z.string().min(1, { message: "Enter a Street Address" }).max(100, { message: "Street Address max length 100 characters" }),
-    city: z.string().min(1, { message: "Enter a City" }).max(50, { message: "City max length 50 characters" }),
-    state: z.string().length(2, { message: "Use State abbreviation of 2 characters" }).transform((val) => val.toUpperCase()),
-    zip_code: z.string().refine((val) => zipCodeRegex.test(val), { message: "Invalid ZIP code format (12345 / 12345-1234)" }),
+    notes: z.string()
+        .min(1, { message: "Enter Notes" })
+        .max(500, { message: "Notes max length 1000 characters" }),
+    allergies: z.string()
+        .max(100, { message: "Allergies max length 100 characters" })
+        .optional(),
+    date_range: z.object({ from: z.date(), to: z.date() }).optional(),
+    selected_days: z.array(z.number()).refine((value) => value.some((item) => item), {
+        message: "Select at least one day"
+    }).optional(),
+    // FIX: day, from, and to are seen as different Dates and need to combine into one
+    date_single: z.object({ day: z.date(), from: z.date(), to: z.date() }).optional(),
+    street_line: z.string()
+        .min(1, { message: "Enter a Street Address" })
+        .max(100, { message: "Street Address max length 100 characters" }),
+    city: z.string()
+        .min(1, { message: "Enter a City" })
+        .max(50, { message: "City max length 50 characters" }),
+    state: z.string()
+        .length(2, { message: "Use State abbreviation of 2 characters" })
+        .transform((val) => val.toUpperCase()),
+    zip_code: z.string()
+        .refine((val) => zipCodeRegex.test(val), { message: "Invalid ZIP code format (12345 / 12345-1234)" }),
+}).refine(data => {
+    if (data.date_range == undefined) {
+        return true
+    }
+    if (data.date_range?.from && data.date_range?.to > data.date_range?.from) {
+        return true;
+    } else {
+        return false;
+    }
+}, {
+    message: "Start Date must be before End Date",
+    path: ["date_range.from"],
 });
 
 function RequestNewForm() {
@@ -68,12 +96,45 @@ function RequestNewForm() {
     const navigate = useNavigate();
 
     const [people, setPeople] = useState([]);
-    const [selectedRecipient, setSelectedRecipient] = useState(null)
-    const [selectedCoordinator, setSelectedCoordinator] = useState(null)
-    const [openRecipientSearch, setOpenRecipientSearch] = useState(false)
-    const [openCoordinatorSearch, setOpenCoordinatorSearch] = useState(false)
+    const [selectedRecipient, setSelectedRecipient] = useState(null);
+    const [selectedCoordinator, setSelectedCoordinator] = useState(null);
+    const [openRecipientSearch, setOpenRecipientSearch] = useState(false);
+    const [openCoordinatorSearch, setOpenCoordinatorSearch] = useState(false);
+    const [dateRangeFrom, setDateRangeFrom] = useState(false);
+    const [dateRangeTo, setDateRangeTo] = useState(false);
 
     const today = new Date(new Date().setHours(0, 0, 0, 0));
+    const endDateRange = new Date(new Date().setMonth(today.getMonth() + 3));
+    const days = [
+        {
+            id: 1,
+            label: "Sunday",
+        },
+        {
+            id: 2,
+            label: "Monday",
+        },
+        {
+            id: 3,
+            label: "Tuesday",
+        },
+        {
+            id: 4,
+            label: "Wednesday",
+        },
+        {
+            id: 5,
+            label: "Thursday",
+        },
+        {
+            id: 6,
+            label: "Friday",
+        },
+        {
+            id: 7,
+            label: "Saturday",
+        },
+    ];
     const form = useForm<z.infer<typeof requestFormSchema>>({
         resolver: zodResolver(requestFormSchema),
         defaultValues: {
@@ -81,8 +142,16 @@ function RequestNewForm() {
             title: "",
             notes: "",
             allergies: "",
-            start_datetime: today,
-            end_datetime: today,
+            date_range: {
+                from: today,
+                to: endDateRange,
+            },
+            selected_days: [],
+            date_single: {
+                day: today,
+                from: today,
+                to: today,
+            },
             street_line: "",
             city: "",
             state: "",
@@ -93,7 +162,7 @@ function RequestNewForm() {
     const { watch } = form;
     const watchRequestTypeSelect = watch("request_type");
 
-    // get current list of people in organization
+    // get current list of people in organization to search through
     useEffect(() => {
         const controller = new AbortController();
 
@@ -139,6 +208,7 @@ function RequestNewForm() {
     }, [])
 
     function onSubmit(values: z.infer<typeof requestFormSchema>) {
+        console.log("SUBMITTED");
         console.log(values);
     }
 
@@ -181,21 +251,18 @@ function RequestNewForm() {
                                         <CommandEmpty>No results found.</CommandEmpty>
                                         {
                                             people.map((person, index) => (
-                                                <div key={index} >
-                                                    <CommandItem className="py-3" onSelect={() => {
-                                                        form.setValue("recipient_id", person.id);
-                                                        setSelectedRecipient(person)
-                                                        setOpenRecipientSearch(false)
-                                                    }}>
-                                                        <>
-                                                            {person.name}
-                                                            <br />
-                                                            {person.email && person.email}
-                                                            {person.phone_number && <><br />{person.phone_number}</>}
-                                                        </>
-                                                    </CommandItem>
-                                                    <CommandSeparator />
-                                                </div>
+                                                <CommandItem className="py-3" key={index} onSelect={() => {
+                                                    form.setValue("recipient_id", person.id);
+                                                    setSelectedRecipient(person)
+                                                    setOpenRecipientSearch(false)
+                                                }}>
+                                                    <>
+                                                        {person.name}
+                                                        <br />
+                                                        {person.email && person.email}
+                                                        {person.phone_number && <><br />{person.phone_number}</>}
+                                                    </>
+                                                </CommandItem>
                                             ))}
                                     </CommandList>
                                 </Command>
@@ -264,95 +331,200 @@ function RequestNewForm() {
                 )}
                 />
                 {watchRequestTypeSelect == "Meal" && (
-                    <FormField control={form.control} name="allergies" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Allergies</FormLabel>
-                            <FormControl>
-                                <Input maxLength={100} placeholder="" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                    />
+                    <>
+                        <FormField control={form.control} name="allergies" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Allergies</FormLabel>
+                                <FormControl>
+                                    <Input maxLength={100} placeholder="" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                            control={form.control} name="date_range.from" render={({ field }) => (
+                                <FormItem className="flex flex-col">
+                                    <FormLabel>Start Date</FormLabel>
+                                    {
+                                        // TODO: make popover close after date selection
+                                    }
+                                    <Popover open={dateRangeFrom} onOpenChange={setDateRangeFrom}>
+                                        <PopoverTrigger asChild>
+                                            <FormControl>
+                                                <Button variant={"outline"} className={cn(
+                                                    "w-[240px] justify-between pl-3 text-left font-normal",
+                                                    !field.value && "text-muted-foreground"
+                                                )}
+                                                >
+                                                    {field.value ? (
+                                                        format(field.value, "PP")
+                                                    ) : (
+                                                        <span>Pick a date</span>
+                                                    )}
+                                                    <CalendarIcon className="h-4 w-4" />
+                                                </Button>
+                                            </FormControl>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                selected={field.value}
+                                                onSelect={field.onChange}
+                                                disabled={(date) =>
+                                                    date < today || date > endDateRange
+                                                }
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control} name="date_range.to" render={({ field }) => (
+                                <FormItem className="flex flex-col">
+                                    <FormLabel>End Date</FormLabel>
+                                    <Popover open={dateRangeTo} onOpenChange={setDateRangeTo}>
+                                        <PopoverTrigger asChild>
+                                            <FormControl>
+                                                <Button variant={"outline"} className={cn(
+                                                    "w-[240px] justify-between pl-3 text-left font-normal",
+                                                    !field.value && "text-muted-foreground"
+                                                )}
+                                                >
+                                                    {field.value ? (
+                                                        format(field.value, "PP")
+                                                    ) : (
+                                                        <span>Pick a date</span>
+                                                    )}
+                                                    <CalendarIcon className="h-4 w-4" />
+                                                </Button>
+                                            </FormControl>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                selected={field.value}
+                                                onSelect={field.onChange}
+                                                disabled={(date) =>
+                                                    date < today || date > endDateRange
+                                                }
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="selected_days"
+                            render={() => (
+                                <FormItem>
+                                    <FormLabel>Delivery Days</FormLabel>
+                                    {days.map((day) => (
+                                        <FormField
+                                            key={day.id}
+                                            control={form.control}
+                                            name="selected_days"
+                                            render={({ field }) => {
+                                                return (
+                                                    <FormItem
+                                                        key={day.id}
+                                                        className="flex flex-row items-start space-x-3 space-y-0"
+                                                    >
+                                                        <FormControl>
+                                                            <Checkbox
+                                                                checked={field.value?.includes(day.id)}
+                                                                onCheckedChange={(checked) => {
+                                                                    return checked
+                                                                        ? field.onChange([...field.value, day.id])
+                                                                        : field.onChange(
+                                                                            field.value?.filter(
+                                                                                (value) => value !== day.id
+                                                                            )
+                                                                        )
+                                                                }}
+                                                            />
+                                                        </FormControl>
+                                                        <FormLabel className="font-normal">
+                                                            {day.label}
+                                                        </FormLabel>
+                                                    </FormItem>
+                                                )
+                                            }}
+                                        />
+                                    ))}
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </>
                 )}
-                <FormField
-                    control={form.control} name="start_datetime" render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                            <FormLabel>Start Date</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button variant={"outline"} className={cn(
-                                            "w-[240px] justify-between pl-3 text-left font-normal",
-                                            !field.value && "text-muted-foreground"
-                                        )}
-                                        >
-                                            {field.value ? (
-                                                format(field.value, "Pp")
-                                            ) : (
-                                                <span>Pick a date</span>
+                {watchRequestTypeSelect != "Meal" && (
+                    <>
+                        <FormField control={form.control} name="date_single.day" render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                                <FormLabel>Start Date</FormLabel>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <FormControl>
+                                            <Button variant={"outline"} className={cn(
+                                                "w-[240px] justify-between pl-3 text-left font-normal",
+                                                !field.value && "text-muted-foreground"
                                             )}
-                                            <CalendarIcon className="h-4 w-4" />
-                                        </Button>
-                                    </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={field.value}
-                                        onSelect={field.onChange}
-                                        disabled={(date) =>
-                                            date > new Date() || date < new Date("1900-01-01")
-                                        }
-                                    />
-                                    <div className="p-3 border-t border-border">
+                                            >
+                                                {field.value ? (
+                                                    format(field.value, "PP")
+                                                ) : (
+                                                    <span>Pick a date</span>
+                                                )}
+                                                <CalendarIcon className="h-4 w-4" />
+                                            </Button>
+                                        </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={field.value}
+                                            onSelect={field.onChange}
+                                            disabled={(date) =>
+                                                date < today || date > endDateRange
+                                            }
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField control={form.control} name="date_single.from" render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                                <FormLabel>Start Time</FormLabel>
+                                <FormControl>
+                                    <div className="p-3">
                                         <TimePicker date={field.value} setDate={field.onChange} />
                                     </div>
-                                </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control} name="end_datetime" render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                            <FormLabel>End Date</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button variant={"outline"} className={cn(
-                                            "w-[240px] justify-between pl-3 text-left font-normal",
-                                            !field.value && "text-muted-foreground"
-                                        )}
-                                        >
-                                            {field.value ? (
-                                                format(field.value, "Pp")
-                                            ) : (
-                                                <span>Pick a date</span>
-                                            )}
-                                            <CalendarIcon className="h-4 w-4" />
-                                        </Button>
-                                    </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={field.value}
-                                        onSelect={field.onChange}
-                                        disabled={(date) =>
-                                            date > new Date() || date < new Date("1900-01-01")
-                                        }
-                                    />
-                                    <div className="p-3 border-t border-border">
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField control={form.control} name="date_single.to" render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                                <FormLabel>End Time</FormLabel>
+                                <FormControl>
+                                    <div className="p-3">
                                         <TimePicker date={field.value} setDate={field.onChange} />
                                     </div>
-                                </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                    </>
+                )}
                 <FormField control={form.control} name="street_line" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Street Address</FormLabel>

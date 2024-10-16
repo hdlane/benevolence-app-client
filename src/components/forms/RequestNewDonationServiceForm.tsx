@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "../ui/calendar";
 import { Input } from "@/components/ui/input"
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Minus, Plus } from "lucide-react";
 import TimePicker from "../TimePicker";
 import { Textarea } from "../ui/textarea";
 import { useAppDispatch } from "@/app/hooks";
@@ -45,6 +45,10 @@ function RequestNewDonationServiceForm({ requestType, people }) {
     // TODO: make popovers close after selecting date
     const [openRecipientSearch, setOpenRecipientSearch] = useState(false);
     const [openCoordinatorSearch, setOpenCoordinatorSearch] = useState(false);
+    const [resources, setResources] = useState([]);
+    const [resourceName, setResourceName] = useState("");
+    const [resourceQuantity, setResourceQuantity] = useState(1);
+    const resourceNameRef = useRef(null);
 
     const today = new Date(new Date().setHours(0, 0, 0, 0));
     const endDateRange = new Date(new Date().setMonth(today.getMonth() + 3));
@@ -61,11 +65,9 @@ function RequestNewDonationServiceForm({ requestType, people }) {
             state: "",
             zip_code: "",
         },
-        shouldUnregister: true,
     });
 
     function onSubmit(values: z.infer<typeof DonationServiceSchema>) {
-        console.log("SUBMITTED");
         const results = { ...values, request_type: requestType, date_single: { from: values.date_single_from, to: values.date_single_to } }
         console.log(results);
     }
@@ -73,7 +75,7 @@ function RequestNewDonationServiceForm({ requestType, people }) {
     return <>
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 justify-center">
-                <FormField control={form.control} name="recipient_id" render={({ field }) => (
+                <FormField control={form.control} name="recipient_id" render={() => (
                     <FormItem>
                         <Popover open={openRecipientSearch} onOpenChange={setOpenRecipientSearch}>
                             <PopoverTrigger asChild>
@@ -111,7 +113,7 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                     </FormItem>
                 )}
                 />
-                <FormField control={form.control} name="coordinator_id" render={({ field }) => (
+                <FormField control={form.control} name="coordinator_id" render={() => (
                     <FormItem>
                         <Popover open={openCoordinatorSearch} onOpenChange={setOpenCoordinatorSearch}>
                             <PopoverTrigger asChild>
@@ -166,6 +168,69 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                             <Textarea maxLength={500} placeholder="" {...field} />
                         </FormControl>
                         <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField control={form.control} name="resources" render={() => (
+                    <FormItem>
+                        <FormLabel>Resources Needed</FormLabel>
+                        <FormItem>
+                            <Input type="text" ref={resourceNameRef} placeholder="Name" onChange={(e) => setResourceName(e.target.value)} />
+                        </FormItem>
+                        <FormItem>
+                            <Input type="number" placeholder="Quantity" defaultValue={1} min={1} max={100} onChange={(e) => setResourceQuantity(parseInt(e.target.value))} />
+                        </FormItem>
+                        <FormMessage />
+                        <FormControl>
+                            {
+                                (resourceName != "" && resourceQuantity > 0) ? (
+                                    <button className="button-primary" type="button" onClick={(e) => {
+                                        e.preventDefault();
+                                        const updatedResources = [
+                                            ...resources,
+                                            {
+                                                name: resourceName,
+                                                quantity: resourceQuantity,
+                                            }
+                                        ];
+                                        setResources(updatedResources);
+                                        form.setValue("resources", updatedResources);
+                                        resourceNameRef.current.value = "";
+                                        resourceNameRef.current.focus();
+                                        setResourceName("");
+                                        setResourceQuantity(1)
+                                    }}
+                                    >
+                                        <Plus />
+                                    </button>
+                                ) : (null)
+                            }
+                        </FormControl>
+                        {resources.map((resource, index) => (
+                            <FormField
+                                key={index}
+                                control={form.control}
+                                name="resources"
+                                render={() => {
+                                    return (
+                                        <FormItem>
+                                            <span>{resource.name} (x{resource.quantity})</span>
+                                            <FormControl>
+                                                <button className="button-primary" type="button" onClick={(e) => {
+                                                    e.preventDefault();
+                                                    const updatedResources = resources.filter((obj) => obj != resource);
+                                                    setResources(updatedResources);
+                                                    form.setValue("resources", updatedResources);
+                                                }}
+                                                >
+                                                    <Minus />
+                                                </button>
+                                            </FormControl>
+                                        </FormItem>
+                                    )
+                                }}
+                            />
+                        ))}
                     </FormItem>
                 )}
                 />
@@ -276,7 +341,7 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                     </FormItem>
                 )}
                 />
-                <button className="button-primary" type="submit">Submit</button>
+                <button className="button-primary" type="button" onClick={form.handleSubmit(onSubmit)}>Submit</button>
             </form>
         </Form >
     </>

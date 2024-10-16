@@ -104,7 +104,7 @@ function RequestNewMealForm({ requestType, people }) {
     return <>
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 justify-center">
-                <FormField control={form.control} name="recipient_id" render={({ field }) => (
+                <FormField control={form.control} name="recipient_id" render={() => (
                     <FormItem>
                         <Popover open={openRecipientSearch} onOpenChange={setOpenRecipientSearch}>
                             <PopoverTrigger asChild>
@@ -142,7 +142,7 @@ function RequestNewMealForm({ requestType, people }) {
                     </FormItem>
                 )}
                 />
-                <FormField control={form.control} name="coordinator_id" render={({ field }) => (
+                <FormField control={form.control} name="coordinator_id" render={() => (
                     <FormItem>
                         <Popover open={openCoordinatorSearch} onOpenChange={setOpenCoordinatorSearch}>
                             <PopoverTrigger asChild>

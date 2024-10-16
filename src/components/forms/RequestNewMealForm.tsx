@@ -33,8 +33,12 @@ import { CalendarIcon } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { Checkbox } from "../ui/checkbox";
 import { MealSchema } from "@/lib/schemas/mealSchema";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@/app/hooks";
 
 function RequestNewMealForm({ requestType, people }) {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const [selectedRecipient, setSelectedRecipient] = useState(null);
     const [selectedCoordinator, setSelectedCoordinator] = useState(null);
@@ -96,9 +100,45 @@ function RequestNewMealForm({ requestType, people }) {
     });
 
     function onSubmit(values: z.infer<typeof MealSchema>) {
-        console.log("SUBMITTED");
         const results = { ...values, request_type: requestType }
         console.log(results);
+
+        async function postData(results) {
+            try {
+                const response = await fetch(
+                    "http://localhost:3000/api/v1/requests",
+                    {
+                        method: "POST",
+                        credentials: "include",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(results),
+                    }
+                );
+                const json = await response.json();
+                if (response.status == 400) {
+                    dispatch(setMessage({ message: "400 status", background: MessageColors.WARNING }));
+                } else if (response.status == 401) {
+                    dispatch(setMessage({ message: json.errors.detail, background: MessageColors.WARNING }));
+                    navigate("/login");
+                } else if (response.status == 403) {
+                    dispatch(setMessage({ message: "You do not have permission to access this request", background: MessageColors.WARNING }));
+                }
+                else if (response.status == 404) {
+                    dispatch(setMessage({ message: "Request could not be found", background: MessageColors.WARNING }));
+                }
+                else if (!response.ok) {
+                    dispatch(setError({ message: `Response status: ${json.error}` }));
+                } else {
+                    dispatch(setMessage({ message: json.message, background: MessageColors.SUCCESS }));
+                }
+            } catch (error) {
+                dispatch(setError({ message: (error as Error).message }));
+            }
+        }
+
+        postData(results);
     }
 
     return <>

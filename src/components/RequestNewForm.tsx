@@ -5,6 +5,7 @@ import {
     Select,
     SelectContent,
     SelectItem,
+    SelectLabel,
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
@@ -12,6 +13,7 @@ import { useAppDispatch } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 import RequestNewDonationServiceForm from "./forms/RequestNewDonationServiceForm";
 import RequestNewMealForm from "./forms/RequestNewMealForm";
+import { Label } from "./ui/label";
 
 
 function RequestNewForm() {
@@ -71,9 +73,10 @@ function RequestNewForm() {
     }, [])
 
     return <>
-        <div className="mb-5">
+        <div className="container mx-auto mb-5">
+            <Label>Request Type</Label>
             <Select onValueChange={setSelectedRequestType} defaultValue={selectedRequestType}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="flex-1">
                     <SelectValue placeholder="Select a Category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -82,10 +85,9 @@ function RequestNewForm() {
                     <SelectItem value="Service">Service</SelectItem>
                 </SelectContent>
             </Select>
+            {(selectedRequestType == "Donation" || selectedRequestType == "Service") && <RequestNewDonationServiceForm requestType={selectedRequestType} people={people} />}
+            {selectedRequestType == "Meal" && <RequestNewMealForm requestType={selectedRequestType} people={people} />}
         </div>
-
-        {(selectedRequestType == "Donation" || selectedRequestType == "Service") && <RequestNewDonationServiceForm requestType={selectedRequestType} people={people} />}
-        {selectedRequestType == "Meal" && <RequestNewMealForm requestType={selectedRequestType} people={people} />}
     </>
 }
 

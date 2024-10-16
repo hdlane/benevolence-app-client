@@ -9,13 +9,19 @@ export const DonationServiceSchema = BaseSchema.extend({
         name: z.string(),
         quantity: z.number({ invalid_type_error: "Enter a number" }),
     }), { message: "Enter at least one resource" }).nonempty({ message: "Enter at least one resource" }),
-}).refine((val) => {
-    if (val == undefined) {
-        return true;
+}).superRefine((val, ctx) => {
+    if (val?.date_single_from && val?.date_single_to <= val?.date_single_from) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.invalid_date,
+            message: "End Time must be after Start Time",
+            path: ["date_single_to"],
+        })
     }
-    if (val?.date_single_from && val?.date_single_to > val?.date_single_from) {
-        return true;
-    } else {
-        return false;
+    if (val?.recipient_id == val?.coordinator_id) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Recipient and Coordinator cannot be same person",
+            path: ["coordinator_id"],
+        })
     }
-}, { message: "Start Time must be before End Time", path: ["date_single_from"] });
+});

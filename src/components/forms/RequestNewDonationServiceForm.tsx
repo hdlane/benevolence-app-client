@@ -111,13 +111,24 @@ function RequestNewDonationServiceForm({ requestType, people }) {
 
     return <>
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 justify-center">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 pt-4">
+                <FormField control={form.control} name="title" render={({ field }) => (
+                    <FormItem className="col-span-full">
+                        <FormLabel>Title</FormLabel>
+                        <FormControl>
+                            <Input maxLength={100} placeholder="" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+                />
                 <FormField control={form.control} name="recipient_id" render={() => (
-                    <FormItem>
+                    <FormItem className="sm:col-span-3">
+                        <FormLabel>Recipient</FormLabel>
                         <Popover open={openRecipientSearch} onOpenChange={setOpenRecipientSearch}>
                             <PopoverTrigger asChild>
                                 <FormControl>
-                                    <Button variant={"outline"} role={"combobox"} >
+                                    <Button className="w-full" variant={"outline"} role={"combobox"} >
                                         {selectedRecipient ? selectedRecipient.name : "Select Recipient"}
                                     </Button>
                                 </FormControl>
@@ -151,11 +162,12 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                 )}
                 />
                 <FormField control={form.control} name="coordinator_id" render={() => (
-                    <FormItem>
+                    <FormItem className="sm:col-span-3">
+                        <FormLabel>Coordinator</FormLabel>
                         <Popover open={openCoordinatorSearch} onOpenChange={setOpenCoordinatorSearch}>
                             <PopoverTrigger asChild>
                                 <FormControl>
-                                    <Button variant={"outline"} role={"combobox"} >
+                                    <Button className="w-full" variant={"outline"} role={"combobox"} >
                                         {selectedCoordinator ? selectedCoordinator.name : "Select Coordinator"}
                                     </Button>
                                 </FormControl>
@@ -188,18 +200,8 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                     </FormItem>
                 )}
                 />
-                <FormField control={form.control} name="title" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Title</FormLabel>
-                        <FormControl>
-                            <Input maxLength={100} placeholder="" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-                />
                 <FormField control={form.control} name="notes" render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="col-span-full">
                         <FormLabel>Notes</FormLabel>
                         <FormControl>
                             <Textarea maxLength={500} placeholder="" {...field} />
@@ -209,7 +211,7 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                 )}
                 />
                 <FormField control={form.control} name="resources" render={() => (
-                    <FormItem>
+                    <FormItem className="sm:col-span-3">
                         <FormLabel>Resources Needed</FormLabel>
                         <FormItem>
                             <Input type="text" ref={resourceNameRef} placeholder={requestType == "Donation" ? "Item" : "Assignment"} onChange={(e) => setResourceName(e.target.value)} />
@@ -221,7 +223,7 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                         <FormControl>
                             {
                                 (resourceName != "" && resourceQuantity > 0) ? (
-                                    <button className="button-primary" type="button" onClick={(e) => {
+                                    <button className="button-primary p-2" type="button" onClick={(e) => {
                                         e.preventDefault();
                                         const updatedResources = [
                                             ...resources,
@@ -240,9 +242,17 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                                     >
                                         <Plus />
                                     </button>
-                                ) : (null)
+                                ) : (
+                                    <button className="button-primary p-2" type="button" disabled><Plus /></button>
+                                )
                             }
                         </FormControl>
+                    </FormItem>
+                )}
+                />
+                {resources.length > 0 ? (
+                    <div className="sm:col-span-3 border rounded p-5">
+                        <p className="text-sm font-md mb-5">Resources:</p>
                         {resources.map((resource, index) => (
                             <FormField
                                 key={index}
@@ -250,135 +260,147 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                                 name="resources"
                                 render={() => {
                                     return (
-                                        <FormItem>
-                                            <span>{resource.name} (x{resource.quantity})</span>
-                                            <FormControl>
-                                                <button className="button-primary" type="button" onClick={(e) => {
-                                                    e.preventDefault();
-                                                    const updatedResources = resources.filter((obj) => obj != resource);
-                                                    setResources(updatedResources);
-                                                    form.setValue("resources", updatedResources);
-                                                }}
-                                                >
-                                                    <Minus />
-                                                </button>
-                                            </FormControl>
-                                        </FormItem>
+                                        <div className="space-y-4">
+                                            <FormItem className="my-4">
+                                                <FormControl>
+                                                    <Button variant={"destructive"} className="button-primary h-3 w-3 p-3 mr-5" type="button" onClick={(e) => {
+                                                        e.preventDefault();
+                                                        const updatedResources = resources.filter((obj) => obj != resource);
+                                                        setResources(updatedResources);
+                                                        form.setValue("resources", updatedResources);
+                                                    }}
+                                                    >
+                                                        <span>X</span>
+                                                    </Button>
+                                                </FormControl>
+                                                <span className="mt-2">{resource.name} (x{resource.quantity})</span>
+                                            </FormItem>
+                                            <hr />
+                                        </div>
                                     )
                                 }}
                             />
                         ))}
-                    </FormItem>
-                )}
-                />
-                <FormField control={form.control} name="date_single_day" render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                        <FormLabel>Start Date</FormLabel>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <FormControl>
-                                    <Button variant={"outline"} className={cn(
-                                        "w-[240px] justify-between pl-3 text-left font-normal",
-                                        !field.value && "text-muted-foreground"
-                                    )}
-                                    >
-                                        {field.value ? (
-                                            format(field.value, "PP")
-                                        ) : (
-                                            <span>Pick a date</span>
+                    </div>
+                ) : (
+                    <div className="sm:col-span-3 border rounded p-5">
+                        <p className="text-sm font-md mb-5">Resources:</p>
+                        <p className="text-sm font-md mb-5 text-gray-500">None created yet!</p>
+                    </div>
+                )
+                }
+                <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 sm:col-span-full">
+                    <FormField control={form.control} name="date_single_day" render={({ field }) => (
+                        <FormItem className="col-span-full lg:col-span-2 md:col-span-full">
+                            <FormLabel>Start Date</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button variant={"outline"} className={cn(
+                                            "flex justify-between w-full pl-3 text-left font-normal",
+                                            !field.value && "text-muted-foreground"
                                         )}
-                                        <CalendarIcon className="h-4 w-4" />
-                                    </Button>
-                                </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                    mode="single"
-                                    selected={field.value}
-                                    onSelect={(date) => {
-                                        const tempFrom = form.getValues("date_single_from");
-                                        const tempTo = form.getValues("date_single_to");
-                                        const from = new Date(tempFrom.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
-                                        const to = new Date(tempTo.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
-                                        form.setValue("date_single_day", date);
-                                        form.setValue("date_single_from", from);
-                                        form.setValue("date_single_to", to);
-                                    }}
-                                    disabled={(date) =>
-                                        date < today || date > endDateRange
-                                    }
-                                />
-                            </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField control={form.control} name="date_single_from" render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                        <FormLabel>Start Time</FormLabel>
-                        <FormControl>
-                            <div className="p-3">
-                                <TimePicker date={field.value} setDate={field.onChange} />
-                            </div>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField control={form.control} name="date_single_to" render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                        <FormLabel>End Time</FormLabel>
-                        <FormControl>
-                            <div className="p-3">
-                                <TimePicker date={field.value} setDate={field.onChange} />
-                            </div>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField control={form.control} name="street_line" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Street Address</FormLabel>
-                        <FormControl>
-                            <Input maxLength={100} placeholder="" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField control={form.control} name="city" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>City</FormLabel>
-                        <FormControl>
-                            <Input maxLength={50} placeholder="" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField control={form.control} name="state" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>State</FormLabel>
-                        <FormControl>
-                            <Input maxLength={2} placeholder="" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField control={form.control} name="zip_code" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>ZIP Code</FormLabel>
-                        <FormControl>
-                            <Input maxLength={10} placeholder="" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <button className="button-primary" type="button" onClick={form.handleSubmit(onSubmit)}>Submit</button>
+                                        >
+                                            {field.value ? (
+                                                format(field.value, "PP")
+                                            ) : (
+                                                <span>Pick a date</span>
+                                            )}
+                                            <CalendarIcon className="h-4 w-4" />
+                                        </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={field.value}
+                                        onSelect={(date) => {
+                                            const tempFrom = form.getValues("date_single_from");
+                                            const tempTo = form.getValues("date_single_to");
+                                            const from = new Date(tempFrom.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
+                                            const to = new Date(tempTo.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
+                                            form.setValue("date_single_day", date);
+                                            form.setValue("date_single_from", from);
+                                            form.setValue("date_single_to", to);
+                                        }}
+                                        disabled={(date) =>
+                                            date < today || date > endDateRange
+                                        }
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField control={form.control} name="date_single_from" render={({ field }) => (
+                        <FormItem className="col-span-full sm:col-span-3 lg:col-span-2 lg:justify-self-center">
+                            <FormLabel>Start Time</FormLabel>
+                            <FormControl>
+                                <div className="p-3">
+                                    <TimePicker date={field.value} setDate={field.onChange} />
+                                </div>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField control={form.control} name="date_single_to" render={({ field }) => (
+                        <FormItem className="col-span-full sm:col-span-3 lg:col-span-2 lg:justify-self-end">
+                            <FormLabel>End Time</FormLabel>
+                            <FormControl>
+                                <div className="p-3">
+                                    <TimePicker date={field.value} setDate={field.onChange} />
+                                </div>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
+                <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-3 col-span-full">
+                    <FormField control={form.control} name="street_line" render={({ field }) => (
+                        <FormItem className="col-span-full">
+                            <FormLabel>Street Address</FormLabel>
+                            <FormControl>
+                                <Input maxLength={100} placeholder="" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField control={form.control} name="city" render={({ field }) => (
+                        <FormItem className="col-span-full">
+                            <FormLabel>City</FormLabel>
+                            <FormControl>
+                                <Input maxLength={50} placeholder="" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField control={form.control} name="state" render={({ field }) => (
+                        <FormItem className="sm:col-span-2">
+                            <FormLabel>State</FormLabel>
+                            <FormControl>
+                                <Input maxLength={2} placeholder="" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField control={form.control} name="zip_code" render={({ field }) => (
+                        <FormItem className="sm:col-span-1">
+                            <FormLabel>ZIP Code</FormLabel>
+                            <FormControl>
+                                <Input maxLength={10} placeholder="" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
+                <button className="button-primary mb-10 col-span-1" type="button" onClick={form.handleSubmit(onSubmit)}>Submit</button>
             </form>
         </Form >
     </>

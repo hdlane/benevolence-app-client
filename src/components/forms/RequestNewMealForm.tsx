@@ -35,10 +35,12 @@ import { Checkbox } from "../ui/checkbox";
 import { MealSchema } from "@/lib/schemas/mealSchema";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/app/hooks";
+import { useToast } from "@/hooks/use-toast";
 
 function RequestNewMealForm({ requestType, people }) {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const { toast } = useToast();
 
     const [selectedRecipient, setSelectedRecipient] = useState(null);
     const [selectedCoordinator, setSelectedCoordinator] = useState(null);
@@ -118,23 +120,57 @@ function RequestNewMealForm({ requestType, people }) {
                 );
                 const json = await response.json();
                 if (response.status == 400) {
-                    dispatch(setMessage({ message: "400 status", background: MessageColors.WARNING }));
+                    // dispatch(setMessage({ message: "400 status", background: MessageColors.WARNING }));
+                    toast({
+                        variant: "destructive",
+                        title: "400 status",
+                        description: `${json.error}`
+                    })
                 } else if (response.status == 401) {
-                    dispatch(setMessage({ message: json.errors.detail, background: MessageColors.WARNING }));
+                    // dispatch(setMessage({ message: json.errors.detail, background: MessageColors.WARNING }));
+                    toast({
+                        variant: "destructive",
+                        title: "401 status",
+                        description: `${json.error}`
+                    })
                     navigate("/login");
                 } else if (response.status == 403) {
-                    dispatch(setMessage({ message: "You do not have permission to access this request", background: MessageColors.WARNING }));
+                    // dispatch(setMessage({ message: "You do not have permission to access this request", background: MessageColors.WARNING }));
+                    toast({
+                        variant: "destructive",
+                        title: "403 status",
+                        description: `${json.error}`
+                    })
                 }
                 else if (response.status == 404) {
-                    dispatch(setMessage({ message: "Request could not be found", background: MessageColors.WARNING }));
+                    // dispatch(setMessage({ message: "Request could not be found", background: MessageColors.WARNING }));
+                    toast({
+                        variant: "destructive",
+                        title: "404 status",
+                        description: `${json.error}`
+                    })
                 }
                 else if (!response.ok) {
-                    dispatch(setError({ message: `Response status: ${json.error}` }));
+                    // dispatch(setError({ message: `Response status: ${json.error}` }));
+                    toast({
+                        variant: "destructive",
+                        title: "Error",
+                        description: `${json.error}`
+                    })
                 } else {
-                    dispatch(setMessage({ message: json.message, background: MessageColors.SUCCESS }));
+                    // dispatch(setMessage({ message: json.message, background: MessageColors.SUCCESS }));
+                    toast({
+                        title: "Success",
+                        description: `${json.message}`
+                    })
                 }
             } catch (error) {
-                dispatch(setError({ message: (error as Error).message }));
+                // dispatch(setError({ message: (error as Error).message }));
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: `${(error as Error).message}`
+                })
             }
         }
 

@@ -61,8 +61,8 @@ function MealResourcesTable() {
     // const resources = useAppSelector((state) => state.mealResources.list);
 
     // useEffect(() => {
+    //     const controller = new AbortController();
     //     async function getData() {
-    //         const controller = new AbortController();
     //         try {
     //             const response = await fetch(
     //                 `http://localhost:3000/api/v1/requests/${requestId}`,
@@ -98,6 +98,10 @@ function MealResourcesTable() {
     //     }
     //
     //     getData();
+    //     
+    //     return () => {
+    //       controller.abort("Page Refresh");
+    //     }
     // }, []);
 
     return <Table>

@@ -12,8 +12,8 @@ function RequestMetadata() {
     const request = useAppSelector((state) => state.request.request);
 
     useEffect(() => {
+        const controller = new AbortController();
         async function getData() {
-            const controller = new AbortController();
             try {
                 const response = await fetch(
                     `http://localhost:3000/api/v1/requests/${requestId}`,
@@ -49,6 +49,10 @@ function RequestMetadata() {
         }
 
         getData();
+
+        return () => {
+            controller.abort("Page Refresh");
+        }
     }, []);
 
     return <>

@@ -39,6 +39,7 @@ function RequestNewForm() {
                 );
                 if (response.status == 400) {
                     dispatch(setMessage({ message: "400 status", background: MessageColors.WARNING }));
+                    navigate("/");
                 }
                 else if (response.status == 403) {
                     dispatch(setMessage({ message: "You do not have permission to access this request", background: MessageColors.WARNING }));

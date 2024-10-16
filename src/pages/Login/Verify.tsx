@@ -54,7 +54,7 @@ function Verify() {
         }
 
         return () => {
-            controller.abort();
+            controller.abort("Page Refresh");
         }
     }, []);
 

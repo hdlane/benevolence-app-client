@@ -18,9 +18,9 @@ function RequestNewForm() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const [people, setPeople] = useState([]);
     const [selectedRequestType, setSelectedRequestType] = useState("Meal");
 
+    const [people, setPeople] = useState([]);
     // get current list of people in organization to search through
     useEffect(() => {
         const controller = new AbortController();
@@ -40,8 +40,11 @@ function RequestNewForm() {
                 if (response.status == 400) {
                     dispatch(setMessage({ message: "400 status", background: MessageColors.WARNING }));
                     navigate("/");
-                }
-                else if (response.status == 403) {
+                } else if (response.status == 401) {
+                    const json = await response.json();
+                    dispatch(setMessage({ message: json.errors.detail, background: MessageColors.WARNING }));
+                    navigate("/login");
+                } else if (response.status == 403) {
                     dispatch(setMessage({ message: "You do not have permission to access this request", background: MessageColors.WARNING }));
                     navigate("/");
                 }
@@ -63,7 +66,7 @@ function RequestNewForm() {
         getPeople();
 
         return () => {
-            controller.abort()
+            controller.abort("Page Refresh");
         }
     }, [])
 

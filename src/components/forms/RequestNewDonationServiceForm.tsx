@@ -70,6 +70,43 @@ function RequestNewDonationServiceForm({ requestType, people }) {
     function onSubmit(values: z.infer<typeof DonationServiceSchema>) {
         const results = { ...values, request_type: requestType, date_single: { from: values.date_single_from, to: values.date_single_to } }
         console.log(results);
+
+        async function postData(results) {
+            try {
+                const response = await fetch(
+                    "http://localhost:3000/api/v1/requests",
+                    {
+                        method: "POST",
+                        credentials: "include",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(results),
+                    }
+                );
+                const json = await response.json();
+                if (response.status == 400) {
+                    dispatch(setMessage({ message: "400 status", background: MessageColors.WARNING }));
+                } else if (response.status == 401) {
+                    dispatch(setMessage({ message: json.errors.detail, background: MessageColors.WARNING }));
+                    navigate("/login");
+                } else if (response.status == 403) {
+                    dispatch(setMessage({ message: "You do not have permission to access this request", background: MessageColors.WARNING }));
+                }
+                else if (response.status == 404) {
+                    dispatch(setMessage({ message: "Request could not be found", background: MessageColors.WARNING }));
+                }
+                else if (!response.ok) {
+                    dispatch(setError({ message: `Response status: ${json.error}` }));
+                } else {
+                    dispatch(setMessage({ message: json.message, background: MessageColors.SUCCESS }));
+                }
+            } catch (error) {
+                dispatch(setError({ message: (error as Error).message }));
+            }
+        }
+
+        postData(results);
     }
 
     return <>
@@ -175,7 +212,7 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                     <FormItem>
                         <FormLabel>Resources Needed</FormLabel>
                         <FormItem>
-                            <Input type="text" ref={resourceNameRef} placeholder="Name" onChange={(e) => setResourceName(e.target.value)} />
+                            <Input type="text" ref={resourceNameRef} placeholder={requestType == "Donation" ? "Item" : "Assignment"} onChange={(e) => setResourceName(e.target.value)} />
                         </FormItem>
                         <FormItem>
                             <Input type="number" placeholder="Quantity" defaultValue={1} min={1} max={100} onChange={(e) => setResourceQuantity(parseInt(e.target.value))} />

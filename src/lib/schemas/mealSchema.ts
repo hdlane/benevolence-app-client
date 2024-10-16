@@ -21,4 +21,4 @@ export const MealSchema = BaseSchema.extend({
 }, {
     message: "Start Date must be before End Date",
     path: ["date_range.from"],
-});
+}).refine((data) => data.recipient_id != data.coordinator_id, { message: "Recipient and Coordinator cannot be same person", path: ["coordinator_id"] });

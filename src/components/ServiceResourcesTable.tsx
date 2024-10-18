@@ -12,7 +12,7 @@ import {
     TableRow
 } from "@/components/ui/table";
 
-function MealResourcesTable() {
+function ServiceResourcesTable() {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
@@ -137,4 +137,4 @@ function MealResourcesTable() {
     </Table>
 }
 
-export default MealResourcesTable;
+export default ServiceResourcesTable;

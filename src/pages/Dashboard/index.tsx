@@ -6,48 +6,51 @@ import { ChevronDown, Search } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setRequests } from "@/features/requests/requestsSlice";
-import { setError } from "@/features/errors/errorsSlice";
-import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
+import { useToast } from "@/hooks/use-toast";
+import createApi from "@/lib/api";
 
 function Dashboard() {
     const requests = useAppSelector((state) => state.requests.requests);
     const dispatch = useAppDispatch();
-
+    const { toast } = useToast();
     const navigate = useNavigate();
 
     useEffect(() => {
         const controller = new AbortController();
+        const api = createApi({ endpoint: "/requests" });
 
         async function getData() {
             try {
-                const response = await fetch(
-                    "http://localhost:3000/api/v1/requests", {
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    signal: controller.signal,
-                });
+                const response = await api.get({ controller: controller });
+                const json = await response.json();
 
-                if (response.status == 401) {
-                    const json = await response.json();
-                    dispatch(setMessage({ message: json.errors.detail, background: MessageColors.WARNING }));
-                    navigate("/login");
-                } else if (!response.ok) {
-                    dispatch(setError({ message: `Response status: ${response.status}` }));
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        toast({
+                            variant: "destructive",
+                            description: `${json.errors.detail}`
+                        });
+                        navigate("/login");
+                    }
+                    toast({
+                        variant: "destructive",
+                        description: `${json.errors.detail}`
+                    });
                 } else {
-                    const json = await response.json();
                     dispatch(setRequests(json.data));
                 }
             } catch (error) {
-                dispatch(setError({ message: (error as Error).message }))
+                toast({
+                    variant: "destructive",
+                    description: `${error}`,
+                });
             }
         }
 
         getData();
 
         return () => {
-            controller.abort("Page Refresh");
+            controller.abort("Request Aborted");
         }
     }, []);
 

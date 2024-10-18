@@ -8,6 +8,7 @@ import Verify from "./pages/Login/Verify";
 import VerifyPerson from "./pages/Login/VerifyPerson";
 import VerifyOrganization from "./pages/Login/VerifyOrganization";
 import RequestDetails from "./pages/Requests/RequestDetails";
+import RequestCreate from "./pages/Requests/RequestCreate";
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
                 <Route path="/login/verify/person" element={<VerifyPerson />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/requests/:requestId" element={<RequestDetails />} />
+                <Route path="/requests/new" element={<RequestCreate />} />
             </Routes>
         </>
     )

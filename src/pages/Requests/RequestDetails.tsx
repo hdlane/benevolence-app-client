@@ -7,22 +7,16 @@ import MealResourcesTable from "@/components/MealResourcesTable";
 import ServiceResourcesTable from "@/components/ServiceResourcesTable";
 
 function RequestDetails() {
+    // TODO: Make sure request exists and user is authorized to view
     const request = useAppSelector((state) => state.request.request);
-    let requestTable = <MealResourcesTable />;
-
-    // if (request?.request_type == "Donation") {
-    //     requestTable = <DonationResourcesTable />
-    // } else if (request?.request_type == "Meal") {
-    //     requestTable = <MealResourcesTable />
-    // } else if (request?.request_type == "Service") {
-    //     requestTable = <ServiceResourcesTable />
-    // }
 
     return <>
         <TitleBar title={request?.title} subTitle={request?.request_type} />
         <div className="content">
             <RequestMetadata />
-            {requestTable}
+            {request?.request_type == "Donation" && <DonationResourcesTable />}
+            {request?.request_type == "Meal" && <MealResourcesTable />}
+            {request?.request_type == "Service" && <ServiceResourcesTable />}
         </div>
     </>
 }

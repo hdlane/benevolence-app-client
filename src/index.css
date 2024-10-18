@@ -13,7 +13,7 @@
 body {
   --primary-color: #bc6c25;
   --secondary-color: #dda15e;
-  --tertiary-color: #dbcbb3;/*#9CA874;*/ /*#fefae0;*/
+  --tertiary-color: #dbcbb3;
   --text-primary-color: #333333;
   --text-secondary-color: #666666;
 
@@ -22,8 +22,12 @@ body {
   width: 100%;
 }
 
-button {
-  max-width: 100px;
+button:disabled {
+  opacity: 25%;
+}
+
+button:disabled:hover {
+  background-color: var(--primary-color);
 }
 
 a {

@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import {
     setOrganizationId,
     setOrganizationName,
 } from "@/features/organizations/organizationsSlice";
 import { setPeople } from "@/features/people/peopleSlice";
-import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
-import { setError } from "@/features/errors/errorsSlice";
 import { useNavigate } from "react-router-dom";
 import {
     Card,
@@ -14,6 +12,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import createApi from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 function VerifyOrganization() {
     const token = useAppSelector((state) => state.token.token);
@@ -21,79 +21,83 @@ function VerifyOrganization() {
     const message = useAppSelector((state) => state.messages.currentMessage);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const { toast } = useToast();
 
     useEffect(() => {
         const controller = new AbortController();
 
         async function verifyToken() {
             try {
-                const response = await fetch(
-                    `http://localhost:3000/api/v1/login/verify?token=${token}`,
-                    {
-                        credentials: "include",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        signal: controller.signal,
+                const api = createApi({ endpoint: `/login/verify?token=${token}` });
+                const response = await api.get({ controller: controller });
+                const json = await response.json();
+
+                if (!response.ok) {
+                    if (response.status == 404) {
+                        toast({
+                            variant: "destructive",
+                            description: "Token has expired. Please login again.",
+                        });
+                        navigate("/login");
+                    }
+                    toast({
+                        variant: "destructive",
+                        description: `${json.errors.detail}`
                     });
-                if (response.status == 404) {
-                    dispatch(setMessage({ message: "Login link has expired, please login again.", background: MessageColors.WARNING }));
-                    navigate("/login");
-                } else if (!response.ok) {
-                    dispatch(setError({ message: `Response status: ${response.status}` }));
                 }
             } catch (error) {
-                dispatch(setError({ message: (error as Error).message }));
+                toast({
+                    variant: "destructive",
+                    description: `${error}`,
+                });
             }
         }
 
         if (token == null) {
-            dispatch(setMessage({ message: "Token from login link not provided. Please follow the link sent to your email.", background: MessageColors.WARNING }));
+            toast({
+                variant: "destructive",
+                description: "Token from login link not provided. Please follow the link sent to your email.",
+            });
             navigate("/login");
         } else {
             verifyToken();
         }
 
         return () => {
-            controller.abort();
+            controller.abort("Request Aborted");
         }
     }, []);
 
     async function handleSelect(organization_id: number, organization_name: string) {
+        const api = createApi({ endpoint: "/login/verify/organization" })
         const controller = new AbortController();
         dispatch(setOrganizationId({ id: organization_id }));
         dispatch(setOrganizationName({ name: organization_name }));
-        try {
-            const response = await fetch(
-                "http://localhost:3000/api/v1/login/verify/organization",
-                {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ organization_id }),
-                    signal: controller.signal
-                });
 
-            if (response.status == 400) {
-                dispatch(setMessage({ message: "400 status", background: MessageColors.WARNING }));
-            }
-            else if (response.status == 404) {
-                dispatch(setMessage({ message: "404 status", background: MessageColors.WARNING }));
-            }
-            else if (!response.ok) {
-                dispatch(setError({ message: `Response status: ${response.status}` }));
+        try {
+            const response = await api.post({
+                body: { organization_id },
+                controller: controller,
+            });
+            const json = await response.json();
+
+            if (!response.ok) {
+                toast({
+                    variant: "destructive",
+                    description: `${json.errors.detail}`
+                });
             } else {
-                const json = await response.json();
                 dispatch(setPeople(json.data));
-                setMessage(json.message);
                 navigate("/login/verify/person");
             }
         } catch (error) {
-            dispatch(setError({ message: (error as Error).message }));
+            toast({
+                variant: "destructive",
+                description: `${error}`,
+            });
         }
     }
+
     return <>
         <div className="content flex items-center justify-center h-full">
             <div className="flex flex-col space-y-4 bg-white p-6 rounded text-center w-full max-w-md">

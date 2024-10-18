@@ -2,7 +2,9 @@ import React from "react";
 import TitleBar from "@/components/TitleBar";
 import RequestNewForm from "@/components/RequestNewForm";
 
-function RequestsNew() {
+function RequestCreate() {
+    // require is_admin
+    // when created, show message and redirect to home
     return <>
         <TitleBar title={"New Request"} />
         <div className="content">
@@ -11,4 +13,4 @@ function RequestsNew() {
     </>
 }
 
-export default RequestsNew;
+export default RequestCreate;

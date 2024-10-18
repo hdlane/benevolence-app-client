@@ -2,34 +2,38 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { useAppDispatch } from "@/app/hooks";
-import { setError } from "@/features/errors/errorsSlice";
-import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
+import createApi from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 function Navbar() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const { toast } = useToast();
 
     async function handleLogout() {
+        const controller = new AbortController();
+        const api = createApi({ endpoint: "/logout" })
+
         try {
-            const response = await fetch(
-                "http://localhost:3000/api/v1/logout",
-                {
-                    method: "DELETE",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                },
-            )
+            const response = await api._delete({ controller: controller });
+            const json = await response.json();
+
             if (!response.ok) {
-                dispatch(setError({ message: `Response status: ${response.status}` }));
+                toast({
+                    variant: "destructive",
+                    description: `${json.errors.detail}`
+                });
             } else {
-                const json = await response.json();
-                dispatch(setMessage({ message: json.message, background: MessageColors.SUCCESS }));
+                toast({
+                    description: "Successfully logged out!"
+                });
                 navigate("/login");
             }
         } catch (error) {
-            dispatch(setError({ message: (error as Error).message }));
+            toast({
+                variant: "destructive",
+                description: `${error}`,
+            });
         }
     }
 

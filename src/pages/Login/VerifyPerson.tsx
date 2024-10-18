@@ -14,6 +14,8 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { ChevronLeft } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import createApi from "@/lib/api";
 
 function VerifyPerson() {
     const token = useAppSelector((state) => state.token.token);
@@ -21,33 +23,44 @@ function VerifyPerson() {
     const organization = useAppSelector((state) => state.organizations.selectedOrganizationName);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const { toast } = useToast();
 
     useEffect(() => {
         const controller = new AbortController();
+
         async function verifyToken() {
             try {
-                const response = await fetch(
-                    `http://localhost:3000/api/v1/login/verify?token=${token}`,
-                    {
-                        credentials: "include",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        signal: controller.signal,
-                    });
-                if (response.status == 404) {
-                    dispatch(setMessage({ message: "Login link has expired, please login again.", background: MessageColors.WARNING }));
-                    navigate("/login");
-                } else if (!response.ok) {
-                    dispatch(setError({ message: `Response status: ${response.status}` }));
+                const api = createApi({ endpoint: `/login/verify?token=${token}` });
+                const response = await api.get({ controller: controller });
+                const json = await response.json();
+
+                if (!response.ok) {
+                    if (response.status == 404) {
+                        toast({
+                            variant: "destructive",
+                            description: "Token has expired. Please login again.",
+                        });
+                        navigate("/login");
+                    } else {
+                        toast({
+                            variant: "destructive",
+                            description: `${json.errors.detail}`
+                        });
+                    }
                 }
             } catch (error) {
-                dispatch(setError({ message: (error as Error).message }));
+                toast({
+                    variant: "destructive",
+                    description: `${error}`,
+                });
             }
         }
 
         if (token == null) {
-            dispatch(setMessage({ message: "Token from login link not provided. Please follow the link sent to your email.", background: MessageColors.WARNING }));
+            toast({
+                variant: "destructive",
+                description: "Token from login link not provided. Please follow the link sent to your email.",
+            })
             navigate("/login");
         } else {
             verifyToken();
@@ -55,39 +68,37 @@ function VerifyPerson() {
     }, []);
 
     async function handleSelect(person_id: number, person_name: string) {
+        const api = createApi({ endpoint: "/login/verify/person" });
         const controller = new AbortController();
         dispatch(setPersonId({ id: person_id }));
         dispatch(setPersonName({ name: person_name }));
-        try {
-            const response = await fetch(
-                "http://localhost:3000/api/v1/login/verify/person",
-                {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ person_id }),
-                    signal: controller.signal
-                });
 
-            if (response.status == 400) {
-                dispatch(setMessage({ message: "400 status", background: MessageColors.WARNING }));
-            }
-            else if (response.status == 404) {
-                dispatch(setMessage({ message: "404 status", background: MessageColors.WARNING }));
-            }
-            else if (!response.ok) {
-                dispatch(setError({ message: `Response status: ${response.status}` }));
+        try {
+            const response = await api.post({
+                body: { person_id },
+                controller: controller,
+            });
+            const json = await response.json();
+
+            if (!response.ok) {
+                toast({
+                    variant: "destructive",
+                    description: `${json.errors.detail}`
+                });
             } else {
-                const json = await response.json();
-                dispatch(setMessage({ message: json.message, background: MessageColors.SUCCESS }));
+                toast({
+                    description: `${json.message}`,
+                });
                 navigate("/");
             }
         } catch (error) {
-            dispatch(setError({ message: (error as Error).message }));
+            toast({
+                variant: "destructive",
+                description: `${error}`,
+            });
         }
     }
+
     return <>
         <div className="content flex items-center justify-center h-full">
             <div className="flex flex-col space-y-4 bg-white p-6 rounded text-center w-full max-w-md">

@@ -6,14 +6,15 @@ import {
 import { useNavigate, useSearchParams } from "react-router-dom";
 import TitleBar from "@/components/TitleBar";
 import { setToken } from "@/features/token/tokenSlice";
-import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
-import { setError } from "@/features/errors/errorsSlice";
+import { useToast } from "@/hooks/use-toast";
+import createApi from "@/lib/api";
 
 function Verify() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const { toast } = useToast();
     const [searchParams,] = useSearchParams();
-    // create slice for token
+
     dispatch(setToken({ token: searchParams.get('token') }));
     const token = useAppSelector((state) => state.token.token);
 
@@ -22,39 +23,47 @@ function Verify() {
 
         async function verifyToken() {
             try {
-                const response = await fetch(
-                    `http://localhost:3000/api/v1/login/verify?token=${token}`,
-                    {
-                        credentials: "include",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        signal: controller.signal,
-                    });
-                if (response.status == 404) {
-                    dispatch(setMessage({ message: "Login link has expired, please login again.", background: MessageColors.WARNING }));
-                    navigate("/login");
-                } else if (!response.ok) {
-                    dispatch(setError({ message: `Response status: ${response.status}` }));
+                const api = createApi({ endpoint: `/login/verify?token=${token}` });
+                const response = await api.get({ controller: controller });
+                const json = await response.json();
+
+                if (!response.ok) {
+                    if (response.status == 404) {
+                        toast({
+                            variant: "destructive",
+                            description: "Token has expired. Please login again.",
+                        });
+                        navigate("/login");
+                    } else {
+                        toast({
+                            variant: "destructive",
+                            description: `${json.errors.detail}`
+                        });
+                    }
                 } else {
-                    const json = await response.json();
                     dispatch(setOrganizations(json.data));
                     navigate("/login/verify/organization");
                 }
             } catch (error) {
-                dispatch(setError({ message: (error as Error).message }));
+                toast({
+                    variant: "destructive",
+                    description: `${error}`,
+                });
             }
         }
 
         if (token == null) {
-            dispatch(setMessage({ message: "Token from login link not provided. Please follow the link sent to your email.", background: MessageColors.WARNING }));
+            toast({
+                variant: "destructive",
+                description: "Token from login link not provided. Please follow the link sent to your email."
+            })
             navigate("/login");
         } else {
             verifyToken();
         }
 
         return () => {
-            controller.abort("Page Refresh");
+            controller.abort("Request Aborted");
         }
     }, []);
 

@@ -100,7 +100,7 @@ function MealResourcesTable() {
     //     getData();
     //     
     //     return () => {
-    //       controller.abort("Page Refresh");
+    //       controller.abort("Request Aborted");
     //     }
     // }, []);
 

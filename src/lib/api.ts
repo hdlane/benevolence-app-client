@@ -1,61 +1,5 @@
-function createApi({ endpoint, navigate, toast }) {
+function createApi({ endpoint }) {
     const API_URL = "http://localhost:3000/api/v1";
-
-    async function parseResponse(response) {
-        try {
-            const json = await response.json();
-            if (response.status == 400) {
-                toast({
-                    variant: "destructive",
-                    title: "An Error Occurred",
-                    description: `Error ${response.status}: ${json.message} || ${response.statusText}`,
-                })
-                navigate("/");
-            } else if (response.status == 401) {
-                toast({
-                    variant: "destructive",
-                    title: "An Error Occurred",
-                    description: `Error ${response.status}: ${json.message} || ${response.statusText}`,
-                })
-                navigate("/login");
-            } else if (response.status == 403) {
-                toast({
-                    variant: "destructive",
-                    title: "An Error Occurred",
-                    description: `Error ${response.status}: ${json.message} || ${response.statusText}`,
-                })
-                navigate("/");
-            }
-            else if (response.status == 404) {
-                toast({
-                    variant: "destructive",
-                    title: "An Error Occurred",
-                    description: `Error ${response.status}: ${json.message} || ${response.statusText}`,
-                })
-                navigate("/");
-            }
-            else if (!response.ok) {
-                toast({
-                    variant: "destructive",
-                    title: "An Error Occurred",
-                    description: `Error ${response.status}: ${json.message} || ${response.statusText}`,
-                })
-            } else {
-                toast({
-                    title: "Success!",
-                    description: `NOICE! ${response.status}: ${json.message} || ${response.statusText}`,
-                })
-                return json;
-            }
-        } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "An Error Occurred",
-                description: `${(error as Error).message}`,
-            })
-        }
-    }
-
     return {
         get: async ({ options = {}, controller }) => {
             try {
@@ -71,13 +15,9 @@ function createApi({ endpoint, navigate, toast }) {
                         signal: controller.signal,
                     },
                 );
-                return await parseResponse(response);
+                return response;
             } catch (error) {
-                toast({
-                    variant: "destructive",
-                    title: "An Error Occurred",
-                    description: `${(error as Error).message}`,
-                })
+                throw error;
             }
         },
         post: async ({ body, options = {}, controller }) => {
@@ -95,16 +35,12 @@ function createApi({ endpoint, navigate, toast }) {
                         signal: controller.signal,
                     },
                 );
-                return await parseResponse(response);
+                return response;
             } catch (error) {
-                toast({
-                    variant: "destructive",
-                    title: "An Error Occurred",
-                    description: `${(error as Error).message}`,
-                })
+                throw error;
             }
         },
-        delete: async ({ options = {}, controller }) => {
+        _delete: async ({ options = {}, controller }) => {
             try {
                 const response = await fetch(
                     `${API_URL}${endpoint}`,
@@ -118,13 +54,9 @@ function createApi({ endpoint, navigate, toast }) {
                         signal: controller.signal,
                     },
                 );
-                return await parseResponse(response);
+                return response;
             } catch (error) {
-                toast({
-                    variant: "destructive",
-                    title: "An Error Occurred",
-                    description: `${(error as Error).message}`,
-                })
+                throw error;
             }
         },
     }

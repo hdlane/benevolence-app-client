@@ -36,6 +36,7 @@ import { MealSchema } from "@/lib/schemas/mealSchema";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/app/hooks";
 import { useToast } from "@/hooks/use-toast";
+import createApi from "@/lib/api";
 
 function RequestNewMealForm({ requestType, people }) {
     const dispatch = useAppDispatch();
@@ -106,71 +107,40 @@ function RequestNewMealForm({ requestType, people }) {
         console.log(results);
 
         async function postData(results) {
+            const api = createApi({ endpoint: "/requests" });
+            const controller = new AbortController();
+
             try {
-                const response = await fetch(
-                    "http://localhost:3000/api/v1/requests",
-                    {
-                        method: "POST",
-                        credentials: "include",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(results),
-                    }
-                );
+                const response = await api.post({
+                    body: results,
+                    controller: controller,
+                });
                 const json = await response.json();
-                if (response.status == 400) {
-                    // dispatch(setMessage({ message: "400 status", background: MessageColors.WARNING }));
-                    toast({
-                        variant: "destructive",
-                        title: "400 status",
-                        description: `${json.error}`
-                    })
-                } else if (response.status == 401) {
-                    // dispatch(setMessage({ message: json.errors.detail, background: MessageColors.WARNING }));
-                    toast({
-                        variant: "destructive",
-                        title: "401 status",
-                        description: `${json.error}`
-                    })
-                    navigate("/login");
-                } else if (response.status == 403) {
-                    // dispatch(setMessage({ message: "You do not have permission to access this request", background: MessageColors.WARNING }));
-                    toast({
-                        variant: "destructive",
-                        title: "403 status",
-                        description: `${json.error}`
-                    })
+
+                if (!response.ok) {
+                    if (response.status == 401) {
+                        toast({
+                            variant: "destructive",
+                            description: `${json.errors.detail}`
+                        });
+                        navigate("/login");
+                    } else {
+                        toast({
+                            variant: "destructive",
+                            description: `${json.errors.detail}`
+                        });
+                    }
                 }
-                else if (response.status == 404) {
-                    // dispatch(setMessage({ message: "Request could not be found", background: MessageColors.WARNING }));
+                else {
                     toast({
-                        variant: "destructive",
-                        title: "404 status",
-                        description: `${json.error}`
-                    })
-                }
-                else if (!response.ok) {
-                    // dispatch(setError({ message: `Response status: ${json.error}` }));
-                    toast({
-                        variant: "destructive",
-                        title: "Error",
-                        description: `${json.error}`
-                    })
-                } else {
-                    // dispatch(setMessage({ message: json.message, background: MessageColors.SUCCESS }));
-                    toast({
-                        title: "Success",
-                        description: `${json.message}`
-                    })
+                        description: "Request successfully created!",
+                    });
                 }
             } catch (error) {
-                // dispatch(setError({ message: (error as Error).message }));
                 toast({
                     variant: "destructive",
-                    title: "Error",
-                    description: `${(error as Error).message}`
-                })
+                    description: `${error}`
+                });
             }
         }
 

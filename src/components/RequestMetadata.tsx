@@ -1,57 +1,61 @@
 import React, { useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
-import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
-import { setError } from "@/features/errors/errorsSlice";
 import { setRequest } from "@/features/requests/requestDetailsSlice";
 import { useNavigate, useParams } from "react-router-dom";
+import createApi from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 function RequestMetadata() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const { toast } = useToast();
     const { requestId } = useParams();
     const request = useAppSelector((state) => state.request.request);
 
     useEffect(() => {
         const controller = new AbortController();
+        const api = createApi({ endpoint: `/requests/${requestId}` })
+
         async function getData() {
             try {
-                const response = await fetch(
-                    `http://localhost:3000/api/v1/requests/${requestId}`,
-                    {
-                        credentials: "include",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        signal: controller.signal
-                    });
+                const response = await api.get({ controller: controller });
+                const json = await response.json();
 
-                if (response.status == 400) {
-                    dispatch(setMessage({ message: "400 status", background: MessageColors.WARNING }));
-                    navigate("/");
+                if (!response.ok) {
+                    if (response.status == 401) {
+                        toast({
+                            variant: "destructive",
+                            description: `${json.errors.detail}`
+                        });
+                        navigate("/login");
+                    } else if (response.status == 403) {
+                        toast({
+                            variant: "destructive",
+                            description: `${json.errors.detail}`
+                        });
+                        navigate("/");
+                    } else {
+                        toast({
+                            variant: "destructive",
+                            description: `${json.errors.detail}`
+                        });
+                    }
                 }
-                else if (response.status == 403) {
-                    dispatch(setMessage({ message: "You do not have permission to access this request", background: MessageColors.WARNING }));
-                    navigate("/");
-                }
-                else if (response.status == 404) {
-                    dispatch(setMessage({ message: "Request could not be found", background: MessageColors.WARNING }));
-                    navigate("/");
-                }
-                else if (!response.ok) {
-                    dispatch(setError({ message: `Response status: ${response.status}` }));
-                } else {
-                    const json = await response.json();
+                else {
                     dispatch(setRequest({ ...json.data }));
                 }
             } catch (error) {
-                dispatch(setError({ message: (error as Error).message }));
+                toast({
+                    variant: "destructive",
+                    description: `${error}`,
+                });
             }
         }
 
         getData();
 
         return () => {
-            controller.abort("Page Refresh");
+            controller.abort("Request Aborted");
         }
     }, []);
 

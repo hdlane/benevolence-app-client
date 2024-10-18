@@ -36,6 +36,7 @@ import { useAppDispatch } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 import { DonationServiceSchema } from "@/lib/schemas/donationServiceSchema";
 import { useToast } from "@/hooks/use-toast";
+import createApi from "@/lib/api";
 
 function RequestNewDonationServiceForm({ requestType, people }) {
     const dispatch = useAppDispatch();
@@ -74,64 +75,40 @@ function RequestNewDonationServiceForm({ requestType, people }) {
         console.log(results);
 
         async function postData(results) {
+            const api = createApi({ endpoint: "/requests" });
+            const controller = new AbortController();
+
             try {
-                const response = await fetch(
-                    "http://localhost:3000/api/v1/requests",
-                    {
-                        method: "POST",
-                        credentials: "include",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(results),
-                    }
-                );
+                const response = await api.post({
+                    body: results,
+                    controller: controller,
+                });
                 const json = await response.json();
-                if (response.status == 400) {
-                    toast({
-                        variant: "destructive",
-                        title: "400 status",
-                        description: `${json.error}`
-                    })
-                } else if (response.status == 401) {
-                    toast({
-                        variant: "destructive",
-                        title: "401 status",
-                        description: `${json.error}`
-                    })
-                    navigate("/login");
-                } else if (response.status == 403) {
-                    toast({
-                        variant: "destructive",
-                        title: "403 status",
-                        description: `${json.error}`
-                    })
+
+                if (!response.ok) {
+                    if (response.status == 401) {
+                        toast({
+                            variant: "destructive",
+                            description: `${json.errors.detail}`
+                        });
+                        navigate("/login");
+                    } else {
+                        toast({
+                            variant: "destructive",
+                            description: `${json.errors.detail}`
+                        });
+                    }
                 }
-                else if (response.status == 404) {
+                else {
                     toast({
-                        variant: "destructive",
-                        title: "404 status",
-                        description: `${json.error}`
-                    })
-                }
-                else if (!response.ok) {
-                    toast({
-                        variant: "destructive",
-                        title: "Error",
-                        description: `${json.error}`
-                    })
-                } else {
-                    toast({
-                        title: "Success",
-                        description: `${json.message}`
-                    })
+                        description: "Request successfully created!",
+                    });
                 }
             } catch (error) {
                 toast({
                     variant: "destructive",
-                    title: "Error",
-                    description: `${(error as Error).message}`
-                })
+                    description: `${error}`
+                });
             }
         }
 

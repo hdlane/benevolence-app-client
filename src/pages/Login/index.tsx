@@ -1,68 +1,73 @@
 import React, { useState } from "react";
 import TitleBar from "@/components/TitleBar";
-import { MessageColors } from "@/features/messages/messagesSlice";
-import { setError } from "@/features/errors/errorsSlice";
-import { useAppDispatch } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
+import createApi from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 function Login() {
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
+    const { toast } = useToast();
 
     const [email, setEmail] = useState<string>("");
-    const [loginMessage, setLoginMessage] = useState<string | null>(null);
-    const [loginMessageBackground, setLoginMessageBackground] = useState<MessageColors>(MessageColors.WARNING);
 
     const submitButton = document.getElementById("submit-button");
 
     async function handleSubmit(e) {
         e.preventDefault();
 
+        const api = createApi({ endpoint: "/login" });
         const controller = new AbortController();
         const parsedEmail = z.string().email().safeParse(email);
 
         if (!parsedEmail.success) {
             const message = parsedEmail.error.format();
-            setLoginMessageBackground(MessageColors.WARNING);
-            setLoginMessage(message._errors[0]);
+            toast({
+                description: message._errors[0],
+            })
             return
         }
 
         try {
-            const response = await fetch(
-                "http://localhost:3000/api/v1/login",
-                {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ email }),
-                    signal: controller.signal
-                });
-
-            if (response.status == 400) {
-                setLoginMessageBackground(MessageColors.WARNING);
-                setLoginMessage("Email address invalid");
-            }
-            else if (response.status == 404) {
-                setLoginMessageBackground(MessageColors.WARNING);
-                setLoginMessage("Account not found with that email.");
-            }
-            else if (!response.ok) {
-                dispatch(setError({ message: `Response status: ${response.status}` }));
+            const response = await api.post({
+                body: { email },
+                controller: controller,
+            });
+            const json = await response.json();
+            if (!response.ok) {
+                if (response.status === 400) {
+                    toast({
+                        variant: "destructive",
+                        description: "Email address invalid",
+                    });
+                } else if (response.status === 404) {
+                    toast({
+                        variant: "destructive",
+                        description: "Account not found with that email address",
+                    });
+                } else {
+                    toast({
+                        variant: "destructive",
+                        description: `${json.errors.detail}`
+                    });
+                }
             } else {
                 submitButton?.setAttribute("disabled", "true");
-                const json = await response.json();
-                setLoginMessageBackground(MessageColors.SUCCESS);
-                setLoginMessage(json.message);
                 if (json.redirect_url) {
-                    navigate("/");
+                    toast({
+                        description: `${json.message}`,
+                    });
+                    window.open(json.redirect_url, "_self");
+                } else {
+                    toast({
+                        description: `${json.message}`,
+                    });
                 }
             }
         } catch (error) {
-            dispatch(setError({ message: (error as Error).message }));
+            toast({
+                variant: "destructive",
+                description: `${error}`,
+            });
         }
     }
 
@@ -72,9 +77,6 @@ function Login() {
             <div className="flex flex-col space-y-4 bg-white p-6 rounded text-center w-full max-w-md">
                 <p className="text-lg font-semibold">To get started, enter your email address.</p>
                 <p>We'll send you a link you can use to login.</p>
-                {loginMessage ? (
-                    <div className={`flex justify-between p-1 message-${loginMessageBackground}`}> <span className="flex-1">{loginMessage}</span></div>
-                ) : null}
                 <form>
                     <input
                         type="email"

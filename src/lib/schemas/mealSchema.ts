@@ -5,7 +5,7 @@ export const MealSchema = BaseSchema.extend({
     allergies: z.string()
         .max(100, { message: "Allergies max length 100 characters" })
         .optional(),
-    date_range: z.object({ from: z.date(), to: z.date() }).optional(),
+    date_range: z.object({ start_date: z.date(), end_date: z.date() }).optional(),
     selected_days: z.array(z.number()).refine((val) => val.some((item) => item), {
         message: "Select at least one day"
     }).optional(),
@@ -13,7 +13,7 @@ export const MealSchema = BaseSchema.extend({
     if (data.date_range == undefined) {
         return true;
     }
-    if (data.date_range?.from && data.date_range?.to > data.date_range?.from) {
+    if (data.date_range?.start_date && data.date_range?.end_date > data.date_range?.start_date) {
         return true;
     } else {
         return false;

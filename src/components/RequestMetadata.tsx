@@ -34,6 +34,12 @@ function RequestMetadata() {
                             description: `${json.errors.detail}`
                         });
                         navigate("/");
+                    } else if (response.status == 404) {
+                        toast({
+                            variant: "destructive",
+                            description: "Request does not exist"
+                        });
+                        navigate("/");
                     } else {
                         toast({
                             variant: "destructive",

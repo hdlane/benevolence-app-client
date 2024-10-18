@@ -21,5 +21,5 @@ export const BaseSchema = z.object({
         .length(2, { message: "Use State abbreviation of 2 characters" })
         .transform((val) => val.toUpperCase()),
     zip_code: z.string()
-        .refine((val) => zipCodeRegex.test(val), { message: "Invalid ZIP code format (12345 / 12345-1234)" }),
+        .refine((val) => zipCodeRegex.test(val), { message: "Invalid ZIP code format (12345 / 12345-6789)" }),
 });

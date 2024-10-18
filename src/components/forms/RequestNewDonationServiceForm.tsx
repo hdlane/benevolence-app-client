@@ -4,8 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
-import { setError } from "@/features/errors/errorsSlice";
 import { Button } from "@/components/ui/button";
 import {
     Command,
@@ -29,7 +27,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "../ui/calendar";
 import { Input } from "@/components/ui/input"
-import { CalendarIcon, Minus, Plus } from "lucide-react";
+import { CalendarIcon, Plus } from "lucide-react";
 import TimePicker from "../TimePicker";
 import { Textarea } from "../ui/textarea";
 import { useAppDispatch } from "@/app/hooks";
@@ -54,15 +52,16 @@ function RequestNewDonationServiceForm({ requestType, people }) {
     const resourceNameRef = useRef(null);
 
     const today = new Date(new Date().setHours(0, 0, 0, 0));
-    const endDateRange = new Date(new Date().setMonth(today.getMonth() + 3));
+    const endDateRange = new Date(new Date().setHours(0, 0, 0, 0));
+    endDateRange.setMonth(today.getMonth() + 3);
     const form = useForm<z.infer<typeof DonationServiceSchema>>({
         resolver: zodResolver(DonationServiceSchema),
         defaultValues: {
             title: "",
             notes: "",
             date_single_day: today,
-            date_single_from: today,
-            date_single_to: today,
+            start_date: today,
+            end_date: today,
             street_line: "",
             city: "",
             state: "",
@@ -71,7 +70,22 @@ function RequestNewDonationServiceForm({ requestType, people }) {
     });
 
     function onSubmit(values: z.infer<typeof DonationServiceSchema>) {
-        const results = { ...values, request_type: requestType, date_single: { from: values.date_single_from, to: values.date_single_to } }
+        const results = {
+            request: {
+                recipient_id: values.recipient_id,
+                coordinator_id: values.coordinator_id,
+                request_type: requestType,
+                title: values.title,
+                notes: values.notes,
+                start_date: values.start_date,
+                end_date: values.end_date,
+                street_line: values.street_line,
+                city: values.city,
+                state: values.state,
+                zip_code: values.zip_code,
+            },
+            resources: values.resources,
+        }
         console.log(results);
 
         async function postData(results) {
@@ -103,8 +117,10 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                     toast({
                         description: "Request successfully created!",
                     });
+                    navigate(`/requests/${json.id}`);
                 }
             } catch (error) {
+                console.error(error)
                 toast({
                     variant: "destructive",
                     description: `${error}`
@@ -119,7 +135,7 @@ function RequestNewDonationServiceForm({ requestType, people }) {
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 pt-4">
                 <FormField control={form.control} name="title" render={({ field }) => (
-                    <FormItem className="col-span-full">
+                    <FormItem className="sm:col-span-full">
                         <FormLabel>Title</FormLabel>
                         <FormControl>
                             <Input maxLength={100} placeholder="" {...field} />
@@ -321,13 +337,13 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                                         mode="single"
                                         selected={field.value}
                                         onSelect={(date) => {
-                                            const tempFrom = form.getValues("date_single_from");
-                                            const tempTo = form.getValues("date_single_to");
-                                            const from = new Date(tempFrom.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
-                                            const to = new Date(tempTo.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
+                                            const tempFrom = form.getValues("start_date");
+                                            const tempTo = form.getValues("end_date");
+                                            const start_date = new Date(tempFrom.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
+                                            const end_date = new Date(tempTo.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
                                             form.setValue("date_single_day", date);
-                                            form.setValue("date_single_from", from);
-                                            form.setValue("date_single_to", to);
+                                            form.setValue("start_date", start_date);
+                                            form.setValue("end_date", end_date);
                                         }}
                                         disabled={(date) =>
                                             date < today || date > endDateRange
@@ -339,7 +355,7 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                         </FormItem>
                     )}
                     />
-                    <FormField control={form.control} name="date_single_from" render={({ field }) => (
+                    <FormField control={form.control} name="start_date" render={({ field }) => (
                         <FormItem className="col-span-full sm:col-span-3 lg:col-span-2 lg:justify-self-center">
                             <FormLabel>Start Time</FormLabel>
                             <FormControl>
@@ -351,7 +367,7 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                         </FormItem>
                     )}
                     />
-                    <FormField control={form.control} name="date_single_to" render={({ field }) => (
+                    <FormField control={form.control} name="end_date" render={({ field }) => (
                         <FormItem className="col-span-full sm:col-span-3 lg:col-span-2 lg:justify-self-end">
                             <FormLabel>End Time</FormLabel>
                             <FormControl>

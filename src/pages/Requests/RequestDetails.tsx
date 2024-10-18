@@ -2,11 +2,12 @@ import React from "react";
 import TitleBar from "@/components/TitleBar";
 import RequestMetadata from "@/components/RequestMetadata";
 import { useAppSelector } from "@/app/hooks";
-// import DonationResourcesTable from "@/components/DonationResourcesTable";
+import DonationResourcesTable from "@/components/DonationResourcesTable";
 import MealResourcesTable from "@/components/MealResourcesTable";
-// import ServiceResourcesTable from "@/components/ServiceResourcesTable";
+import ServiceResourcesTable from "@/components/ServiceResourcesTable";
 
 function RequestDetails() {
+    // TODO: Make sure request exists and user is authorized to view
     const request = useAppSelector((state) => state.request.request);
 
     return <>

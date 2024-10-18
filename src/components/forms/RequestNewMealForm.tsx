@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
-import { setError } from "@/features/errors/errorsSlice";
 import { Button } from "@/components/ui/button";
 import {
     Command,
@@ -52,7 +50,8 @@ function RequestNewMealForm({ requestType, people }) {
     const [dateRangeTo, setDateRangeTo] = useState(false);
 
     const today = new Date(new Date().setHours(0, 0, 0, 0));
-    const endDateRange = new Date(new Date().setMonth(today.getMonth() + 3));
+    const endDateRange = new Date(new Date().setHours(0, 0, 0, 0));
+    endDateRange.setMonth(today.getMonth() + 3);
     const days = [
         {
             id: 1,
@@ -90,8 +89,8 @@ function RequestNewMealForm({ requestType, people }) {
             notes: "",
             allergies: "",
             date_range: {
-                from: today,
-                to: endDateRange,
+                start_date: today,
+                end_date: endDateRange,
             },
             selected_days: [],
             street_line: "",
@@ -103,7 +102,27 @@ function RequestNewMealForm({ requestType, people }) {
     });
 
     function onSubmit(values: z.infer<typeof MealSchema>) {
-        const results = { ...values, request_type: requestType }
+        const selected_days = [];
+        values.selected_days?.forEach((day) => {
+            selected_days.push(day - 1);
+        })
+        const results = {
+            request: {
+                recipient_id: values.recipient_id,
+                coordinator_id: values.coordinator_id,
+                request_type: requestType,
+                title: values.title,
+                notes: values.notes,
+                allergies: values.allergies,
+                selected_days: selected_days,
+                start_date: values.date_range?.start_date,
+                end_date: values.date_range?.end_date,
+                street_line: values.street_line,
+                city: values.city,
+                state: values.state,
+                zip_code: values.zip_code,
+            },
+        }
         console.log(results);
 
         async function postData(results) {
@@ -135,8 +154,10 @@ function RequestNewMealForm({ requestType, people }) {
                     toast({
                         description: "Request successfully created!",
                     });
+                    navigate(`/requests/${json.id}`);
                 }
             } catch (error) {
+                console.error(error)
                 toast({
                     variant: "destructive",
                     description: `${error}`
@@ -260,7 +281,7 @@ function RequestNewMealForm({ requestType, people }) {
                 />
                 <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-3 sm:col-span-4">
                     <FormField
-                        control={form.control} name="date_range.from" render={({ field }) => (
+                        control={form.control} name="date_range.start_date" render={({ field }) => (
                             <FormItem className="sm:col-span-3">
                                 <FormLabel>Start Date</FormLabel>
                                 {
@@ -299,7 +320,7 @@ function RequestNewMealForm({ requestType, people }) {
                         )}
                     />
                     <FormField
-                        control={form.control} name="date_range.to" render={({ field }) => (
+                        control={form.control} name="date_range.end_date" render={({ field }) => (
                             <FormItem className="sm:col-span-3">
                                 <FormLabel>End Date</FormLabel>
                                 <Popover open={dateRangeTo} onOpenChange={setDateRangeTo}>

@@ -50,6 +50,7 @@ function RequestNewDonationServiceForm({ requestType, people }) {
     const [resourceName, setResourceName] = useState("");
     const [resourceQuantity, setResourceQuantity] = useState(1);
     const resourceNameRef = useRef(null);
+    const resourceQuantityRef = useRef(null);
 
     const today = new Date(new Date().setHours(0, 0, 0, 0));
     const endDateRange = new Date(new Date().setHours(0, 0, 0, 0));
@@ -239,7 +240,7 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                             <Input type="text" ref={resourceNameRef} placeholder={requestType == "Donation" ? "Item" : "Assignment"} onChange={(e) => setResourceName(e.target.value)} />
                         </FormItem>
                         <FormItem>
-                            <Input type="number" placeholder="Quantity" defaultValue={1} min={1} max={100} onChange={(e) => setResourceQuantity(parseInt(e.target.value))} />
+                            <Input type="number" ref={resourceQuantityRef} placeholder="Quantity" defaultValue={1} min={1} max={100} onChange={(e) => setResourceQuantity(parseInt(e.target.value))} />
                         </FormItem>
                         <FormMessage />
                         <FormControl>
@@ -257,6 +258,7 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                                         setResources(updatedResources);
                                         form.setValue("resources", updatedResources);
                                         resourceNameRef.current.value = "";
+                                        resourceQuantityRef.current.value = 1;
                                         resourceNameRef.current.focus();
                                         setResourceName("");
                                         setResourceQuantity(1)

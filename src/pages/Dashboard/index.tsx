@@ -8,6 +8,8 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setRequests } from "@/features/requests/requestsSlice";
 import { useToast } from "@/hooks/use-toast";
 import createApi from "@/lib/api";
+import DataTable from "@/components/tables/DataTable";
+import { requestColumns } from "@/lib/tables/columns";
 
 function Dashboard() {
     const requests = useAppSelector((state) => state.requests.requests);
@@ -67,7 +69,7 @@ function Dashboard() {
             <hr />
             <h2 className="m-5 text-xl">{requests ? `${requests.length} active requests` : "Loading..."}</h2>
             <hr />
-            {requests ? <RequestsTable /> : <p>Loading...</p>}
+            {requests ? <DataTable columns={requestColumns} data={requests} /> : <p>Loading...</p>}
         </div>
     </>
 }

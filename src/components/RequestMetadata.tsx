@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
-import { setRequest } from "@/features/requests/requestDetailsSlice";
+import { clearRequest, setRequest } from "@/features/requests/requestDetailsSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import createApi from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
@@ -49,6 +49,7 @@ function RequestMetadata() {
                 }
                 else {
                     dispatch(setRequest({ ...json.data }));
+                    console.log(json.data)
                 }
             } catch (error) {
                 toast({

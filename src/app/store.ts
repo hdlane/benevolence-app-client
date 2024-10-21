@@ -9,9 +9,11 @@ import serviceResourcesReducer from "../features/resources/serviceResourcesSlice
 import messagesReducer from "../features/messages/messagesSlice";
 import errorsReducer from "../features/errors/errorsSlice";
 import tokenReducer from "../features/token/tokenSlice";
+import userReducer from "../features/users/userSlice";
 
 export const store = configureStore({
     reducer: {
+        user: userReducer,
         people: peopleReducer,
         organizations: organizationsReducer,
         token: tokenReducer,

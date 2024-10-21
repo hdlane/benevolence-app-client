@@ -1,11 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
-import {
-    setPersonId,
-    setPersonName,
-} from "@/features/people/peopleSlice";
-import { setError } from "@/features/errors/errorsSlice";
-import { MessageColors, setMessage } from "@/features/messages/messagesSlice";
 import { Link, useNavigate } from "react-router-dom";
 import {
     Card,
@@ -16,6 +10,7 @@ import {
 import { ChevronLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import createApi from "@/lib/api";
+import { setUser } from "@/features/users/userSlice";
 
 function VerifyPerson() {
     const token = useAppSelector((state) => state.token.token);
@@ -67,11 +62,9 @@ function VerifyPerson() {
         }
     }, []);
 
-    async function handleSelect(person_id: number, person_name: string) {
+    async function handleSelect(person_id: number) {
         const api = createApi({ endpoint: "/login/verify/person" });
         const controller = new AbortController();
-        dispatch(setPersonId({ id: person_id }));
-        dispatch(setPersonName({ name: person_name }));
 
         try {
             const response = await api.post({
@@ -86,6 +79,7 @@ function VerifyPerson() {
                     description: `${json.errors.detail}`
                 });
             } else {
+                dispatch(setUser({ id: json.data.id, name: json.data.name, is_admin: json.data.is_admin }));
                 toast({
                     description: `${json.message}`,
                 });
@@ -115,7 +109,7 @@ function VerifyPerson() {
                                     <CardTitle>{person.name}</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <button className="button-primary" type="button" onClick={() => { handleSelect(person.id, person.name) }}>Select</button>
+                                    <button className="button-primary" type="button" onClick={() => { handleSelect(person.id) }}>Select</button>
                                 </CardContent>
                             </Card>
                         </div>

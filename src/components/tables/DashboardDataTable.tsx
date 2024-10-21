@@ -23,8 +23,6 @@ import {
 
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "../ui/button";
-import { ChevronDown } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]

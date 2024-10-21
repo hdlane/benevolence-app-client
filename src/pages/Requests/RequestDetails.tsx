@@ -12,9 +12,9 @@ function RequestDetails() {
         <TitleBar title={request?.title} subTitle={request?.request_type} />
         <div className="content">
             <RequestMetadata />
-            {request?.request_type == "Donation" && <DataTable columns={donationColumns} data={request.resources} />}
-            {request?.request_type == "Meal" && <DataTable columns={mealColumns} data={request.resources} />}
-            {request?.request_type == "Service" && <DataTable columns={serviceColumns} data={request.resources} />}
+            {request?.request_type == "Donation" && <DataTable columns={donationColumns} data={request.resources} sortId="name" />}
+            {request?.request_type == "Meal" && <DataTable columns={mealColumns} data={request.resources} sortId="date" />}
+            {request?.request_type == "Service" && <DataTable columns={serviceColumns} data={request.resources} sortId="name" />}
         </div>
     </>
 }

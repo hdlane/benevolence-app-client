@@ -3,7 +3,7 @@ import TitleBar from "@/components/TitleBar";
 import RequestNewForm from "@/components/RequestNewForm";
 
 function RequestCreate() {
-    // require is_admin
+    // TODO: require is_admin
     // when created, show message and redirect to home
     return <>
         <TitleBar title={"New Request"} />

@@ -1,12 +1,14 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
 
 export type Request = {
     id: number,
     title: string,
     start_date: string,
     end_date: string,
-    num_resources: number,
+    quantity: number,
     assigned: number,
     request_type: string,
 }
@@ -14,7 +16,7 @@ export type Request = {
 export type Donation = {
     id: number,
     name: string,
-    num_resources: number,
+    quantity: number,
     assigned: number,
     provider_name: string,
 }
@@ -29,7 +31,7 @@ export type Meal = {
 export type Service = {
     id: number,
     name: string,
-    num_resources: number,
+    quantity: number,
     assigned: number,
     provider_name: string,
 }
@@ -44,7 +46,16 @@ export const requestColumns: ColumnDef<Request>[] = [
     },
     {
         accessorKey: "start_date",
-        header: "START DATE",
+        header: ({ column }) => {
+            return (
+                <button
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    START DATE
+                    <ArrowUpDown className="inline ml-2 h-4 w-4" />
+                </button>
+            )
+        },
         cell: ({ row }) => {
             const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
             const date: string = row.getValue("start_date");
@@ -54,7 +65,16 @@ export const requestColumns: ColumnDef<Request>[] = [
     },
     {
         accessorKey: "end_date",
-        header: "END DATE",
+        header: ({ column }) => {
+            return (
+                <button
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    END DATE
+                    <ArrowUpDown className="inline ml-2 h-4 w-4" />
+                </button>
+            )
+        },
         cell: ({ row }) => {
             const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
             const date: string = row.getValue("end_date");
@@ -81,8 +101,13 @@ export const donationColumns: ColumnDef<Donation>[] = [
         header: "ITEM",
     },
     {
-        accessorKey: "num_resources",
+        accessorKey: "quantity",
         header: "# NEEDED",
+        cell: ({ row }) => {
+            const quantity = row.getValue("quantity");
+            const assigned = row.original.assigned;
+            return `${assigned} / ${quantity} Assigned`
+        }
     },
 ]
 
@@ -125,15 +150,16 @@ export const mealColumns: ColumnDef<Meal>[] = [
 
 export const serviceColumns: ColumnDef<Service>[] = [
     {
-        accessorKey: "assignment",
+        accessorKey: "name",
         header: "ASSIGNMENT",
     },
     {
-        accessorKey: "slots",
+        accessorKey: "quantity",
         header: "SLOTS",
-    },
-    {
-        accessorKey: "actions",
-        header: "ACTIONS",
+        cell: ({ row }) => {
+            const quantity = row.getValue("quantity");
+            const assigned = row.original.assigned;
+            return `${assigned} / ${quantity} Assigned`
+        }
     },
 ]

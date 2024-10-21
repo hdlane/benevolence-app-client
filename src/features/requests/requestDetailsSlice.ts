@@ -3,6 +3,7 @@ import type { RootState } from "@/app/store";
 
 interface RequestDetails {
     id: number;
+    resources: any;
     recipient_name: string;
     coordinator_name: string;
     creator_name: string;

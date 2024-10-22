@@ -1,7 +1,16 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
+import { MoreHorizontal } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export type Request = {
     id: number,
@@ -18,14 +27,16 @@ export type Donation = {
     name: string,
     quantity: number,
     assigned: number,
-    provider_name: string,
+    provider_id: number | null,
+    provider_name: string | null,
 }
 
 export type Meal = {
     id: number,
-    name: string,
+    name: string | null,
     date: string,
-    provider_name: string,
+    provider_id: number | null,
+    provider_name: string | null,
 }
 
 export type Service = {
@@ -33,7 +44,8 @@ export type Service = {
     name: string,
     quantity: number,
     assigned: number,
-    provider_name: string,
+    provider_id: number | null,
+    provider_name: string | null,
 }
 
 export const requestColumns: ColumnDef<Request>[] = [
@@ -42,7 +54,7 @@ export const requestColumns: ColumnDef<Request>[] = [
         header: "NAME",
         cell: ({ row }) => {
             return <Link to={`/requests/${row.original.id}`}>{row.getValue("title")}</Link>
-        }
+        },
     },
     {
         accessorKey: "start_date",
@@ -87,7 +99,7 @@ export const requestColumns: ColumnDef<Request>[] = [
         header: "HELP NEEDED",
         cell: ({ row }) => {
             return `${row.original.assigned} / ${row.getValue("num_resources")} Assigned`
-        }
+        },
     },
     {
         accessorKey: "request_type",
@@ -107,7 +119,37 @@ export const donationColumns: ColumnDef<Donation>[] = [
             const quantity = row.getValue("quantity");
             const assigned = row.original.assigned;
             return `${assigned} / ${quantity} Assigned`
-        }
+        },
+    },
+    {
+        id: "actions",
+        header: "ACTIONS",
+        cell: ({ row }) => {
+            const resource = row.original
+            const userId = localStorage.getItem("user_id");
+
+            return (
+                <>
+                    {
+                        (resource.provider_id == null || resource.provider_id == parseInt(userId)) && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                        <span className="sr-only">Open menu</span>
+                                        <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    {(resource.provider_id == null && resource.assigned < resource.quantity) && <DropdownMenuItem onClick={() => { }}>Sign Up</DropdownMenuItem>}
+                                    {resource.provider_id == userId && <DropdownMenuItem onClick={() => { }}>Unassign</DropdownMenuItem>}
+                                    <DropdownMenuItem onClick={() => { }}>Details</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )
+                    }
+                </>
+            )
+        },
     },
 ]
 
@@ -127,12 +169,18 @@ export const mealColumns: ColumnDef<Meal>[] = [
         header: "PROVIDER",
         cell: ({ row }) => {
             const name = row.getValue("provider_name");
+            const provider_id = row.original.provider_id;
+            const userId = localStorage.getItem("user_id");
+
             if (name == null) {
                 return " - "
-            } else {
+            } else if (provider_id == userId) {
+                return `${name} (Assigned)`
+            }
+            else {
                 return name
             }
-        }
+        },
     },
     {
         accessorKey: "name",
@@ -144,7 +192,41 @@ export const mealColumns: ColumnDef<Meal>[] = [
             } else {
                 return name
             }
-        }
+        },
+    },
+    {
+        id: "actions",
+        header: "ACTIONS",
+        cell: ({ row }) => {
+            const resource = row.original
+            const userId = localStorage.getItem("user_id");
+
+            return (
+                <>
+                    {
+                        (resource.provider_id == null || resource.provider_id == parseInt(userId)) && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                        <span className="sr-only">Open menu</span>
+                                        <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    {resource.provider_id == null && <DropdownMenuItem onClick={() => { }}>Sign Up</DropdownMenuItem>}
+                                    {resource.provider_id == userId && (
+                                        <>
+                                            <DropdownMenuItem onClick={() => { }}>Edit</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => { }}>Unassign</DropdownMenuItem>
+                                        </>
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )
+                    }
+                </>
+            )
+        },
     },
 ]
 
@@ -160,6 +242,36 @@ export const serviceColumns: ColumnDef<Service>[] = [
             const quantity = row.getValue("quantity");
             const assigned = row.original.assigned;
             return `${assigned} / ${quantity} Assigned`
-        }
+        },
+    },
+    {
+        id: "actions",
+        header: "ACTIONS",
+        cell: ({ row }) => {
+            const resource = row.original
+            const userId = localStorage.getItem("user_id");
+
+            return (
+                <>
+                    {
+                        (resource.provider_id == null || resource.provider_id == parseInt(userId)) && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                        <span className="sr-only">Open menu</span>
+                                        <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    {(resource.provider_id == null && resource.assigned < resource.quantity) && <DropdownMenuItem onClick={() => { }}>Sign Up</DropdownMenuItem>}
+                                    {resource.provider_id == userId && <DropdownMenuItem onClick={() => { }}>Unassign</DropdownMenuItem>}
+                                    <DropdownMenuItem onClick={() => { }}>Details</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )
+                    }
+                </>
+            )
+        },
     },
 ]

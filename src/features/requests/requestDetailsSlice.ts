@@ -11,11 +11,11 @@ interface RequestDetails {
     request_type: string;
     title: string | null;
     notes: string | null;
-    allergies: string | null,
-    start_date: string | null;
-    start_time: string | null,
-    end_date: string | null;
-    end_time: string | null,
+    allergies: string | null;
+    start_date: string | number | Date | null;
+    start_time: string | number | Date | null;
+    end_date: string | number | Date | null;
+    end_time: string | number | Date | null;
     street_line: string | null;
     city: string | null;
     state: string | null;

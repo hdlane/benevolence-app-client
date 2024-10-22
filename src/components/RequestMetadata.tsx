@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
-import { clearRequest, setRequest } from "@/features/requests/requestDetailsSlice";
+import { setRequest } from "@/features/requests/requestDetailsSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import createApi from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
@@ -79,7 +79,7 @@ function RequestMetadata() {
         <hr />
         <dl className="flex flex-col md:flex-row p-3">
             <dt className="w-32 font-semibold">Date</dt>
-            <dd className="flex-1">{request?.start_date}{request?.end_date ? ` to  ${request?.end_date}` : ""}</dd>
+            <dd className="flex-1">{(request?.start_date as string)}{(request?.end_date as string != request?.end_date as string) ? ` to  ${(request?.end_date as string)}` : ""}</dd>
         </dl>
         <hr />
         <dl className="flex flex-col md:flex-row p-3">

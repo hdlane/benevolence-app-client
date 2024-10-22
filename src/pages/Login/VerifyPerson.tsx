@@ -80,6 +80,7 @@ function VerifyPerson() {
                 });
             } else {
                 dispatch(setUser({ id: json.data.id, name: json.data.name, is_admin: json.data.is_admin }));
+                localStorage.setItem("user_id", json.data.id);
                 toast({
                     description: `${json.message}`,
                 });

@@ -1,16 +1,19 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
 import { ArrowUpDown } from "lucide-react";
-import { MoreHorizontal } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import createApi from "../api";
+import DonationDialog from "@/components/dialogs/DonationDialog";
+import MealDialog from "@/components/dialogs/MealDialog";
+import ServiceDialog from "@/components/dialogs/ServiceDialog";
+
+async function patchData(resourceId: number, resource_data: any) {
+    const api = createApi({ endpoint: `/resources/${resourceId}` });
+    const controller = new AbortController();
+    const response = await api.patch({
+        body: { resource_data },
+        controller: controller,
+    });
+}
 
 export type Request = {
     id: number,
@@ -132,19 +135,7 @@ export const donationColumns: ColumnDef<Donation>[] = [
                 <>
                     {
                         (resource.provider_id == null || resource.provider_id == parseInt(userId)) && (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                        <span className="sr-only">Open menu</span>
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    {(resource.provider_id == null && resource.assigned < resource.quantity) && <DropdownMenuItem onClick={() => { }}>Sign Up</DropdownMenuItem>}
-                                    {resource.provider_id == userId && <DropdownMenuItem onClick={() => { }}>Unassign</DropdownMenuItem>}
-                                    <DropdownMenuItem onClick={() => { }}>Details</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                            <DonationDialog resource={resource} userId={userId} />
                         )
                     }
                 </>
@@ -205,23 +196,7 @@ export const mealColumns: ColumnDef<Meal>[] = [
                 <>
                     {
                         (resource.provider_id == null || resource.provider_id == parseInt(userId)) && (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                        <span className="sr-only">Open menu</span>
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    {resource.provider_id == null && <DropdownMenuItem onClick={() => { }}>Sign Up</DropdownMenuItem>}
-                                    {resource.provider_id == userId && (
-                                        <>
-                                            <DropdownMenuItem onClick={() => { }}>Edit</DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => { }}>Unassign</DropdownMenuItem>
-                                        </>
-                                    )}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                            <MealDialog resource={resource} userId={userId} />
                         )
                     }
                 </>
@@ -255,19 +230,7 @@ export const serviceColumns: ColumnDef<Service>[] = [
                 <>
                     {
                         (resource.provider_id == null || resource.provider_id == parseInt(userId)) && (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                        <span className="sr-only">Open menu</span>
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    {(resource.provider_id == null && resource.assigned < resource.quantity) && <DropdownMenuItem onClick={() => { }}>Sign Up</DropdownMenuItem>}
-                                    {resource.provider_id == userId && <DropdownMenuItem onClick={() => { }}>Unassign</DropdownMenuItem>}
-                                    <DropdownMenuItem onClick={() => { }}>Details</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                            <ServiceDialog resource={resource} userId={userId} />
                         )
                     }
                 </>

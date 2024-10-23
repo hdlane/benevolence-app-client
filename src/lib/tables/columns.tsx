@@ -6,10 +6,10 @@ import DonationDialog from "@/components/dialogs/DonationDialog";
 import MealDialog from "@/components/dialogs/MealDialog";
 import ServiceDialog from "@/components/dialogs/ServiceDialog";
 
-async function patchData(resourceId: number, resource_data: any) {
+async function putData(resourceId: number, resource_data: any) {
     const api = createApi({ endpoint: `/resources/${resourceId}` });
     const controller = new AbortController();
-    const response = await api.patch({
+    const response = await api.put({
         body: { resource_data },
         controller: controller,
     });
@@ -28,8 +28,10 @@ export type Request = {
 export type Donation = {
     id: number,
     name: string,
+    date: string,
     quantity: number,
     assigned: number,
+    delivery_date_id: number,
     provider_id: number | null,
     provider_name: string | null,
 }
@@ -38,6 +40,7 @@ export type Meal = {
     id: number,
     name: string | null,
     date: string,
+    delivery_date_id: number,
     provider_id: number | null,
     provider_name: string | null,
 }
@@ -45,8 +48,10 @@ export type Meal = {
 export type Service = {
     id: number,
     name: string,
+    date: string,
     quantity: number,
     assigned: number,
+    delivery_date_id: number,
     provider_id: number | null,
     provider_name: string | null,
 }
@@ -149,7 +154,7 @@ export const mealColumns: ColumnDef<Meal>[] = [
         accessorKey: "date",
         header: "DATE",
         cell: ({ row }) => {
-            const options: Intl.DateTimeFormatOptions = { weekday: "short", year: "numeric", month: "short", day: "numeric" };
+            const options: Intl.DateTimeFormatOptions = { weekday: "short", year: "numeric", month: "short", day: "numeric", timeZone: "UTC" };
             const date: string = row.getValue("date");
             const formatted = new Date(date).toLocaleDateString("en-us", options);
             return formatted

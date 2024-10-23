@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -11,13 +12,83 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+import createApi from "@/lib/api";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+
+interface ResourceData {
+    resource_id: number;
+    provider_id: number;
+    delivery_date_id: number;
+    name: string;
+    quantity: number;
+}
 
 function MealDialog({ resource, userId }) {
+    const navigate = useNavigate();
+    const { toast } = useToast();
+    const [dialogOpen, setDialogOpen] = useState(false);
     const [triggerClicked, setTriggerClicked] = useState("Sign Up");
+    const [resourceName, setResourceName] = useState(resource.name);
+
+    async function putResourceData(resource_data: ResourceData) {
+        const api = createApi({ endpoint: `/resources/${resource.id}` });
+        const controller = new AbortController();
+
+        try {
+            const response = await api.put({
+                body: { resource_data },
+                controller: controller,
+            });
+            const json = await response.json();
+
+            if (!response.ok) {
+                if (response.status == 401) {
+                    toast({
+                        variant: "destructive",
+                        description: `${json.errors.detail}`
+                    });
+                    navigate("/login");
+                } else {
+                    toast({
+                        variant: "destructive",
+                        description: `${json.errors.detail}`
+                    });
+                }
+            }
+            else {
+                toast({
+                    description: "Assignment successful!",
+                });
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error(error)
+            toast({
+                variant: "destructive",
+                description: `${error}`
+            });
+        }
+    }
+
+    function handleSave(e) {
+        e.preventDefault();
+
+        const provider_id = localStorage.getItem("user_id");
+        const resourceData = {
+            resource_id: resource.id,
+            provider_id: Number(provider_id),
+            delivery_date_id: resource.delivery_date_id,
+            name: resourceName,
+            quantity: 1,
+        }
+
+        putResourceData(resourceData);
+    }
 
     return (
-        <Dialog>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 w-8 p-0">
@@ -48,21 +119,36 @@ function MealDialog({ resource, userId }) {
                     <>
                         <DialogHeader>
                             <DialogTitle>Meal Signup - {resource.date}</DialogTitle>
+                            <DialogDescription>Enter a meal name to provide</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="name" className="text-right">
-                                    Enter Meal
+                            <div className="grid row-span-1 grid-cols-4 items-center gap-4">
+                                <Label htmlFor="name">
+                                    Meal
                                 </Label>
                                 <Input
                                     id="name"
-                                    defaultValue={""}
-                                    className="col-span-3"
+                                    className="col-span-full"
+                                    required
+                                    onChange={(e) => setResourceName(e.target.value)}
                                 />
                             </div>
                         </div>
-                        <DialogFooter>
-                            <button className="button-primary" type="submit">Save changes</button>
+                        <DialogFooter className="flex-col sm:flex-row">
+                            <button className="button-primary" type="button"
+                                disabled={resourceName == "" ? true : false}
+                                onClick={(e) => {
+                                    setDialogOpen(false);
+                                    handleSave(e);
+                                }}>
+                                Save changes
+                            </button>
+                            <button className="button-outline mt-5 sm:m-0" type="button"
+                                onClick={() => {
+                                    setDialogOpen(false);
+                                }}>
+                                Cancel
+                            </button>
                         </DialogFooter>
                     </>
                 )}
@@ -70,21 +156,28 @@ function MealDialog({ resource, userId }) {
                     <>
                         <DialogHeader>
                             <DialogTitle>Meal Edit - {resource.date}</DialogTitle>
+                            <DialogDescription>Edit the meal you are assigned to</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                             <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="name" className="text-right">
-                                    Enter Meal
+                                <Label htmlFor="name">
+                                    Meal
                                 </Label>
                                 <Input
                                     id="name"
                                     defaultValue={`${resource.name}`}
-                                    className="col-span-3"
+                                    className="col-span-full"
                                 />
                             </div>
                         </div>
-                        <DialogFooter>
-                            <button className="button-primary" type="button">Save changes</button>
+                        <DialogFooter className="flex-col sm:flex-row">
+                            <button className="button-primary" type="button">Save</button>
+                            <button className="button-outline mt-5 sm:m-0" type="button"
+                                onClick={() => {
+                                    setDialogOpen(false);
+                                }}>
+                                Cancel
+                            </button>
                         </DialogFooter>
                     </>
                 )}
@@ -92,6 +185,7 @@ function MealDialog({ resource, userId }) {
                     <>
                         <DialogHeader>
                             <DialogTitle>Unassign From Meal - {resource.date}</DialogTitle>
+                            <DialogDescription>Remove yourself from a meal</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                             <div className="grid grid-cols-all items-center gap-4">
@@ -102,7 +196,12 @@ function MealDialog({ resource, userId }) {
                         </div>
                         <DialogFooter className="flex-col sm:flex-row">
                             <button className="button-primary" type="button">Yes, Unassign</button>
-                            <button className="button-primary mt-5 sm:m-0" type="button">Cancel</button>
+                            <button className="button-outline mt-5 sm:m-0" type="button"
+                                onClick={() => {
+                                    setDialogOpen(false);
+                                }}>
+                                Cancel
+                            </button>
                         </DialogFooter>
                     </>
                 )}

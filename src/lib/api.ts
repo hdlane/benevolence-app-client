@@ -40,13 +40,13 @@ function createApi({ endpoint }) {
                 throw error;
             }
         },
-        patch: async ({ body, options = {}, controller }) => {
+        put: async ({ body, options = {}, controller }) => {
             try {
                 const response = await fetch(
                     `${API_URL}${endpoint}`,
                     {
                         ...options,
-                        method: "PATCH",
+                        method: "PUT",
                         credentials: "include",
                         body: JSON.stringify(body),
                         headers: {

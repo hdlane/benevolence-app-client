@@ -196,6 +196,7 @@ function DonationDialog({ resource, userId }) {
                     <>
                         <DialogHeader>
                             <DialogTitle>Donation Edit - {resource.name}</DialogTitle>
+                            <DialogDescription>Edit how much you are donating</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                             <div className="grid grid-cols-4 items-center gap-4">
@@ -223,12 +224,13 @@ function DonationDialog({ resource, userId }) {
                 {triggerClicked == "Unassign" && (
                     <>
                         <DialogHeader>
-                            <DialogTitle>Unassign From Meal - {resource.date}</DialogTitle>
+                            <DialogTitle>Unassign From Donation - {resource.name}</DialogTitle>
+                            <DialogDescription>Remove yourself from a donation</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                             <div className="grid grid-cols-all items-center gap-4">
                                 <p>
-                                    You are about to unassign yourself from this meal. Are you sure?
+                                    You are about to unassign yourself from this donation item. Are you sure?
                                 </p>
                             </div>
                         </div>

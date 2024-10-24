@@ -95,7 +95,7 @@ function ServiceDialog({ resource, userId }) {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    {(resource.provider_id == null && resource.assigned < resource.quantity) &&
+                    {(resource.provider_id != userId && resource.assigned < resource.quantity) &&
                         <DropdownMenuItem className="p-0">
                             <DialogTrigger className="p-2 w-full text-left" onClick={() => setTriggerClicked("Sign Up")}>
                                 Sign Up

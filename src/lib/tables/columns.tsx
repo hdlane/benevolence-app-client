@@ -1,27 +1,17 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
 import { ArrowUpDown } from "lucide-react";
-import createApi from "../api";
 import DonationDialog from "@/components/dialogs/DonationDialog";
 import MealDialog from "@/components/dialogs/MealDialog";
 import ServiceDialog from "@/components/dialogs/ServiceDialog";
-
-async function putData(resourceId: number, resource_data: any) {
-    const api = createApi({ endpoint: `/resources/${resourceId}` });
-    const controller = new AbortController();
-    const response = await api.put({
-        body: { resource_data },
-        controller: controller,
-    });
-}
 
 export type Request = {
     id: number,
     title: string,
     start_date: string,
     end_date: string,
-    quantity: number,
-    assigned: number,
+    num_resources: number,
+    fulfilled: number,
     request_type: string,
 }
 
@@ -32,17 +22,29 @@ export type Donation = {
     quantity: number,
     assigned: number,
     delivery_date_id: number,
-    provider_id: number | null,
-    provider_name: string | null,
+    providers: [
+        {
+            id: number | null,
+            name: string | null,
+            assigned: number | null,
+        }
+    ],
 }
 
 export type Meal = {
     id: number,
     name: string | null,
     date: string,
+    quantity: number,
+    assigned: number,
     delivery_date_id: number,
-    provider_id: number | null,
-    provider_name: string | null,
+    providers: [
+        {
+            id: number | null,
+            name: string | null,
+            assigned: number | null,
+        }
+    ],
 }
 
 export type Service = {
@@ -52,8 +54,13 @@ export type Service = {
     quantity: number,
     assigned: number,
     delivery_date_id: number,
-    provider_id: number | null,
-    provider_name: string | null,
+    providers: [
+        {
+            id: number | null,
+            name: string | null,
+            assigned: number | null,
+        }
+    ],
 }
 
 export const requestColumns: ColumnDef<Request>[] = [
@@ -106,7 +113,7 @@ export const requestColumns: ColumnDef<Request>[] = [
         accessorKey: "num_resources",
         header: "HELP NEEDED",
         cell: ({ row }) => {
-            return `${row.original.assigned} / ${row.getValue("num_resources")} Assigned`
+            return `${row.original.fulfilled} / ${row.original.num_resources} Fulfilled`
         },
     },
     {
@@ -133,15 +140,13 @@ export const donationColumns: ColumnDef<Donation>[] = [
         id: "actions",
         header: "ACTIONS",
         cell: ({ row }) => {
-            const resource = row.original
             const userId = localStorage.getItem("user_id");
+            const resource = row.original;
 
             return (
                 <>
                     {
-                        (resource.provider_id == null || resource.provider_id == parseInt(userId)) && (
-                            <DonationDialog resource={resource} userId={userId} />
-                        )
+                        <DonationDialog resource={resource} userId={userId} />
                     }
                 </>
             )
@@ -164,18 +169,21 @@ export const mealColumns: ColumnDef<Meal>[] = [
         accessorKey: "provider_name",
         header: "PROVIDER",
         cell: ({ row }) => {
-            const name = row.getValue("provider_name");
-            const provider_id = row.original.provider_id;
-            const userId = localStorage.getItem("user_id");
+            if (row.original.providers && row.original.providers.length) {
+                const name = row.original.providers[0].name;
+                const provider_id = row.original.providers[0].id;
+                const userId = localStorage.getItem("user_id");
 
-            if (name == null) {
-                return " - "
-            } else if (provider_id == userId) {
-                return `${name} (Assigned)`
+                if (name == null) {
+                    return " - "
+                } else if (provider_id == userId) {
+                    return `${name} (Assigned)`
+                }
+                else {
+                    return name
+                }
             }
-            else {
-                return name
-            }
+            return " - "
         },
     },
     {
@@ -194,13 +202,18 @@ export const mealColumns: ColumnDef<Meal>[] = [
         id: "actions",
         header: "ACTIONS",
         cell: ({ row }) => {
-            const resource = row.original
             const userId = localStorage.getItem("user_id");
+            const resource = row.original;
+            const providers = row.original.providers;
+            const providerIdPresent = (provider) => provider.id == userId;
 
             return (
                 <>
                     {
-                        (resource.provider_id == null || resource.provider_id == parseInt(userId)) && (
+                        (
+                            providers.some(providerIdPresent) ||
+                            resource.quantity != resource.assigned
+                        ) && (
                             <MealDialog resource={resource} userId={userId} />
                         )
                     }
@@ -228,15 +241,13 @@ export const serviceColumns: ColumnDef<Service>[] = [
         id: "actions",
         header: "ACTIONS",
         cell: ({ row }) => {
-            const resource = row.original
             const userId = localStorage.getItem("user_id");
+            const resource = row.original;
 
             return (
                 <>
                     {
-                        (resource.provider_id == null || resource.provider_id == parseInt(userId)) && (
-                            <ServiceDialog resource={resource} userId={userId} />
-                        )
+                        <ServiceDialog resource={resource} userId={userId} />
                     }
                 </>
             )

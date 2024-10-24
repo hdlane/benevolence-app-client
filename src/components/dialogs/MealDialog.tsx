@@ -87,6 +87,14 @@ function MealDialog({ resource, userId }) {
         putResourceData(resourceData);
     }
 
+    function userIdPresent(provider) {
+        return provider.id == userId;
+    }
+
+    function providerIdPresent(provider) {
+        return provider.id;
+    }
+
     return (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DropdownMenu>
@@ -97,12 +105,12 @@ function MealDialog({ resource, userId }) {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    {resource.provider_id == null &&
+                    {!resource.providers.some(providerIdPresent) &&
                         <DropdownMenuItem className="p-0">
                             <DialogTrigger className="p-2 w-full text-left" onClick={() => setTriggerClicked("Sign Up")}>Sign Up</DialogTrigger>
                         </DropdownMenuItem>
                     }
-                    {resource.provider_id == userId && (
+                    {resource.providers.some(userIdPresent) && (
                         <>
                             <DropdownMenuItem className="p-0">
                                 <DialogTrigger className="p-2 w-full text-left" onClick={() => setTriggerClicked("Edit")}>Edit</DialogTrigger>

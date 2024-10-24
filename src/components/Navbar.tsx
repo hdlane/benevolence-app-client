@@ -6,7 +6,6 @@ import createApi from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
 function Navbar() {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { toast } = useToast();
 
@@ -24,6 +23,7 @@ function Navbar() {
                     description: `${json.errors.detail}`
                 });
             } else {
+                localStorage.removeItem("user_id");
                 toast({
                     description: "Successfully logged out!"
                 });

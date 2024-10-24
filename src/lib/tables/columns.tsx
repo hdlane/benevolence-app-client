@@ -1,51 +1,66 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
 import { ArrowUpDown } from "lucide-react";
-import { MoreHorizontal } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import DonationDialog from "@/components/dialogs/DonationDialog";
+import MealDialog from "@/components/dialogs/MealDialog";
+import ServiceDialog from "@/components/dialogs/ServiceDialog";
 
 export type Request = {
     id: number,
     title: string,
     start_date: string,
     end_date: string,
-    quantity: number,
-    assigned: number,
+    num_resources: number,
+    fulfilled: number,
     request_type: string,
 }
 
 export type Donation = {
     id: number,
     name: string,
+    date: string,
     quantity: number,
     assigned: number,
-    provider_id: number | null,
-    provider_name: string | null,
+    delivery_date_id: number,
+    providers: [
+        {
+            id: number | null,
+            name: string | null,
+            assigned: number | null,
+        }
+    ],
 }
 
 export type Meal = {
     id: number,
     name: string | null,
     date: string,
-    provider_id: number | null,
-    provider_name: string | null,
+    quantity: number,
+    assigned: number,
+    delivery_date_id: number,
+    providers: [
+        {
+            id: number | null,
+            name: string | null,
+            assigned: number | null,
+        }
+    ],
 }
 
 export type Service = {
     id: number,
     name: string,
+    date: string,
     quantity: number,
     assigned: number,
-    provider_id: number | null,
-    provider_name: string | null,
+    delivery_date_id: number,
+    providers: [
+        {
+            id: number | null,
+            name: string | null,
+            assigned: number | null,
+        }
+    ],
 }
 
 export const requestColumns: ColumnDef<Request>[] = [
@@ -98,7 +113,7 @@ export const requestColumns: ColumnDef<Request>[] = [
         accessorKey: "num_resources",
         header: "HELP NEEDED",
         cell: ({ row }) => {
-            return `${row.original.assigned} / ${row.getValue("num_resources")} Assigned`
+            return `${row.original.fulfilled} / ${row.original.num_resources} Fulfilled`
         },
     },
     {
@@ -125,27 +140,13 @@ export const donationColumns: ColumnDef<Donation>[] = [
         id: "actions",
         header: "ACTIONS",
         cell: ({ row }) => {
-            const resource = row.original
             const userId = localStorage.getItem("user_id");
+            const resource = row.original;
 
             return (
                 <>
                     {
-                        (resource.provider_id == null || resource.provider_id == parseInt(userId)) && (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                        <span className="sr-only">Open menu</span>
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    {(resource.provider_id == null && resource.assigned < resource.quantity) && <DropdownMenuItem onClick={() => { }}>Sign Up</DropdownMenuItem>}
-                                    {resource.provider_id == userId && <DropdownMenuItem onClick={() => { }}>Unassign</DropdownMenuItem>}
-                                    <DropdownMenuItem onClick={() => { }}>Details</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        )
+                        <DonationDialog resource={resource} userId={userId} />
                     }
                 </>
             )
@@ -158,7 +159,7 @@ export const mealColumns: ColumnDef<Meal>[] = [
         accessorKey: "date",
         header: "DATE",
         cell: ({ row }) => {
-            const options: Intl.DateTimeFormatOptions = { weekday: "short", year: "numeric", month: "short", day: "numeric" };
+            const options: Intl.DateTimeFormatOptions = { weekday: "short", year: "numeric", month: "short", day: "numeric", timeZone: "UTC" };
             const date: string = row.getValue("date");
             const formatted = new Date(date).toLocaleDateString("en-us", options);
             return formatted
@@ -168,18 +169,21 @@ export const mealColumns: ColumnDef<Meal>[] = [
         accessorKey: "provider_name",
         header: "PROVIDER",
         cell: ({ row }) => {
-            const name = row.getValue("provider_name");
-            const provider_id = row.original.provider_id;
-            const userId = localStorage.getItem("user_id");
+            if (row.original.providers && row.original.providers.length) {
+                const name = row.original.providers[0].name;
+                const provider_id = row.original.providers[0].id;
+                const userId = localStorage.getItem("user_id");
 
-            if (name == null) {
-                return " - "
-            } else if (provider_id == userId) {
-                return `${name} (Assigned)`
+                if (name == null) {
+                    return " - "
+                } else if (provider_id == userId) {
+                    return `${name} (Assigned)`
+                }
+                else {
+                    return name
+                }
             }
-            else {
-                return name
-            }
+            return " - "
         },
     },
     {
@@ -198,30 +202,19 @@ export const mealColumns: ColumnDef<Meal>[] = [
         id: "actions",
         header: "ACTIONS",
         cell: ({ row }) => {
-            const resource = row.original
             const userId = localStorage.getItem("user_id");
+            const resource = row.original;
+            const providers = row.original.providers;
+            const providerIdPresent = (provider) => provider.id == userId;
 
             return (
                 <>
                     {
-                        (resource.provider_id == null || resource.provider_id == parseInt(userId)) && (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                        <span className="sr-only">Open menu</span>
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    {resource.provider_id == null && <DropdownMenuItem onClick={() => { }}>Sign Up</DropdownMenuItem>}
-                                    {resource.provider_id == userId && (
-                                        <>
-                                            <DropdownMenuItem onClick={() => { }}>Edit</DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => { }}>Unassign</DropdownMenuItem>
-                                        </>
-                                    )}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                        (
+                            providers.some(providerIdPresent) ||
+                            resource.quantity != resource.assigned
+                        ) && (
+                            <MealDialog resource={resource} userId={userId} />
                         )
                     }
                 </>
@@ -248,27 +241,13 @@ export const serviceColumns: ColumnDef<Service>[] = [
         id: "actions",
         header: "ACTIONS",
         cell: ({ row }) => {
-            const resource = row.original
             const userId = localStorage.getItem("user_id");
+            const resource = row.original;
 
             return (
                 <>
                     {
-                        (resource.provider_id == null || resource.provider_id == parseInt(userId)) && (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                        <span className="sr-only">Open menu</span>
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    {(resource.provider_id == null && resource.assigned < resource.quantity) && <DropdownMenuItem onClick={() => { }}>Sign Up</DropdownMenuItem>}
-                                    {resource.provider_id == userId && <DropdownMenuItem onClick={() => { }}>Unassign</DropdownMenuItem>}
-                                    <DropdownMenuItem onClick={() => { }}>Details</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        )
+                        <ServiceDialog resource={resource} userId={userId} />
                     }
                 </>
             )

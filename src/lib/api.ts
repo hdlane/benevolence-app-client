@@ -40,6 +40,26 @@ function createApi({ endpoint }) {
                 throw error;
             }
         },
+        put: async ({ body, options = {}, controller }) => {
+            try {
+                const response = await fetch(
+                    `${API_URL}${endpoint}`,
+                    {
+                        ...options,
+                        method: "PUT",
+                        credentials: "include",
+                        body: JSON.stringify(body),
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        signal: controller.signal,
+                    },
+                );
+                return response;
+            } catch (error) {
+                throw error;
+            }
+        },
         _delete: async ({ options = {}, controller }) => {
             try {
                 const response = await fetch(

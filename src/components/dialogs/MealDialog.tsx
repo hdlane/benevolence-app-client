@@ -139,6 +139,10 @@ function MealDialog({ resource, userId }) {
                                     className="col-span-full"
                                     required
                                     onChange={(e) => setResourceName(e.target.value)}
+                                    onSubmit={(e) => {
+                                        setDialogOpen(false);
+                                        handleSave(e);
+                                    }}
                                 />
                             </div>
                         </div>
@@ -149,7 +153,7 @@ function MealDialog({ resource, userId }) {
                                     setDialogOpen(false);
                                     handleSave(e);
                                 }}>
-                                Save changes
+                                Sign up
                             </button>
                             <button className="button-outline mt-5 sm:m-0" type="button"
                                 onClick={() => {
@@ -173,13 +177,29 @@ function MealDialog({ resource, userId }) {
                                 </Label>
                                 <Input
                                     id="name"
-                                    defaultValue={`${resource.name}`}
                                     className="col-span-full"
+                                    value={resourceName}
+                                    onChange={(e) => {
+                                        setResourceName(e.target.value)
+                                    }}
+                                    onSubmit={(e) => {
+                                        setDialogOpen(false);
+                                        handleSave(e);
+                                    }}
                                 />
                             </div>
                         </div>
                         <DialogFooter className="flex-col sm:flex-row">
-                            <button className="button-primary" type="button">Save</button>
+                            <button
+                                className="button-primary"
+                                type="button"
+                                onClick={(e) => {
+                                    setDialogOpen(false);
+                                    handleSave(e);
+                                }}
+                            >
+                                Save changes
+                            </button>
                             <button className="button-outline mt-5 sm:m-0" type="button"
                                 onClick={() => {
                                     setDialogOpen(false);

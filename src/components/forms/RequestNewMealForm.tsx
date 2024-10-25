@@ -123,7 +123,6 @@ function RequestNewMealForm({ requestType, people }) {
                 zip_code: values.zip_code,
             },
         }
-        console.log(results);
 
         async function postData(results) {
             const api = createApi({ endpoint: "/requests" });

@@ -53,7 +53,6 @@ function RequestDetails() {
                 }
                 else {
                     dispatch(setRequest({ ...json.data }));
-                    console.log(json.data)
                 }
             } catch (error) {
                 toast({

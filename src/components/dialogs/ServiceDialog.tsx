@@ -144,7 +144,7 @@ function ServiceDialog({ resource, userId }) {
                                     setDialogOpen(false);
                                     handleSave(e);
                                 }}>
-                                Save changes
+                                Sign up
                             </button>
                             <button className="button-outline mt-5 sm:m-0" type="button"
                                 onClick={() => {

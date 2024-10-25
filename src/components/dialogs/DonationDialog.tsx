@@ -65,7 +65,7 @@ function DonationDialog({ resource, userId }) {
                 toast({
                     description: "Assignment successful!",
                 });
-                // window.location.reload();
+                window.location.reload();
             }
         } catch (error) {
             console.error(error)
@@ -103,8 +103,6 @@ function DonationDialog({ resource, userId }) {
             name: resource.name,
             quantity: adjustedQuantity,
         }
-
-        console.log(resourceData);
 
         putResourceData(resourceData);
     }
@@ -206,7 +204,7 @@ function DonationDialog({ resource, userId }) {
                                     setDialogOpen(false);
                                     handleSave(e);
                                 }}>
-                                Save changes
+                                Sign up
                             </button>
                             <button className="button-outline mt-5 sm:m-0" type="button"
                                 onClick={() => {

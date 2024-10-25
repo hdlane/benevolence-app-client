@@ -87,7 +87,6 @@ function RequestNewDonationServiceForm({ requestType, people }) {
             },
             resources: values.resources,
         }
-        console.log(results);
 
         async function postData(results) {
             const api = createApi({ endpoint: "/requests" });

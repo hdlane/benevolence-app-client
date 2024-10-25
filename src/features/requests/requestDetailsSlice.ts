@@ -5,7 +5,9 @@ interface RequestDetails {
     id: number;
     resources: any;
     recipient_name: string;
+    recipient_id: number;
     coordinator_name: string;
+    coordinator_id: number;
     creator_name: string;
     organization_id: number;
     request_type: string;

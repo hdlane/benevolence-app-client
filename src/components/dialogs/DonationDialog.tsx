@@ -125,7 +125,7 @@ function DonationDialog({ resource, userId }) {
         resourceQuantity > 1 ? setResourceQuantity(resourceQuantity - 1) : null
     }
 
-    function providerIdPresent(provider) {
+    function userIdPresent(provider) {
         return provider.id == userId;
     }
 
@@ -139,12 +139,12 @@ function DonationDialog({ resource, userId }) {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    {(!resource.providers.some(providerIdPresent) && resource.assigned < resource.quantity) &&
+                    {(!resource.providers.some(userIdPresent) && resource.assigned < resource.quantity) &&
                         <DropdownMenuItem className="p-0">
                             <DialogTrigger className="p-2 w-full text-left" onClick={() => setTriggerClicked("Sign Up")}>Sign Up</DialogTrigger>
                         </DropdownMenuItem>
                     }
-                    {resource.providers.some(providerIdPresent) &&
+                    {resource.providers.some(userIdPresent) &&
                         <>
                             <DropdownMenuItem className="p-0">
                                 <DialogTrigger className="p-2 w-full text-left" onClick={() => setTriggerClicked("Edit")}>Edit</DialogTrigger>

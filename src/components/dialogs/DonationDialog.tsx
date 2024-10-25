@@ -31,7 +31,10 @@ function DonationDialog({ resource, userId }) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [triggerClicked, setTriggerClicked] = useState("Sign Up");
     const [resourceQuantity, setResourceQuantity] = useState(1);
-    const maxQuantity = resource.quantity - resource.assigned
+    const maxQuantity = resource.quantity - resource.assigned;
+    const providerQuantity = resource.providers
+        .filter((provider) => provider.id == userId)[0]?.quantity;
+    const providerEditMaxQuantity = maxQuantity + providerQuantity;
 
     async function putResourceData(resource_data: ResourceData) {
         const api = createApi({ endpoint: `/resources/${resource.id}` });
@@ -62,7 +65,7 @@ function DonationDialog({ resource, userId }) {
                 toast({
                     description: "Assignment successful!",
                 });
-                window.location.reload();
+                // window.location.reload();
             }
         } catch (error) {
             console.error(error)
@@ -78,10 +81,18 @@ function DonationDialog({ resource, userId }) {
 
         let adjustedQuantity = resourceQuantity;
 
-        if (resourceQuantity > maxQuantity) {
-            adjustedQuantity = maxQuantity;
-        } else if (resourceQuantity < 1) {
-            adjustedQuantity = 1;
+        if (triggerClicked === "Edit") {
+            if (resourceQuantity > providerEditMaxQuantity) {
+                adjustedQuantity = providerEditMaxQuantity;
+            } else if (resourceQuantity < 1) {
+                adjustedQuantity = 1;
+            }
+        } else {
+            if (resourceQuantity > maxQuantity) {
+                adjustedQuantity = maxQuantity;
+            } else if (resourceQuantity < 1) {
+                adjustedQuantity = 1;
+            }
         }
 
         const provider_id = localStorage.getItem("user_id");
@@ -93,13 +104,19 @@ function DonationDialog({ resource, userId }) {
             quantity: adjustedQuantity,
         }
 
+        console.log(resourceData);
+
         putResourceData(resourceData);
     }
 
     function handleIncrement(e) {
         e.preventDefault();
 
-        resourceQuantity < maxQuantity ? setResourceQuantity(resourceQuantity + 1) : null
+        if (triggerClicked === "Edit") {
+            resourceQuantity < providerEditMaxQuantity ? setResourceQuantity(resourceQuantity + 1) : null
+        } else {
+            resourceQuantity < maxQuantity ? setResourceQuantity(resourceQuantity + 1) : null
+        }
     }
 
     function handleDecrement(e) {
@@ -153,7 +170,7 @@ function DonationDialog({ resource, userId }) {
                             <div className="flex grid-cols-4 items-center justify-center gap-4">
                                 <div className="flex flex-col items-start">
                                     <Label htmlFor="name">{resource.name}</Label>
-                                    <span className="text-sm">(Max: {resource.quantity - resource.assigned})</span>
+                                    <span className="text-sm">(Max: {maxQuantity})</span>
                                 </div>
                                 <button
                                     type="button"
@@ -169,6 +186,10 @@ function DonationDialog({ resource, userId }) {
                                     className="max-w-[50px] text-center"
                                     value={resourceQuantity}
                                     onChange={(e) => setResourceQuantity(e.target.value)}
+                                    onSubmit={(e) => {
+                                        setDialogOpen(false);
+                                        handleSave(e);
+                                    }}
                                 />
                                 <button
                                     type="button"
@@ -203,19 +224,52 @@ function DonationDialog({ resource, userId }) {
                             <DialogDescription>Edit how much you are donating</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="name" className="text-right">
-                                    Enter Meal
-                                </Label>
+                            <div className="flex grid-cols-4 items-center justify-center gap-4">
+                                <div className="flex flex-col items-start">
+                                    <Label htmlFor="name">{resource.name}</Label>
+                                    <span className="text-sm">(Max: {(resource.quantity - resource.assigned) +
+                                        (providerQuantity ? providerQuantity : 0)})</span>
+                                </div>
+                                <button
+                                    type="button"
+                                    className="button-primary p-1"
+                                    onClick={(e) => handleDecrement(e)}
+                                >
+                                    <Minus />
+                                </button>
                                 <Input
-                                    id="name"
-                                    defaultValue={`${resource.name}`}
-                                    className="col-span-3"
+                                    type="number"
+                                    min={1}
+                                    max={(resource.quantity - resource.assigned) +
+                                        (providerQuantity ? providerQuantity : 0)}
+                                    className="max-w-[50px] text-center"
+                                    value={resourceQuantity}
+                                    onChange={(e) => setResourceQuantity(e.target.value)}
+                                    onSubmit={(e) => {
+                                        setDialogOpen(false);
+                                        handleSave(e);
+                                    }}
                                 />
+                                <button
+                                    type="button"
+                                    className="button-primary p-1"
+                                    onClick={(e) => handleIncrement(e)}
+                                >
+                                    <Plus />
+                                </button>
                             </div>
                         </div>
                         <DialogFooter className="flex-col sm:flex-row">
-                            <button className="button-primary" type="button">Save changes</button>
+                            <button
+                                className="button-primary"
+                                type="button"
+                                onClick={(e) => {
+                                    setDialogOpen(false);
+                                    handleSave(e);
+                                }}
+                            >
+                                Save changes
+                            </button>
                             <button className="button-outline mt-5 sm:m-0" type="button"
                                 onClick={() => {
                                     setDialogOpen(false);
@@ -239,11 +293,22 @@ function DonationDialog({ resource, userId }) {
                             </div>
                         </div>
                         <DialogFooter className="flex-col sm:flex-row">
-                            <button className="button-primary" type="button">Yes, Unassign</button>
-                            <button className="button-outline mt-5 sm:m-0" type="button"
+                            <button
+                                className="button-primary"
+                                type="button"
                                 onClick={() => {
                                     setDialogOpen(false);
-                                }}>
+                                }}
+                            >
+                                Yes, Unassign
+                            </button>
+                            <button
+                                className="button-outline mt-5 sm:m-0"
+                                type="button"
+                                onClick={() => {
+                                    setDialogOpen(false);
+                                }}
+                            >
                                 Cancel
                             </button>
                         </DialogFooter>

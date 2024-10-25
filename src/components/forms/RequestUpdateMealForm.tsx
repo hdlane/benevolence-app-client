@@ -85,8 +85,8 @@ function RequestUpdateMealForm({ request, people }) {
         resolver: zodResolver(MealUpdateSchema),
         defaultValues: {
             title: request.title,
-            recipient_id: selectedRecipient.id,
-            coordinator_id: selectedCoordinator.id,
+            recipient_id: selectedRecipient?.id,
+            coordinator_id: selectedCoordinator?.id,
             notes: request.notes,
             allergies: request.allergies,
             // date_range: {

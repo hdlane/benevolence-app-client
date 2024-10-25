@@ -32,17 +32,17 @@ import TimePicker from "../TimePicker";
 import { Textarea } from "../ui/textarea";
 import { useAppDispatch } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
-import { DonationServiceSchema } from "@/lib/schemas/donationServiceSchema";
+import { DonationServiceUpdateSchema } from "@/lib/schemas/donationServiceUpdateSchema";
 import { useToast } from "@/hooks/use-toast";
 import createApi from "@/lib/api";
 
-function RequestUpdateDonationServiceForm({ requestType, people }) {
+function RequestUpdateDonationServiceForm({ request, people }) {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { toast } = useToast();
 
-    const [selectedRecipient, setSelectedRecipient] = useState(null);
-    const [selectedCoordinator, setSelectedCoordinator] = useState(null);
+    const [selectedRecipient, setSelectedRecipient] = useState(people.filter((person) => person.id == request.recipient_id)[0]);
+    const [selectedCoordinator, setSelectedCoordinator] = useState(people.filter((person) => person.id == request.coordinator_id)[0]);
     // TODO: make popovers close after selecting date
     const [openRecipientSearch, setOpenRecipientSearch] = useState(false);
     const [openCoordinatorSearch, setOpenCoordinatorSearch] = useState(false);
@@ -55,31 +55,33 @@ function RequestUpdateDonationServiceForm({ requestType, people }) {
     const today = new Date(new Date().setHours(0, 0, 0, 0));
     const endDateRange = new Date(new Date().setHours(0, 0, 0, 0));
     endDateRange.setMonth(today.getMonth() + 3);
-    const form = useForm<z.infer<typeof DonationServiceSchema>>({
-        resolver: zodResolver(DonationServiceSchema),
+    const form = useForm<z.infer<typeof DonationServiceUpdateSchema>>({
+        resolver: zodResolver(DonationServiceUpdateSchema),
         defaultValues: {
-            title: "",
-            notes: "",
-            date_single_day: today,
-            start_date: today,
-            end_date: today,
-            street_line: "",
-            city: "",
-            state: "",
-            zip_code: "",
+            title: request.title,
+            notes: request.notes,
+            recipient_id: selectedRecipient?.id,
+            coordinator_id: selectedCoordinator?.id,
+            // date_single_day: today,
+            // start_date: today,
+            // end_date: today,
+            street_line: request.street_line,
+            city: request.city,
+            state: request.state,
+            zip_code: request.zip_code,
         },
     });
 
-    function onSubmit(values: z.infer<typeof DonationServiceSchema>) {
+    function onSubmit(values: z.infer<typeof DonationServiceUpdateSchema>) {
         const results = {
             request: {
                 recipient_id: values.recipient_id,
                 coordinator_id: values.coordinator_id,
-                request_type: requestType,
+                request_type: request.request_type,
                 title: values.title,
                 notes: values.notes,
-                start_date: values.start_date,
-                end_date: values.end_date,
+                // start_date: values.start_date,
+                // end_date: values.end_date,
                 street_line: values.street_line,
                 city: values.city,
                 state: values.state,
@@ -88,13 +90,13 @@ function RequestUpdateDonationServiceForm({ requestType, people }) {
             resources: values.resources,
         }
 
-        async function postData(results) {
-            const api = createApi({ endpoint: "/requests" });
+        async function putRequestData(request_data) {
+            const api = createApi({ endpoint: `/requests/${request.id}` });
             const controller = new AbortController();
 
             try {
-                const response = await api.post({
-                    body: results,
+                const response = await api.put({
+                    body: request_data,
                     controller: controller,
                 });
                 const json = await response.json();
@@ -115,9 +117,9 @@ function RequestUpdateDonationServiceForm({ requestType, people }) {
                 }
                 else {
                     toast({
-                        description: "Request successfully created!",
+                        description: "Update successful!",
                     });
-                    navigate(`/requests/${json.id}`);
+                    navigate(`/requests/${request.id}`);
                 }
             } catch (error) {
                 console.error(error)
@@ -128,7 +130,7 @@ function RequestUpdateDonationServiceForm({ requestType, people }) {
             }
         }
 
-        postData(results);
+        putRequestData(results);
     }
 
     return <>
@@ -232,155 +234,6 @@ function RequestUpdateDonationServiceForm({ requestType, people }) {
                     </FormItem>
                 )}
                 />
-                <FormField control={form.control} name="resources" render={() => (
-                    <FormItem className="sm:col-span-3">
-                        <FormLabel>Resources Needed</FormLabel>
-                        <FormItem>
-                            <Input type="text" ref={resourceNameRef} placeholder={requestType == "Donation" ? "Item" : "Assignment"} onChange={(e) => setResourceName(e.target.value)} />
-                        </FormItem>
-                        <FormItem>
-                            <Input type="number" ref={resourceQuantityRef} placeholder="Quantity" defaultValue={1} min={1} max={100} onChange={(e) => setResourceQuantity(parseInt(e.target.value))} />
-                        </FormItem>
-                        <FormMessage />
-                        <FormControl>
-                            {
-                                (resourceName != "" && resourceQuantity > 0) ? (
-                                    <button className="button-primary p-2" type="button" onClick={(e) => {
-                                        e.preventDefault();
-                                        const updatedResources = [
-                                            ...resources,
-                                            {
-                                                name: resourceName,
-                                                quantity: resourceQuantity,
-                                            }
-                                        ];
-                                        setResources(updatedResources);
-                                        form.setValue("resources", updatedResources);
-                                        resourceNameRef.current.value = "";
-                                        resourceQuantityRef.current.value = 1;
-                                        resourceNameRef.current.focus();
-                                        setResourceName("");
-                                        setResourceQuantity(1)
-                                    }}
-                                    >
-                                        <Plus />
-                                    </button>
-                                ) : (
-                                    <button className="button-primary p-2" type="button" disabled><Plus /></button>
-                                )
-                            }
-                        </FormControl>
-                    </FormItem>
-                )}
-                />
-                {resources.length > 0 ? (
-                    <div className="sm:col-span-3 border rounded p-5">
-                        <p className="text-sm font-md mb-5">Resources:</p>
-                        {resources.map((resource, index) => (
-                            <FormField
-                                key={index}
-                                control={form.control}
-                                name="resources"
-                                render={() => {
-                                    return (
-                                        <div className="space-y-4">
-                                            <FormItem className="my-4">
-                                                <FormControl>
-                                                    <Button variant={"destructive"} className="button-primary h-3 w-3 p-3 mr-5" type="button" onClick={(e) => {
-                                                        e.preventDefault();
-                                                        const updatedResources = resources.filter((obj) => obj != resource);
-                                                        setResources(updatedResources);
-                                                        form.setValue("resources", updatedResources);
-                                                    }}
-                                                    >
-                                                        <span>X</span>
-                                                    </Button>
-                                                </FormControl>
-                                                <span className="mt-2">{resource.name} (x{resource.quantity})</span>
-                                            </FormItem>
-                                            <hr />
-                                        </div>
-                                    )
-                                }}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="sm:col-span-3 border rounded p-5">
-                        <p className="text-sm font-md mb-5">Resources:</p>
-                        <p className="text-sm font-md mb-5 text-gray-500">None created yet!</p>
-                    </div>
-                )
-                }
-                <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 sm:col-span-full">
-                    <FormField control={form.control} name="date_single_day" render={({ field }) => (
-                        <FormItem className="col-span-full lg:col-span-2 md:col-span-full">
-                            <FormLabel>Start Date</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button variant={"outline"} className={cn(
-                                            "flex justify-between w-full pl-3 text-left font-normal",
-                                            !field.value && "text-muted-foreground"
-                                        )}
-                                        >
-                                            {field.value ? (
-                                                format(field.value, "PP")
-                                            ) : (
-                                                <span>Pick a date</span>
-                                            )}
-                                            <CalendarIcon className="h-4 w-4" />
-                                        </Button>
-                                    </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={field.value}
-                                        onSelect={(date) => {
-                                            const tempFrom = form.getValues("start_date");
-                                            const tempTo = form.getValues("end_date");
-                                            const start_date = new Date(tempFrom.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
-                                            const end_date = new Date(tempTo.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
-                                            form.setValue("date_single_day", date);
-                                            form.setValue("start_date", start_date);
-                                            form.setValue("end_date", end_date);
-                                        }}
-                                        disabled={(date) =>
-                                            date < today || date > endDateRange
-                                        }
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <FormField control={form.control} name="start_date" render={({ field }) => (
-                        <FormItem className="col-span-full sm:col-span-3 lg:col-span-2 lg:justify-self-center">
-                            <FormLabel>Start Time</FormLabel>
-                            <FormControl>
-                                <div className="p-3">
-                                    <TimePicker date={field.value} setDate={field.onChange} />
-                                </div>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <FormField control={form.control} name="end_date" render={({ field }) => (
-                        <FormItem className="col-span-full sm:col-span-3 lg:col-span-2 lg:justify-self-end">
-                            <FormLabel>End Time</FormLabel>
-                            <FormControl>
-                                <div className="p-3">
-                                    <TimePicker date={field.value} setDate={field.onChange} />
-                                </div>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                </div>
                 <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-3 col-span-full">
                     <FormField control={form.control} name="street_line" render={({ field }) => (
                         <FormItem className="col-span-full">

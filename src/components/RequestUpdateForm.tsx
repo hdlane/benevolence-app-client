@@ -62,7 +62,7 @@ function RequestUpdateForm() {
 
     return <>
         <div className="container mx-auto mb-5">
-            {(request?.request_type == "Donation" || request?.request_type == "Service") && <RequestUpdateDonationServiceForm requestType={request?.request_type} people={people} />}
+            {(request?.request_type == "Donation" || request?.request_type == "Service") && <RequestUpdateDonationServiceForm request={request} people={people} />}
             {request?.request_type == "Meal" && <RequestUpdateMealForm request={request} people={people} />}
         </div>
     </>

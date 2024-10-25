@@ -85,6 +85,10 @@ function ServiceDialog({ resource, userId }) {
         putResourceData(resourceData);
     }
 
+    function userIdPresent(provider) {
+        return provider.id == userId;
+    }
+
     return (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DropdownMenu>
@@ -95,25 +99,27 @@ function ServiceDialog({ resource, userId }) {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    {(resource.provider_id != userId && resource.assigned < resource.quantity) &&
+                    {(!resource.providers.some(userIdPresent) && resource.assigned < resource.quantity) &&
                         <DropdownMenuItem className="p-0">
                             <DialogTrigger className="p-2 w-full text-left" onClick={() => setTriggerClicked("Sign Up")}>
                                 Sign Up
                             </DialogTrigger>
                         </DropdownMenuItem>
                     }
-                    {resource.provider_id == userId &&
+                    {resource.providers.some(userIdPresent) &&
                         <DropdownMenuItem className="p-0">
                             <DialogTrigger className="p-2 w-full text-left" onClick={() => setTriggerClicked("Unassign")}>
                                 Unassign
                             </DialogTrigger>
                         </DropdownMenuItem>
                     }
-                    <DropdownMenuItem className="p-0">
-                        <DialogTrigger className="p-2 w-full text-left" onClick={() => setTriggerClicked("Details")}>
-                            Details
-                        </DialogTrigger>
-                    </DropdownMenuItem>
+                    {resource.assigned > 0 &&
+                        <DropdownMenuItem className="p-0">
+                            <DialogTrigger className="p-2 w-full text-left" onClick={() => setTriggerClicked("Details")}>
+                                Details
+                            </DialogTrigger>
+                        </DropdownMenuItem>
+                    }
                 </DropdownMenuContent>
             </DropdownMenu>
             <DialogContent className="sm:max-w-[425px]">
@@ -138,7 +144,7 @@ function ServiceDialog({ resource, userId }) {
                                     setDialogOpen(false);
                                     handleSave(e);
                                 }}>
-                                Save changes
+                                Sign up
                             </button>
                             <button className="button-outline mt-5 sm:m-0" type="button"
                                 onClick={() => {

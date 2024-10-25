@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+// import { cn } from "@/lib/utils";
+// import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import {
     Command,
@@ -25,19 +25,19 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "../ui/calendar";
+// import { Calendar } from "../ui/calendar";
 import { Input } from "@/components/ui/input"
-import { CalendarIcon } from "lucide-react";
+// import { CalendarIcon } from "lucide-react";
 import { Textarea } from "../ui/textarea";
-import { Checkbox } from "../ui/checkbox";
-import { MealSchema } from "@/lib/schemas/mealSchema";
+// import { Checkbox } from "../ui/checkbox";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "@/app/hooks";
+// import { useAppDispatch } from "@/app/hooks";
 import { useToast } from "@/hooks/use-toast";
 import createApi from "@/lib/api";
+import { MealUpdateSchema } from "@/lib/schemas/mealUpdateSchema";
 
 function RequestUpdateMealForm({ request, people }) {
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { toast } = useToast();
 
@@ -45,53 +45,54 @@ function RequestUpdateMealForm({ request, people }) {
     const [selectedCoordinator, setSelectedCoordinator] = useState(people.filter((person) => person.id == request.coordinator_id)[0]);
     const [openRecipientSearch, setOpenRecipientSearch] = useState(false);
     const [openCoordinatorSearch, setOpenCoordinatorSearch] = useState(false);
-    // TODO: make popovers close after selecting date
-    const [dateRangeFrom, setDateRangeFrom] = useState(false);
-    const [dateRangeTo, setDateRangeTo] = useState(false);
+    // const [dateRangeFrom, setDateRangeFrom] = useState(false);
+    // const [dateRangeTo, setDateRangeTo] = useState(false);
 
     const today = new Date(new Date().setHours(0, 0, 0, 0));
     const endDateRange = new Date(new Date().setHours(0, 0, 0, 0));
     endDateRange.setMonth(today.getMonth() + 3);
-    const days = [
-        {
-            id: 1,
-            label: "Sunday",
-        },
-        {
-            id: 2,
-            label: "Monday",
-        },
-        {
-            id: 3,
-            label: "Tuesday",
-        },
-        {
-            id: 4,
-            label: "Wednesday",
-        },
-        {
-            id: 5,
-            label: "Thursday",
-        },
-        {
-            id: 6,
-            label: "Friday",
-        },
-        {
-            id: 7,
-            label: "Saturday",
-        },
-    ];
-    const form = useForm<z.infer<typeof MealSchema>>({
-        resolver: zodResolver(MealSchema),
+    // const days = [
+    //     {
+    //         id: 1,
+    //         label: "Sunday",
+    //     },
+    //     {
+    //         id: 2,
+    //         label: "Monday",
+    //     },
+    //     {
+    //         id: 3,
+    //         label: "Tuesday",
+    //     },
+    //     {
+    //         id: 4,
+    //         label: "Wednesday",
+    //     },
+    //     {
+    //         id: 5,
+    //         label: "Thursday",
+    //     },
+    //     {
+    //         id: 6,
+    //         label: "Friday",
+    //     },
+    //     {
+    //         id: 7,
+    //         label: "Saturday",
+    //     },
+    // ];
+    const form = useForm<z.infer<typeof MealUpdateSchema>>({
+        resolver: zodResolver(MealUpdateSchema),
         defaultValues: {
             title: request.title,
+            recipient_id: selectedRecipient.id,
+            coordinator_id: selectedCoordinator.id,
             notes: request.notes,
             allergies: request.allergies,
-            date_range: {
-                start_date: request.start_date,
-                end_date: request.end_date,
-            },
+            // date_range: {
+            //     start_date: request.start_date,
+            //     end_date: request.end_date,
+            // },
             // selected_days: request.selected_days,
             street_line: request.street_line,
             city: request.city,
@@ -100,7 +101,7 @@ function RequestUpdateMealForm({ request, people }) {
         },
     });
 
-    function onSubmit(values: z.infer<typeof MealSchema>) {
+    function onSubmit(values: z.infer<typeof MealUpdateSchema>) {
         // TODO: not implemented yet:
         // const selected_days = [];
         // values.selected_days?.forEach((day) => {
@@ -131,7 +132,7 @@ function RequestUpdateMealForm({ request, people }) {
 
             try {
                 const response = await api.put({
-                    body: { request_data },
+                    body: request_data,
                     controller: controller,
                 });
                 const json = await response.json();

@@ -9,6 +9,7 @@ import VerifyPerson from "./pages/Login/VerifyPerson";
 import VerifyOrganization from "./pages/Login/VerifyOrganization";
 import RequestDetails from "./pages/Requests/RequestDetails";
 import RequestCreate from "./pages/Requests/RequestCreate";
+import RequestUpdate from "./pages/Requests/RequestUpdate";
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                 <Route path="/login/verify/person" element={<VerifyPerson />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/requests/:requestId" element={<RequestDetails />} />
+                <Route path="/requests/:requestId/edit" element={<RequestUpdate />} />
                 <Route path="/requests/new" element={<RequestCreate />} />
             </Routes>
         </>

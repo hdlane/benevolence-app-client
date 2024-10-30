@@ -13,7 +13,7 @@ interface TimePickerProps {
 }
 
 export function TimePicker({ date, setDate }: TimePickerProps) {
-    const [period, setPeriod] = useState<Period>("AM");
+    const [period, setPeriod] = useState<Period>(date.getHours() > 11 ? "PM" : "AM");
 
     const minuteRef = React.useRef<HTMLInputElement>(null);
     const hourRef = React.useRef<HTMLInputElement>(null);

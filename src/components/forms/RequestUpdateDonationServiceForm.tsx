@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-// import { cn } from "@/lib/utils";
-// import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import {
     Command,
@@ -25,18 +23,19 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-// import { Calendar } from "../ui/calendar";
 import { Input } from "@/components/ui/input"
-// import { CalendarIcon, Plus } from "lucide-react";
-// import TimePicker from "../TimePicker";
 import { Textarea } from "../ui/textarea";
 // import { useAppDispatch } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 import { DonationServiceUpdateSchema } from "@/lib/schemas/donationServiceUpdateSchema";
 import { useToast } from "@/hooks/use-toast";
 import createApi from "@/lib/api";
-import { Check, Plus } from "lucide-react";
+import { CalendarIcon, Plus } from "lucide-react";
 import ResourceItem from "./ui/ResourceItem";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar } from "../ui/calendar";
+import TimePicker from "../TimePicker";
 
 function RequestUpdateDonationServiceForm({ request, people }) {
     // const dispatch = useAppDispatch();
@@ -67,9 +66,9 @@ function RequestUpdateDonationServiceForm({ request, people }) {
             notes: request.notes,
             recipient_id: selectedRecipient?.id,
             coordinator_id: selectedCoordinator?.id,
-            // date_single_day: today,
-            // start_date: today,
-            // end_date: today,
+            date_single_day: new Date(request.start_date),
+            start_date: new Date(request.start_date),
+            end_date: new Date(request.end_date),
             street_line: request.street_line,
             city: request.city,
             state: request.state,
@@ -96,8 +95,8 @@ function RequestUpdateDonationServiceForm({ request, people }) {
                 request_type: request.request_type,
                 title: values.title,
                 notes: values.notes,
-                // start_date: values.start_date,
-                // end_date: values.end_date,
+                start_date: values.start_date,
+                end_date: values.end_date,
                 street_line: values.street_line,
                 city: values.city,
                 state: values.state,
@@ -399,6 +398,75 @@ function RequestUpdateDonationServiceForm({ request, people }) {
                             ))}
                         </>
                     ) : null}
+                </div>
+                <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 sm:col-span-full">
+                    <FormField control={form.control} name="date_single_day" render={({ field }) => (
+                        <FormItem className="col-span-full lg:col-span-2 md:col-span-full">
+                            <FormLabel>Start Date</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button variant={"outline"} className={cn(
+                                            "flex justify-between w-full pl-3 text-left font-normal",
+                                            !field.value && "text-muted-foreground"
+                                        )}
+                                        >
+                                            {field.value ? (
+                                                format(field.value, "PP")
+                                            ) : (
+                                                <span>Pick a date</span>
+                                            )}
+                                            <CalendarIcon className="h-4 w-4" />
+                                        </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={field.value}
+                                        onSelect={(date) => {
+                                            const tempFrom = form.getValues("start_date");
+                                            const tempTo = form.getValues("end_date");
+                                            const start_date = new Date(tempFrom.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
+                                            const end_date = new Date(tempTo.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
+                                            form.setValue("date_single_day", date);
+                                            form.setValue("start_date", start_date);
+                                            form.setValue("end_date", end_date);
+                                        }}
+                                        disabled={(date) =>
+                                            date < today || date > endDateRange
+                                        }
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField control={form.control} name="start_date" render={({ field }) => (
+                        <FormItem className="col-span-full sm:col-span-3 lg:col-span-2 lg:justify-self-center">
+                            <FormLabel>Start Time</FormLabel>
+                            <FormControl>
+                                <div className="p-3">
+                                    <TimePicker date={field.value} setDate={field.onChange} />
+                                </div>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField control={form.control} name="end_date" render={({ field }) => (
+                        <FormItem className="col-span-full sm:col-span-3 lg:col-span-2 lg:justify-self-end">
+                            <FormLabel>End Time</FormLabel>
+                            <FormControl>
+                                <div className="p-3">
+                                    <TimePicker date={field.value} setDate={field.onChange} />
+                                </div>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
                 </div>
                 <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-3 col-span-full">
                     <FormField control={form.control} name="street_line" render={({ field }) => (

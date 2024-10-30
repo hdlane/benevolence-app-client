@@ -83,13 +83,14 @@ function RequestUpdateDonationServiceForm({ request, people }) {
             new: [
                 ...newResources,
             ],
-            update: [
+            updated: [
                 ...updatedResources,
             ],
         }
 
         const results = {
             request: {
+                id: request.id,
                 recipient_id: values.recipient_id,
                 coordinator_id: values.coordinator_id,
                 request_type: request.request_type,
@@ -104,7 +105,7 @@ function RequestUpdateDonationServiceForm({ request, people }) {
             },
             resources: resources,
         }
-        console.log(results);
+        console.log(results)
 
         async function putRequestData(request_data) {
             const api = createApi({ endpoint: `/requests/${request.id}` });
@@ -146,7 +147,7 @@ function RequestUpdateDonationServiceForm({ request, people }) {
             }
         }
 
-        // putRequestData(results);
+        putRequestData(results);
     }
 
     return <>

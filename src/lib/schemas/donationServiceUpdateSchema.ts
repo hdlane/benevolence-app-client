@@ -2,6 +2,9 @@ import { z } from "zod";
 import { BaseSchema } from "./defaultSchema";
 
 export const DonationServiceUpdateSchema = BaseSchema.extend({
+    date_single_day: z.date(),
+    start_date: z.date(),
+    end_date: z.date(),
     resources: z.array(z.object({
         name: z.string(),
         quantity: z.number({ invalid_type_error: "Enter a number" }),

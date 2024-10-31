@@ -16,6 +16,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import createApi from "@/lib/api";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 
 interface ResourceData {
     resource_id: number;
@@ -157,7 +158,7 @@ function DonationDialog({ resource, userId }) {
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] max-h-[425px] overflow-y-auto">
                 {triggerClicked == "Sign Up" && (
                     <>
                         <DialogHeader>
@@ -315,15 +316,32 @@ function DonationDialog({ resource, userId }) {
                 {triggerClicked == "Details" && (
                     <>
                         <DialogHeader>
-                            <DialogTitle>Details for Donation - {resource.name}</DialogTitle>
+                            <DialogTitle>Donation Details - {resource.name}</DialogTitle>
                             <DialogDescription>View details of a donation item</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-all items-center gap-4">
-                                <p>
-                                    Details
-                                </p>
-                            </div>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>
+                                            PROVIDERS
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {
+                                        resource.providers.length > 0 ? (
+                                            resource.providers.map((provider) => (
+                                                <TableRow key={provider.id}>
+                                                    <TableCell>
+                                                        {provider.name} (x{provider.quantity})
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        ) : (<TableRow><TableCell>No one signed up yet</TableCell></TableRow>)
+                                    }
+                                </TableBody>
+                            </Table>
                         </div>
                         <DialogFooter>
                             <button className="button-outline mt-5 sm:m-0" type="button"

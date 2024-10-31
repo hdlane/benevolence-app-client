@@ -1,8 +1,9 @@
+import { format } from "date-fns";
 import React from "react";
 
 function RequestMetadata({ request }) {
-    const startDate = new Date(request?.start_date).toLocaleDateString();
-    const endDate = new Date(request?.end_date).toLocaleDateString();
+    const startDate = new Date(request?.start_date);
+    const endDate = new Date(request?.end_date);
 
     return <>
         <dl className="flex flex-col md:flex-row p-3">
@@ -12,14 +13,22 @@ function RequestMetadata({ request }) {
         <hr />
         <dl className="flex flex-col md:flex-row p-3">
             <dt className="w-32 font-semibold">Coordinator</dt>
-            <dd className="flex-1">{request?.coordinator_name}</dd>
+            <dd className="flex-1">
+                {request?.coordinator_name ? `${request.coordinator_name} | ` : "(no name)"}
+                {request?.coordinator_email ? (<><a href={`mailto:${request.coordinator_email}`}>Email</a> | </>) : ("(no email) | ")}
+                {request?.coordinator_phone_number ? `${request.coordinator_phone_number}` : "(no phone number)"}
+            </dd>
         </dl>
         <hr />
         <dl className="flex flex-col md:flex-row p-3">
             <dt className="w-32 font-semibold">Date</dt>
             <dd className="flex-1">
-                {request?.start_date && startDate}
-                {request?.end_date && (endDate != startDate ? ` to  ${endDate}` : "")}
+                {`${request?.start_date && format(startDate, "PP")} `}
+                {request?.end_date && (format(endDate, "PP") != format(startDate, "PP")
+                    ? ` to  ${format(endDate, "PP")}`
+                    : (
+                        `${format(startDate, "p")} to ${format(endDate, "p")}`
+                    ))}
             </dd>
         </dl>
         <hr />

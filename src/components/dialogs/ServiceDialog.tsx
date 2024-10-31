@@ -191,7 +191,7 @@ function ServiceDialog({ resource, userId }) {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>
-                                            PROVIDERS
+                                            VOLUNTEERS
                                         </TableHead>
                                     </TableRow>
                                 </TableHeader>

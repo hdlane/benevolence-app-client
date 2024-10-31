@@ -158,7 +158,7 @@ function DonationDialog({ resource, userId }) {
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
-            <DialogContent className="sm:max-w-[425px] max-h-[425px] overflow-y-auto">
+            <DialogContent className="sm:max-w-[425px]">
                 {triggerClicked == "Sign Up" && (
                     <>
                         <DialogHeader>
@@ -316,7 +316,7 @@ function DonationDialog({ resource, userId }) {
                 {triggerClicked == "Details" && (
                     <>
                         <DialogHeader>
-                            <DialogTitle>Donation Details - {resource.name}</DialogTitle>
+                            <DialogTitle>Details for Donation - {resource.name}</DialogTitle>
                             <DialogDescription>View details of a donation item</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
@@ -324,20 +324,20 @@ function DonationDialog({ resource, userId }) {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>
-                                            PROVIDERS
+                                            VOLUNTEERS
                                         </TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {
-                                        resource.providers.length > 0 ? (
-                                            resource.providers.map((provider) => (
-                                                <TableRow key={provider.id}>
+                                        resource.providers.length > 1 ? (
+                                            resource.providers.map((provider) => {
+                                                <TableRow>
                                                     <TableCell>
-                                                        {provider.name} (x{provider.quantity})
+                                                        {provider.name}
                                                     </TableCell>
                                                 </TableRow>
-                                            ))
+                                            })
                                         ) : (<TableRow><TableCell>No one signed up yet</TableCell></TableRow>)
                                     }
                                 </TableBody>

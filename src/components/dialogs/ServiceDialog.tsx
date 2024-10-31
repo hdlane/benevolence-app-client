@@ -14,6 +14,7 @@ import createApi from "@/lib/api";
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 
 interface ResourceData {
     resource_id: number;
@@ -182,15 +183,32 @@ function ServiceDialog({ resource, userId }) {
                 {triggerClicked == "Details" && (
                     <>
                         <DialogHeader>
-                            <DialogTitle>Details for {resource.name}</DialogTitle>
+                            <DialogTitle>Assignment Details - {resource.name}</DialogTitle>
                             <DialogDescription>View details of a service assignment</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-all items-center gap-4">
-                                <p>
-                                    Details
-                                </p>
-                            </div>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>
+                                            PROVIDERS
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {
+                                        resource.providers.length > 0 ? (
+                                            resource.providers.map((provider) => (
+                                                <TableRow key={provider.id}>
+                                                    <TableCell>
+                                                        {provider.name} (x{provider.quantity})
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        ) : (<TableRow><TableCell>No one signed up yet</TableCell></TableRow>)
+                                    }
+                                </TableBody>
+                            </Table>
                         </div>
                         <DialogFooter>
                             <button className="button-outline mt-5 sm:m-0" type="button"

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/app/hooks";
-import RequestArchiveDialog from "./dialogs/RequestArchiveDialog";
+//import RequestArchiveDialog from "./dialogs/RequestArchiveDialog";
 import RequestDeleteDialog from "./dialogs/RequestDeleteDialog";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
@@ -13,6 +13,7 @@ function RequestActions() {
     const request = useAppSelector((state) => state.request.request);
     const [triggerClicked, setTriggerClicked] = useState("");
     const [dialogOpen, setDialogOpen] = useState(false);
+    const location = useLocation();
 
     return <>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -24,9 +25,17 @@ function RequestActions() {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuItem className="p-0">
-                        <DialogTrigger className="p-2 w-full text-left" onClick={() => navigate(`/requests/${request!.id}/edit`)}>Edit</DialogTrigger>
-                    </DropdownMenuItem>
+                    {
+                        !location.pathname.includes("edit") ? (
+                            <DropdownMenuItem className="p-0">
+                                <DialogTrigger className="p-2 w-full text-left" onClick={() => navigate(`/requests/${request!.id}/edit`)}>Edit</DialogTrigger>
+                            </DropdownMenuItem>
+                        ) : (
+                            <DropdownMenuItem className="p-0">
+                                <DialogTrigger className="p-2 w-full text-left" onClick={() => navigate(`/requests/${request!.id}`)}>Go Back</DialogTrigger>
+                            </DropdownMenuItem>
+                        )
+                    }
                     {
                         //    <DropdownMenuItem className="p-0">
                         //        <DialogTrigger className="p-2 w-full text-left" onClick={() => setTriggerClicked("Archive")}>Archive</DialogTrigger>

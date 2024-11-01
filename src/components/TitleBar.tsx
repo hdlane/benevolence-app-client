@@ -1,6 +1,8 @@
 import React from "react";
 import RequestActions from "./RequestActions";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
+import { Plus } from "lucide-react";
 
 interface TitleBarProps {
     title?: string | null;
@@ -8,7 +10,9 @@ interface TitleBarProps {
 }
 
 function TitleBar({ title, subTitle = null }: TitleBarProps) {
+    const is_admin = (localStorage.getItem("is_admin") === "true");
     const location = useLocation();
+    const navigate = useNavigate();
 
     return <>
         <div className="title-bar flex justify-between">
@@ -18,8 +22,17 @@ function TitleBar({ title, subTitle = null }: TitleBarProps) {
             </div>
             {
                 location.pathname.includes("requests") ? (
-                    <RequestActions />
-                ) : null
+                    is_admin ? (
+                        <RequestActions />
+                    ) : null
+                ) : (
+                    is_admin ? (
+                        <Button variant="ghost" onClick={() => navigate("/requests/new")}>
+                            New Request
+                            <Plus className="ml-1" />
+                        </Button>
+                    ) : null
+                )
             }
         </div>
     </>

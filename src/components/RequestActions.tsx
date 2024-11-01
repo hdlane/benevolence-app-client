@@ -26,14 +26,55 @@ function RequestActions() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     {
-                        !location.pathname.includes("edit") ? (
-                            <DropdownMenuItem className="p-0">
-                                <DialogTrigger className="p-2 w-full text-left" onClick={() => navigate(`/requests/${request!.id}/edit`)}>Edit</DialogTrigger>
-                            </DropdownMenuItem>
+                        location.pathname.includes("edit") ? (
+                            <>
+                                <DropdownMenuItem className="p-0">
+                                    <DialogTrigger
+                                        className="p-2 w-full text-left"
+                                        onClick={() => navigate(`/requests/${request!.id}`)}
+                                    >
+                                        Go Back
+                                    </DialogTrigger>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="p-0">
+                                    <DialogTrigger
+                                        className="p-2 w-full text-left"
+                                        onClick={() => setTriggerClicked("Delete")}
+                                    >
+                                        Delete
+                                    </DialogTrigger>
+                                </DropdownMenuItem>
+                            </>
                         ) : (
-                            <DropdownMenuItem className="p-0">
-                                <DialogTrigger className="p-2 w-full text-left" onClick={() => navigate(`/requests/${request!.id}`)}>Go Back</DialogTrigger>
-                            </DropdownMenuItem>
+                            location.pathname.includes("new") ? (
+                                <DropdownMenuItem className="p-0">
+                                    <DialogTrigger
+                                        className="p-2 w-full text-left"
+                                        onClick={() => navigate("/")}
+                                    >
+                                        Go Back
+                                    </DialogTrigger>
+                                </DropdownMenuItem>
+                            ) : (
+                                <>
+                                    <DropdownMenuItem className="p-0">
+                                        <DialogTrigger
+                                            className="p-2 w-full text-left"
+                                            onClick={() => navigate(`/requests/${request!.id}/edit`)}
+                                        >
+                                            Edit
+                                        </DialogTrigger>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className="p-0">
+                                        <DialogTrigger
+                                            className="p-2 w-full text-left"
+                                            onClick={() => setTriggerClicked("Delete")}
+                                        >
+                                            Delete
+                                        </DialogTrigger>
+                                    </DropdownMenuItem>
+                                </>
+                            )
                         )
                     }
                     {
@@ -41,9 +82,6 @@ function RequestActions() {
                         //        <DialogTrigger className="p-2 w-full text-left" onClick={() => setTriggerClicked("Archive")}>Archive</DialogTrigger>
                         //    </DropdownMenuItem>
                     }
-                    <DropdownMenuItem className="p-0">
-                        <DialogTrigger className="p-2 w-full text-left" onClick={() => setTriggerClicked("Delete")}>Delete</DialogTrigger>
-                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
             <DialogContent className="sm:max-w-[425px] max-h-[425px] overflow-y-auto">
@@ -52,7 +90,7 @@ function RequestActions() {
                 }
                 {triggerClicked == "Delete" && <RequestDeleteDialog request={request} onOpenChange={setDialogOpen} />}
             </DialogContent>
-        </Dialog>
+        </Dialog >
     </>
 }
 

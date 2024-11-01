@@ -39,7 +39,7 @@ function RequestDeleteDialog({ request, onOpenChange }) {
             }
             else {
                 toast({
-                    description: "Request has been archived",
+                    description: "Request has been deleted",
                 });
                 navigate("/");
             }
@@ -55,19 +55,25 @@ function RequestDeleteDialog({ request, onOpenChange }) {
     function handleDelete(e) {
         e.preventDefault();
 
-        deleteRequest(requestData);
+        deleteRequest();
     }
 
     return (
         <>
             <DialogHeader>
-                <DialogTitle>Delete Request - {request.title}</DialogTitle>
-                <DialogDescription>Delete this request?</DialogDescription>
+                <DialogTitle className="text-center">
+                    Delete {request.title}?
+                </DialogTitle>
+                <DialogDescription className="text-md text-center">
+                    This will permanently delete ALL resources, assignments, and data for {request.title}
+                </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-4 py-4 text-center">
                 <div className="grid grid-cols-all items-center gap-4">
                     <p>
-                        You are about to delete this request. Are you sure?
+                        <strong>
+                            This cannot be undone.
+                        </strong>
                     </p>
                 </div>
             </div>
@@ -75,7 +81,8 @@ function RequestDeleteDialog({ request, onOpenChange }) {
                 <button
                     className="button-primary bg-red-500"
                     type="button"
-                    onClick={() => {
+                    onClick={(e) => {
+                        handleDelete(e);
                         onOpenChange(false);
                     }}
                 >

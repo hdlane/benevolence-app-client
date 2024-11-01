@@ -1,35 +1,32 @@
-import { Button } from "@/components/ui/button";
+import React from "react";
 import {
-    Dialog,
-    DialogContent,
     DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import createApi from "@/lib/api";
 
 interface RequestData {
-    id: number;
-    status: string;
+    request: {
+        id: number;
+        status: string;
+    },
 }
 
-function RequestArchiveDialog({ request }) {
+function RequestArchiveDialog({ request, onOpenChange }) {
     const navigate = useNavigate();
     const { toast } = useToast();
-    const [dialogOpen, setDialogOpen] = useState(false);
 
-    async function putRequestData(requestData: RequestData) {
+    async function putRequestData(request_data: RequestData) {
         const api = createApi({ endpoint: `/requests/${request.id}` });
         const controller = new AbortController();
 
         try {
             const response = await api.put({
-                body: { requestData },
+                body: request_data,
                 controller: controller,
             });
             const json = await response.json();
@@ -67,8 +64,10 @@ function RequestArchiveDialog({ request }) {
         e.preventDefault();
 
         const requestData = {
-            id: request.id,
-            status: "Archived",
+            request: {
+                id: request.id,
+                status: "Archived",
+            },
         }
 
         putRequestData(requestData);
@@ -77,8 +76,11 @@ function RequestArchiveDialog({ request }) {
     return (
         <>
             <DialogHeader>
-                <DialogTitle>Archive Request - {request.title}</DialogTitle>
-                <DialogDescription>Archive this request?</DialogDescription>
+                <DialogTitle>Archive {request.title}?</DialogTitle>
+                <DialogDescription className="text-md">Archive {request.title} if you want to remove its listing but
+                    keep all the details and assignments for reporting purposes.
+                    This is preferred over completely deleting the request.
+                </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-all items-center gap-4">
@@ -91,8 +93,9 @@ function RequestArchiveDialog({ request }) {
                 <button
                     className="button-primary"
                     type="button"
-                    onClick={() => {
-                        setDialogOpen(false);
+                    onClick={(e) => {
+                        handleArchive(e);
+                        onOpenChange(false);
                     }}
                 >
                     Archive
@@ -101,7 +104,7 @@ function RequestArchiveDialog({ request }) {
                     className="button-outline mt-5 sm:m-0"
                     type="button"
                     onClick={() => {
-                        setDialogOpen(false);
+                        onOpenChange(false);
                     }}
                 >
                     Cancel

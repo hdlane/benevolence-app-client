@@ -1,19 +1,17 @@
-import { Button } from "@/components/ui/button";
+import React from "react";
 import {
     DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import createApi from "@/lib/api";
 
-function RequestDeleteDialog({ request }) {
+function RequestDeleteDialog({ request, onOpenChange }) {
     const navigate = useNavigate();
     const { toast } = useToast();
-    const [dialogOpen, setDialogOpen] = useState(false);
 
     async function deleteRequest() {
         const api = createApi({ endpoint: `/requests/${request.id}` });
@@ -78,7 +76,7 @@ function RequestDeleteDialog({ request }) {
                     className="button-primary bg-red-500"
                     type="button"
                     onClick={() => {
-                        setDialogOpen(false);
+                        onOpenChange(false);
                     }}
                 >
                     Delete
@@ -87,7 +85,7 @@ function RequestDeleteDialog({ request }) {
                     className="button-outline mt-5 sm:m-0"
                     type="button"
                     onClick={() => {
-                        setDialogOpen(false);
+                        onOpenChange(false);
                     }}
                 >
                     Cancel

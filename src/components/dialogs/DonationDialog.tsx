@@ -34,7 +34,7 @@ function DonationDialog({ resource, userId }) {
     const [resourceQuantity, setResourceQuantity] = useState(1);
     const maxQuantity = resource.quantity - resource.assigned;
     const providerQuantity = resource.providers
-        .filter((provider) => provider.id == userId)[0]?.quantity;
+        .find((provider) => provider.id == userId)?.quantity;
     const providerEditMaxQuantity = maxQuantity + providerQuantity;
 
     async function putResourceData(resource_data: ResourceData) {
@@ -96,16 +96,47 @@ function DonationDialog({ resource, userId }) {
             }
         }
 
-        const provider_id = localStorage.getItem("user_id");
         const resourceData = {
             resource_id: resource.id,
-            provider_id: Number(provider_id),
+            provider_id: Number(userId),
             delivery_date_id: resource.delivery_date_id,
             name: resource.name,
             quantity: adjustedQuantity,
         }
 
         putResourceData(resourceData);
+    }
+
+    function handleUnassign(e) {
+        e.preventDefault();
+
+        const providerId = resource.providers.find((provider) => provider.id === Number(userId))?.provider_id;
+        const api = createApi({ endpoint: `/providers/${providerId}` });
+        const controller = new AbortController();
+        async function deleteProvider() {
+            try {
+                const response = await api._delete({ controller: controller })
+                const json = await response.json();
+                if (!response.ok) {
+                    toast({
+                        variant: "destructive",
+                        description: `${json.errors.detail}`
+                    });
+                } else {
+                    toast({
+                        description: "Unassigned from Donation assignment"
+                    });
+                    window.location.reload();
+                }
+            } catch (error) {
+                toast({
+                    variant: "destructive",
+                    description: `${error}`,
+                });
+            }
+        }
+
+        deleteProvider();
     }
 
     function handleIncrement(e) {
@@ -295,8 +326,9 @@ function DonationDialog({ resource, userId }) {
                             <button
                                 className="button-primary"
                                 type="button"
-                                onClick={() => {
+                                onClick={(e) => {
                                     setDialogOpen(false);
+                                    handleUnassign(e);
                                 }}
                             >
                                 Yes, Unassign

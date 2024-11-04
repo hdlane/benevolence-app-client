@@ -27,6 +27,7 @@ export type Donation = {
             id: number | null,
             name: string | null,
             quantity: number | null,
+            provider_id: number | null,
         }
     ],
 }
@@ -43,6 +44,7 @@ export type Meal = {
             id: number | null,
             name: string | null,
             quantity: number | null,
+            provider_id: number | null,
         }
     ],
 }
@@ -59,6 +61,7 @@ export type Service = {
             id: number | null,
             name: string | null,
             quantity: number | null,
+            provider_id: number | null,
         }
     ],
 }

@@ -86,6 +86,38 @@ function ServiceDialog({ resource, userId }) {
         putResourceData(resourceData);
     }
 
+    function handleUnassign(e) {
+        e.preventDefault();
+
+        const providerId = resource.providers.find((provider) => provider.id === Number(userId))?.provider_id;
+        const api = createApi({ endpoint: `/providers/${providerId}` });
+        const controller = new AbortController();
+        async function deleteProvider() {
+            try {
+                const response = await api._delete({ controller: controller })
+                const json = await response.json();
+                if (!response.ok) {
+                    toast({
+                        variant: "destructive",
+                        description: `${json.errors.detail}`
+                    });
+                } else {
+                    toast({
+                        description: "Unassigned from Service assignment"
+                    });
+                    window.location.reload();
+                }
+            } catch (error) {
+                toast({
+                    variant: "destructive",
+                    description: `${error}`,
+                });
+            }
+        }
+
+        deleteProvider();
+    }
+
     function userIdPresent(provider) {
         return provider.id == userId;
     }
@@ -170,11 +202,23 @@ function ServiceDialog({ resource, userId }) {
                             </div>
                         </div>
                         <DialogFooter className="flex-col sm:flex-row">
-                            <button className="button-primary" type="button">Yes, Unassign</button>
-                            <button className="button-outline mt-5 sm:m-0" type="button"
+                            <button
+                                className="button-primary"
+                                type="button"
+                                onClick={(e) => {
+                                    setDialogOpen(false);
+                                    handleUnassign(e);
+                                }}
+                            >
+                                Yes, Unassign
+                            </button>
+                            <button
+                                className="button-outline mt-5 sm:m-0"
+                                type="button"
                                 onClick={() => {
                                     setDialogOpen(false);
-                                }}>
+                                }}
+                            >
                                 Cancel
                             </button>
                         </DialogFooter>

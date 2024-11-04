@@ -53,6 +53,7 @@ function RequestUpdateDonationServiceForm({ request, people }) {
     const [newResourceQuantity, setNewResourceQuantity] = useState(1);
     const [updatedResources, setUpdatedResources] = useState([]);
     const [updatedResourceName, setUpdatedResourceName] = useState("");
+    const [deletedResources, setDeletedResources] = useState([]);
     const resourceNameRef = useRef(null);
     const resourceQuantityRef = useRef(null);
 
@@ -77,7 +78,6 @@ function RequestUpdateDonationServiceForm({ request, people }) {
     });
 
     function onSubmit(values: z.infer<typeof DonationServiceUpdateSchema>) {
-        // TODO: add resource_id to existing resources before PUT
         const resources = {
             new: [
                 ...newResources,
@@ -85,6 +85,9 @@ function RequestUpdateDonationServiceForm({ request, people }) {
             updated: [
                 ...updatedResources,
             ],
+            deleted: [
+                ...deletedResources,
+            ]
         }
 
         const results = {
@@ -104,7 +107,6 @@ function RequestUpdateDonationServiceForm({ request, people }) {
             },
             resources: resources,
         }
-        console.log(results)
 
         async function putRequestData(request_data) {
             const api = createApi({ endpoint: `/requests/${request.id}` });
@@ -305,25 +307,31 @@ function RequestUpdateDonationServiceForm({ request, people }) {
                 )}
                 />
                 <div className="sm:col-span-4 border rounded p-5">
-                    <p className="text-sm font-md mb-5">Unchanged Resources:</p>
-                    {resources.map((resource) => (
-                        <ResourceItem
-                            key={resource.id}
-                            resource={resource}
-                            form={form}
-                            updatedResourceName={updatedResourceName}
-                            setUpdatedResourceName={setUpdatedResourceName}
-                            setResources={setResources}
-                            updatedResources={updatedResources}
-                            setUpdatedResources={setUpdatedResources}
-                        />
-                    ))}
+                    {resources.length > 0 ? (
+                        <>
+                            <p className="text-sm font-md mb-5">Unchanged Resources:</p>
+                            {resources.map((resource) => (
+                                <ResourceItem
+                                    key={resource.id}
+                                    resource={resource}
+                                    form={form}
+                                    updatedResourceName={updatedResourceName}
+                                    setUpdatedResourceName={setUpdatedResourceName}
+                                    setResources={setResources}
+                                    updatedResources={updatedResources}
+                                    setUpdatedResources={setUpdatedResources}
+                                    deletedResources={deletedResources}
+                                    setDeletedResources={setDeletedResources}
+                                />
+                            ))}
+                        </>
+                    ) : null}
                     {newResources.length > 0 ? (
                         <>
                             <p className="text-sm font-md mb-5">New Resources:</p>
-                            {newResources.map((resource, index) => (
+                            {newResources.map((resource) => (
                                 <FormField
-                                    key={index}
+                                    key={resource.id}
                                     control={form.control}
                                     name="resources"
                                     render={() => {
@@ -358,9 +366,9 @@ function RequestUpdateDonationServiceForm({ request, people }) {
                     {updatedResources.length > 0 ? (
                         <>
                             <p className="text-sm font-md mb-5">Updated Resources:</p>
-                            {updatedResources.map((resource, index) => (
+                            {updatedResources.map((resource) => (
                                 <FormField
-                                    key={index}
+                                    key={resource.id}
                                     control={form.control}
                                     name="resources"
                                     render={() => {
@@ -370,7 +378,6 @@ function RequestUpdateDonationServiceForm({ request, people }) {
                                                     <FormControl>
                                                         <Button variant={"destructive"} className="button-primary h-3 w-3 p-3 mr-5" type="button" onClick={(e) => {
                                                             e.preventDefault();
-                                                            // TODO: handle delete later
                                                             const newUpdatedResources = setResources(prev => [
                                                                 ...prev,
                                                                 resource,
@@ -386,7 +393,48 @@ function RequestUpdateDonationServiceForm({ request, people }) {
                                                         type="text"
                                                         disabled
                                                         defaultValue={resource.name}
-                                                    // TODO: handle update
+                                                    />
+                                                    <Input disabled type="number" className="w-12 ml-5" defaultValue={resource.quantity} />
+                                                    <hr />
+                                                </FormItem>
+                                            </div>
+                                        )
+                                    }}
+                                />
+                            ))}
+                        </>
+                    ) : null}
+                    {deletedResources.length > 0 ? (
+                        <>
+                            <p className="text-sm font-md mb-5">Deleted Resources:</p>
+                            {deletedResources.map((resource) => (
+                                <FormField
+                                    key={resource.id}
+                                    control={form.control}
+                                    name="resources"
+                                    render={() => {
+                                        return (
+                                            <div className="space-y-4">
+                                                <FormItem className="flex items-center my-4">
+                                                    <FormControl>
+                                                        <Button variant={"destructive"} className="button-primary h-3 w-3 p-3 mr-5" type="button" onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const newResources = setResources(prev => [
+                                                                ...prev,
+                                                                resource,
+                                                            ])
+                                                            const updatedDeletedResources = setDeletedResources(prev => prev.filter((obj) => obj != resource))
+                                                            form.setValue("deleted_resources", updatedDeletedResources);
+                                                            form.setValue("resources", newResources);
+                                                        }}
+                                                        >
+                                                            <span>X</span>
+                                                        </Button>
+                                                    </FormControl>
+                                                    <Input
+                                                        type="text"
+                                                        disabled
+                                                        defaultValue={resource.name}
                                                     />
                                                     <Input disabled type="number" className="w-12 ml-5" defaultValue={resource.quantity} />
                                                     <hr />

@@ -11,9 +11,9 @@ import { Check } from "lucide-react";
 function ResourceItem({
     resource, setResources, updatedResources,
     setUpdatedResources, updatedResourceName,
-    setUpdatedResourceName, form
+    setUpdatedResourceName, deletedResources,
+    setDeletedResources, form
 }) {
-    // const [updatedResources, setUpdatedResources] = useState([]);
     const [isEnabled, setIsEnabled] = useState(false);
 
     return (
@@ -28,12 +28,17 @@ function ResourceItem({
                             <FormControl>
                                 <Button variant={"destructive"} className="button-primary h-3 w-3 p-3 mr-5" type="button" onClick={(e) => {
                                     e.preventDefault();
-                                    // TODO: handle delete later
-                                    // setResources(prev => prev.push(resource))
-                                    // setUpdatedResources(prev => prev.filter((obj) => obj.id != resource.id))
-                                    // const updatedResources = resources.filter((obj) => obj != resource);
-                                    // setResources(updatedResources);
-                                    // form.setValue("resources", updatedResources);
+                                    setResources(prev => prev.filter((obj) => obj != resource))
+                                    const newDeletedResources = [
+                                        ...deletedResources,
+                                        {
+                                            name: resource.name,
+                                            quantity: resource.quantity,
+                                            id: resource.id,
+                                        }
+                                    ]
+                                    setDeletedResources(newDeletedResources)
+                                    form.setValue("deleted_resources", newDeletedResources);
                                 }}
                                 >
                                     <span>X</span>
@@ -46,7 +51,6 @@ function ResourceItem({
                                     setIsEnabled(true);
                                     setUpdatedResourceName(e.target.value);
                                 }}
-                            // TODO: handle update
                             />
                             <Input disabled type="number" className="w-12 ml-5"
                                 defaultValue={resource.quantity}

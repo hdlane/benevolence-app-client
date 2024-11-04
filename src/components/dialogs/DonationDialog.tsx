@@ -34,7 +34,7 @@ function DonationDialog({ resource, userId }) {
     const [resourceQuantity, setResourceQuantity] = useState(1);
     const maxQuantity = resource.quantity - resource.assigned;
     const providerQuantity = resource.providers
-        .filter((provider) => provider.id == userId)[0]?.quantity;
+        .find((provider) => provider.id == userId)?.quantity;
     const providerEditMaxQuantity = maxQuantity + providerQuantity;
 
     async function putResourceData(resource_data: ResourceData) {
@@ -126,6 +126,7 @@ function DonationDialog({ resource, userId }) {
                     toast({
                         description: "Unassigned from Donation assignment"
                     });
+                    window.location.reload();
                 }
             } catch (error) {
                 toast({

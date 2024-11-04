@@ -105,6 +105,7 @@ function ServiceDialog({ resource, userId }) {
                     toast({
                         description: "Unassigned from Service assignment"
                     });
+                    window.location.reload();
                 }
             } catch (error) {
                 toast({

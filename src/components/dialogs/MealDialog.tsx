@@ -106,6 +106,7 @@ function MealDialog({ resource, userId }) {
                     toast({
                         description: "Unassigned from Meal"
                     });
+                    window.location.reload();
                 }
             } catch (error) {
                 toast({

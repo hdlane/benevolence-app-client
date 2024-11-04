@@ -35,6 +35,8 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/app/hooks";
 import { useToast } from "@/hooks/use-toast";
 import createApi from "@/lib/api";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
+import { DialogTrigger } from "@radix-ui/react-dialog";
 
 function RequestNewMealForm({ requestType, people }) {
     const dispatch = useAppDispatch();
@@ -48,6 +50,7 @@ function RequestNewMealForm({ requestType, people }) {
     // TODO: make popovers close after selecting date
     const [dateRangeFrom, setDateRangeFrom] = useState(false);
     const [dateRangeTo, setDateRangeTo] = useState(false);
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const today = new Date(new Date().setHours(0, 0, 0, 0));
     const endDateRange = new Date(new Date().setHours(0, 0, 0, 0));
@@ -169,7 +172,7 @@ function RequestNewMealForm({ requestType, people }) {
 
     return <>
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 pt-4">
+            <form id="meal-form" onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 pt-4">
                 <FormField control={form.control} name="title" render={({ field }) => (
                     <FormItem className="sm:col-span-full">
                         <FormLabel>Title</FormLabel>
@@ -283,9 +286,6 @@ function RequestNewMealForm({ requestType, people }) {
                         control={form.control} name="date_range.start_date" render={({ field }) => (
                             <FormItem className="sm:col-span-3">
                                 <FormLabel>Start Date</FormLabel>
-                                {
-                                    // TODO: make popover close after date selection
-                                }
                                 <Popover open={dateRangeFrom} onOpenChange={setDateRangeFrom}>
                                     <PopoverTrigger asChild>
                                         <FormControl>
@@ -440,7 +440,68 @@ function RequestNewMealForm({ requestType, people }) {
                     )}
                     />
                 </div>
-                <button className="button-primary mb-10 col-span-1" type="submit">Submit</button>
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                    <DialogTrigger asChild>
+                        <button
+                            className="button-primary mb-10 col-span-1"
+                            type="button"
+                        >
+                            Submit
+                        </button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>
+                                Confirm Meal Request
+                            </DialogTitle>
+                            <DialogDescription>
+                                Verify dates and delivery days
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-all items-center gap-4">
+                                <p>
+                                    Please confirm the date range and delivery days. You will not be able to update after creating this Meal Request.
+                                </p>
+                                <p>
+                                    Date Range:<br />
+                                    <strong>
+                                        {format(form.getValues("date_range.start_date"), "PP")} to {format(form.getValues("date_range.end_date"), "PP")}
+                                    </strong>
+                                </p>
+                                <p>
+                                    Delivery Days:<br />
+                                    <strong>
+                                        {form.getValues("selected_days")!.sort().map((selected_day) => (
+                                            <p>{days.filter((day) => day.id == selected_day)[0].label}</p>
+                                        ))}
+                                    </strong>
+                                </p>
+                            </div>
+                        </div>
+                        <DialogFooter className="flex-col sm:flex-row">
+                            <button
+                                className="button-primary"
+                                type="submit"
+                                form="meal-form"
+                                onClick={() => {
+                                    setDialogOpen(false);
+                                }}
+                            >
+                                Submit
+                            </button>
+                            <button
+                                className="button-outline mt-5 sm:m-0"
+                                type="button"
+                                onClick={() => {
+                                    setDialogOpen(false);
+                                }}
+                            >
+                                Cancel
+                            </button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </form>
         </Form >
     </>

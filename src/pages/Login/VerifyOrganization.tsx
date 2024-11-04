@@ -69,7 +69,7 @@ function VerifyOrganization() {
     }, []);
 
     async function handleSelect(organization_id: number, organization_name: string) {
-        const api = createApi({ endpoint: "/login/verify/organization" })
+        const api = createApi({ endpoint: `/login/verify/organization?token=${token}` })
         const controller = new AbortController();
         dispatch(setOrganizationId({ id: organization_id }));
         dispatch(setOrganizationName({ name: organization_name }));

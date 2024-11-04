@@ -455,7 +455,7 @@ function RequestNewMealForm({ requestType, people }) {
                                 Confirm Meal Request
                             </DialogTitle>
                             <DialogDescription className="text-center">
-                                Verify dates and delivery days
+                                Verify date range and delivery days
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4 text-center">

@@ -451,14 +451,14 @@ function RequestNewMealForm({ requestType, people }) {
                     </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>
+                            <DialogTitle className="text-center">
                                 Confirm Meal Request
                             </DialogTitle>
-                            <DialogDescription>
+                            <DialogDescription className="text-center">
                                 Verify dates and delivery days
                             </DialogDescription>
                         </DialogHeader>
-                        <div className="grid gap-4 py-4">
+                        <div className="grid gap-4 py-4 text-center">
                             <div className="grid grid-cols-all items-center gap-4">
                                 <p>
                                     Please confirm the date range and delivery days. You will not be able to update after creating this Meal Request.
@@ -469,14 +469,14 @@ function RequestNewMealForm({ requestType, people }) {
                                         {format(form.getValues("date_range.start_date"), "PP")} to {format(form.getValues("date_range.end_date"), "PP")}
                                     </strong>
                                 </p>
-                                <p>
+                                <div>
                                     Delivery Days:<br />
                                     <strong>
-                                        {form.getValues("selected_days")!.sort().map((selected_day) => (
-                                            <p>{days.filter((day) => day.id == selected_day)[0].label}</p>
+                                        {form.getValues("selected_days")!.sort().map((selected_day, index) => (
+                                            <div key={index}>{days.filter((day) => day.id == selected_day)[0].label}</div>
                                         ))}
                                     </strong>
-                                </p>
+                                </div>
                             </div>
                         </div>
                         <DialogFooter className="flex-col sm:flex-row">

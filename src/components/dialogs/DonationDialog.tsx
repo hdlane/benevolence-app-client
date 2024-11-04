@@ -215,7 +215,7 @@ function DonationDialog({ resource, userId }) {
                                     max={resource.quantity - resource.assigned}
                                     className="max-w-[50px] text-center"
                                     value={resourceQuantity}
-                                    onChange={(e) => setResourceQuantity(e.target.value)}
+                                    onChange={(e) => setResourceQuantity(Number(e.target.value))}
                                     onSubmit={(e) => {
                                         setDialogOpen(false);
                                         handleSave(e);
@@ -274,7 +274,7 @@ function DonationDialog({ resource, userId }) {
                                         (providerQuantity ? providerQuantity : 0)}
                                     className="max-w-[50px] text-center"
                                     value={resourceQuantity}
-                                    onChange={(e) => setResourceQuantity(e.target.value)}
+                                    onChange={(e) => setResourceQuantity(Number(e.target.value))}
                                     onSubmit={(e) => {
                                         setDialogOpen(false);
                                         handleSave(e);

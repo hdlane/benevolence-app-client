@@ -63,7 +63,7 @@ function VerifyPerson() {
     }, []);
 
     async function handleSelect(person_id: number) {
-        const api = createApi({ endpoint: "/login/verify/person" });
+        const api = createApi({ endpoint: `/login/verify/person?token=${token}` });
         const controller = new AbortController();
 
         try {

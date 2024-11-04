@@ -329,9 +329,9 @@ function RequestUpdateDonationServiceForm({ request, people }) {
                     {newResources.length > 0 ? (
                         <>
                             <p className="text-sm font-md mb-5">New Resources:</p>
-                            {newResources.map((resource) => (
+                            {newResources.map((resource, index) => (
                                 <FormField
-                                    key={resource.id}
+                                    key={index}
                                     control={form.control}
                                     name="resources"
                                     render={() => {

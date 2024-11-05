@@ -6,15 +6,16 @@ import LogoutDialog from "./dialogs/LogoutDialog";
 
 function Navbar() {
     const [dialogOpen, setDialogOpen] = useState(false);
+    const isAdmin = (localStorage.getItem("is_admin") === "true");
 
     return <nav className="navbar">
-        <a href="/" className="flex">
+        <Link to="/" className="flex">
             <img src={logo} alt="Logo" id="logo" />
             <span className="text-2xl">benevolence</span>
-        </a>
+        </Link>
         <div className="navbar-links">
             <Link to="/">Home</Link>
-            <Link to="/admin">Admin</Link>
+            {isAdmin ? <Link to="/admin">Admin</Link> : null}
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger>
                     <a href="#">Logout</a>
@@ -24,7 +25,7 @@ function Navbar() {
                 </DialogContent>
             </Dialog>
         </div>
-    </nav>
+    </nav >
 }
 
 export default Navbar;

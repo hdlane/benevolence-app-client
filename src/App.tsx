@@ -1,5 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import AdminRoutes from "./components/AdminRoutes";
+import ProtectedRoutes from "./components/ProtectedRoutes";
 import Navbar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
@@ -16,15 +18,19 @@ function App() {
         <>
             <Navbar />
             <Routes>
-                <Route path="/" element={<Dashboard />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/login/verify" element={<Verify />} />
                 <Route path="/login/verify/organization" element={<VerifyOrganization />} />
                 <Route path="/login/verify/person" element={<VerifyPerson />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/requests/:requestId" element={<RequestDetails />} />
-                <Route path="/requests/:requestId/edit" element={<RequestUpdate />} />
-                <Route path="/requests/new" element={<RequestCreate />} />
+                <Route element={<ProtectedRoutes />}>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/requests/:requestId" element={<RequestDetails />} />
+                </Route>
+                <Route element={<AdminRoutes />}>
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/requests/:requestId/edit" element={<RequestUpdate />} />
+                    <Route path="/requests/new" element={<RequestCreate />} />
+                </Route>
             </Routes>
         </>
     )

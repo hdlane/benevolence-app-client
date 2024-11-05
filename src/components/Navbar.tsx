@@ -1,41 +1,11 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
-import { useAppDispatch } from "@/app/hooks";
-import createApi from "@/lib/api";
-import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import LogoutDialog from "./dialogs/LogoutDialog";
 
 function Navbar() {
-    const navigate = useNavigate();
-    const { toast } = useToast();
-
-    async function handleLogout() {
-        const controller = new AbortController();
-        const api = createApi({ endpoint: "/logout" })
-
-        try {
-            const response = await api._delete({ controller: controller });
-            const json = await response.json();
-
-            if (!response.ok) {
-                toast({
-                    variant: "destructive",
-                    description: `${json.errors.detail}`
-                });
-            } else {
-                localStorage.removeItem("user_id");
-                toast({
-                    description: "Successfully logged out!"
-                });
-                navigate("/login");
-            }
-        } catch (error) {
-            toast({
-                variant: "destructive",
-                description: `${error}`,
-            });
-        }
-    }
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     return <nav className="navbar">
         <a href="/" className="flex">
@@ -44,10 +14,15 @@ function Navbar() {
         </a>
         <div className="navbar-links">
             <Link to="/">Home</Link>
-            <Link to="/login">Login</Link>
             <Link to="/admin">Admin</Link>
-            <Link to="/requests">Requests</Link>
-            <Link to="#" onClick={handleLogout}>Logout</Link>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogTrigger>
+                    <a href="#">Logout</a>
+                </DialogTrigger>
+                <DialogContent>
+                    <LogoutDialog onOpenChange={setDialogOpen} />
+                </DialogContent>
+            </Dialog>
         </div>
     </nav>
 }

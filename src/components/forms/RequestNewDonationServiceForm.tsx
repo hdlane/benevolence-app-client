@@ -30,14 +30,12 @@ import { Input } from "@/components/ui/input"
 import { CalendarIcon, Plus } from "lucide-react";
 import TimePicker from "../TimePicker";
 import { Textarea } from "../ui/textarea";
-import { useAppDispatch } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 import { DonationServiceSchema } from "@/lib/schemas/donationServiceSchema";
 import { useToast } from "@/hooks/use-toast";
 import createApi from "@/lib/api";
 
 function RequestNewDonationServiceForm({ requestType, people }) {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { toast } = useToast();
 

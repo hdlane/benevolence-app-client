@@ -6,7 +6,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useAppDispatch } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import RequestNewDonationServiceForm from "./forms/RequestNewDonationServiceForm";
@@ -15,7 +14,6 @@ import { Label } from "./ui/label";
 import createApi from "@/lib/api";
 
 function RequestNewForm() {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { toast } = useToast();
 

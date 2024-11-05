@@ -32,14 +32,12 @@ import { Textarea } from "../ui/textarea";
 import { Checkbox } from "../ui/checkbox";
 import { MealSchema } from "@/lib/schemas/mealSchema";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "@/app/hooks";
 import { useToast } from "@/hooks/use-toast";
 import createApi from "@/lib/api";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 
 function RequestNewMealForm({ requestType, people }) {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { toast } = useToast();
 

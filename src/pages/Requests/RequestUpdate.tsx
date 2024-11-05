@@ -13,8 +13,6 @@ function RequestUpdate() {
     const { toast } = useToast();
     const { requestId } = useParams();
     const request = useAppSelector((state) => state.request.request);
-    // TODO: require is_admin
-    // when created, show message and redirect to home
 
     useEffect(() => {
         const controller = new AbortController();

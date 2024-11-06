@@ -27,6 +27,7 @@ function AdminRoutes() {
                     setIsAdmin(true);
                 }
             } else {
+                setIsAdmin(false);
                 const json = await response.json();
                 toast({
                     variant: "destructive",

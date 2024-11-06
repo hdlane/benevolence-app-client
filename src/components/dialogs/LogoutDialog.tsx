@@ -31,10 +31,11 @@ function LogoutDialog({ onOpenChange }) {
                 localStorage.removeItem("user_id");
                 localStorage.removeItem("is_admin");
                 localStorage.removeItem("name");
+                localStorage.removeItem("logged_in");
                 toast({
                     description: "Successfully logged out!"
                 });
-                navigate("/login");
+                window.location.href = "http://localhost:5173/login";
             }
         } catch (error) {
             toast({

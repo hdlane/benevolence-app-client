@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import getPermissions from "@/lib/getPermissions";
 import { useToast } from "@/hooks/use-toast";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { setIsAdmin, setIsLoggedIn } from "@/features/users/userSlice";
 
 function AdminRoutes() {
     const { toast } = useToast();
     const location = useLocation();
-    const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
+    const dispatch = useAppDispatch();
+    const isAdmin = useAppSelector((state) => state.user.is_admin);
+    // const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
     // check backend to get permissions and update cookies
     useEffect(() => {
         async function checkPermissions() {
@@ -16,17 +20,20 @@ function AdminRoutes() {
                 localStorage.setItem("is_admin", json.is_admin);
                 localStorage.setItem("user_id", json.id);
                 localStorage.setItem("name", json.name);
-                json.is_admin === true ? setIsAdmin(true) : setIsAdmin(false);
+                localStorage.setItem("logged_in", json.logged_in);
+                dispatch(setIsLoggedIn({ logged_in: json.logged_in }));
+                json.is_admin === true ? dispatch(setIsAdmin({ is_admin: true })) : dispatch(setIsAdmin({ is_admin: false }));
                 if (!json.is_admin) {
-                    setIsAdmin(false);
+                    dispatch(setIsAdmin({ is_admin: false }));
                     toast({
                         variant: "destructive",
                         description: "You must be logged in as an admin to view this page",
                     });
                 } else {
-                    setIsAdmin(true);
+                    dispatch(setIsAdmin({ is_admin: true }));
                 }
             } else {
+                dispatch(setIsAdmin({ is_admin: false }));
                 const json = await response.json();
                 toast({
                     variant: "destructive",
@@ -36,7 +43,7 @@ function AdminRoutes() {
         }
 
         checkPermissions();
-    }, [])
+    }, [isAdmin])
 
     if (isAdmin === undefined) {
         return "Loading"

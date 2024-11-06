@@ -4,21 +4,21 @@
 
 @layer components {
   .button-primary {
-    @apply bg-[#bc6c25] text-white font-semibold py-2 px-4 rounded 
-           hover:bg-[#dbcbb3] focus:outline-none focus:ring-2 
+    @apply bg-[#556b2f] text-white font-semibold py-2 px-4 rounded 
+           hover:bg-[#6e8b3d] focus:outline-none focus:ring-2 
            focus:ring-blue-400 focus:ring-opacity-75;
   }
   .button-outline {
-    @apply border border-[#bc6c25] text-[#bc6c25] font-semibold py-2 px-4 rounded 
-           hover:bg-[#dbcbb3] hover:border-white hover:text-white focus:outline-none focus:ring-2 
+    @apply border border-[#556b2f] text-[#556b2f] font-semibold py-2 px-4 rounded 
+           hover:bg-[#6e8b3d] hover:border-white hover:text-white focus:outline-none focus:ring-2 
            focus:ring-blue-400 focus:ring-opacity-75;
   }
 }
 
 body {
-  --primary-color: #bc6c25;
-  --secondary-color: #dda15e;
-  --tertiary-color: #dbcbb3;
+  --primary-color: #556b2f;/*#bc6c25;*/
+  --secondary-color: #556b2f;/*#dda15e;*/
+  --tertiary-color: #6e8b3d;/*#dbcbb3;*/
   --text-primary-color: #333333;
   --text-secondary-color: #666666;
 
@@ -40,7 +40,7 @@ a {
 }
 
 a:hover {
-  color: var(--tertiary-color);
+  color: #a2cd5a;
 }
 
 #root {
@@ -81,7 +81,7 @@ a:hover {
 }
 
 .navbar-links a:hover {
-  color: var(--primary-color);
+  color: #a2cd5a;
 }
 
 #logo {

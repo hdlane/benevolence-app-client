@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import TitleBar from "@/components/TitleBar";
 import CountDonutChart from "@/components/charts/CountDonutChart";
 import RequestTypeChart from "@/components/charts/RequestTypeChart";
+import SyncDialog from "@/components/dialogs/SyncDialog";
 import { Card } from "@/components/ui/card";
 import createApi from "@/lib/api";
 import { RefreshCcw } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { format } from "date-fns";
 
 const peopleChartConfig = {
     people: {
@@ -35,7 +38,9 @@ interface Overview {
 }
 
 function Admin() {
-    const [overviewDetails, setOverviewDetails] = useState<Overview>()
+    const [overviewDetails, setOverviewDetails] = useState<Overview>();
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [reload, setReload] = useState(false);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -48,14 +53,11 @@ function Admin() {
                 const json = await response.json();
                 setOverviewDetails(json.data);
             }
+            setReload(false);
         }
 
         getOverview();
-    }, [])
-
-    async function handleSync() {
-        console.log("Clicked")
-    }
+    }, [reload])
 
     return <>
         <TitleBar title={"Admin"} />
@@ -64,8 +66,15 @@ function Admin() {
             <Card className="flex flex-col p-5">
                 <p className="text-lg my-5">Sync with Planning Center People to keep our database up-to-date</p>
                 <div className="flex flex-col sm:flex-row items-center gap-2 mb-5">
-                    <button className="button-primary max-w-xs" type="button" onClick={() => handleSync()}>Sync Now <RefreshCcw className="h-4 inline" /></button>
-                    <span className="text-gray-500 text-md">Last Sync: {overviewDetails?.last_sync ? overviewDetails.last_sync : "Never"}</span>
+                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                        <DialogTrigger asChild>
+                            <button className="button-primary max-w-xs" type="button">Sync Now <RefreshCcw className="h-4 inline" /></button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <SyncDialog onOpenChange={setDialogOpen} onReloadChange={setReload} />
+                        </DialogContent>
+                    </Dialog>
+                    <span className="text-gray-500 text-md">Last Sync: {overviewDetails?.last_sync ? format(overviewDetails.last_sync, "Pp") : "Never"}</span>
                 </div>
             </Card>
             <hr className="mb-5" />

@@ -38,7 +38,9 @@ function RequestTypeChart({
                             axisLine={false}
                             tickFormatter={(value) => value}
                         />
-                        <YAxis />
+                        <YAxis
+                            allowDecimals={false}
+                        />
                         <ChartTooltip
                             cursor={false}
                             content={<ChartTooltipContent hideLabel />}

@@ -12,6 +12,7 @@ import VerifyOrganization from "./pages/Login/VerifyOrganization";
 import RequestDetails from "./pages/Requests/RequestDetails";
 import RequestCreate from "./pages/Requests/RequestCreate";
 import RequestUpdate from "./pages/Requests/RequestUpdate";
+import Oauth from "./pages/Oauth";
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                 <Route path="/login/verify" element={<Verify />} />
                 <Route path="/login/verify/organization" element={<VerifyOrganization />} />
                 <Route path="/login/verify/person" element={<VerifyPerson />} />
+                <Route path="/oauth" element={<Oauth />} />
                 <Route element={<ProtectedRoutes />}>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/requests/:requestId" element={<RequestDetails />} />

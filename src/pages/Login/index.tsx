@@ -71,6 +71,10 @@ function Login() {
         }
     }
 
+    async function handleAuthorize() {
+        window.location.href = "http://localhost:3000/api/v1/oauth";
+    }
+
     return <>
         <TitleBar title={"Login"} />
         <div className="content flex items-center justify-center h-full">
@@ -87,7 +91,13 @@ function Login() {
                         required
                         className="border border-gray-300 rounded px-3 py-2 w-full"
                     />
-                    <div className="flex justify-end py-2">
+                    <div className="flex justify-between items-center py-2">
+                        <a
+                            href="#"
+                            onClick={handleAuthorize}
+                        >
+                            Authorize with Planning Center
+                        </a>
                         <button
                             className="button-primary"
                             type="submit"

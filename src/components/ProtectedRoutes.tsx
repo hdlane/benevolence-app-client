@@ -1,3 +1,5 @@
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { setIsAdmin, setIsLoggedIn } from "@/features/users/userSlice";
 import { useToast } from "@/hooks/use-toast";
 import getPermissions from "@/lib/getPermissions";
 import React, { useEffect, useState } from "react";
@@ -6,7 +8,8 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 function ProtectedRoutes() {
     const { toast } = useToast();
     const location = useLocation();
-    const [isAuthorized, setIsAuthorized] = useState<boolean | undefined>(undefined);
+    const dispatch = useAppDispatch();
+    const isLoggedIn = useAppSelector((state) => state.user.logged_in);
     // check backend to get permissions and update cookies
     useEffect(() => {
         async function checkPermissions() {
@@ -16,9 +19,11 @@ function ProtectedRoutes() {
                 localStorage.setItem("is_admin", json.is_admin);
                 localStorage.setItem("user_id", json.id);
                 localStorage.setItem("name", json.name);
-                setIsAuthorized(true);
+                localStorage.setItem("logged_in", json.logged_in);
+                dispatch(setIsLoggedIn({ logged_in: true }));
+                dispatch(setIsAdmin({ is_admin: json.is_admin }));
             } else {
-                setIsAuthorized(false);
+                dispatch(setIsLoggedIn({ logged_in: false }));
                 const json = await response.json();
                 toast({
                     variant: "destructive",
@@ -28,14 +33,14 @@ function ProtectedRoutes() {
         }
 
         checkPermissions();
-    }, [])
+    }, [isLoggedIn])
 
-    if (isAuthorized === undefined) {
+    if (isLoggedIn === undefined) {
         return "Loading"
     }
 
     return (
-        isAuthorized === true ? <Outlet /> : <Navigate to={"/login"} replace state={{ path: location.pathname }} />
+        (localStorage.getItem("logged_in") === "true" || isLoggedIn === true) ? <Outlet /> : <Navigate to={"/login"} replace state={{ path: location.pathname }} />
     )
 }
 

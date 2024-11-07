@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
+import { DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Loader } from "lucide-react";
 import createApi from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
@@ -49,7 +49,7 @@ function OauthDialog({ onOpenChange }) {
             <DialogTitle className="text-center">
                 Authorize Planning Center
             </DialogTitle>
-            <DialogDescription className="text-md text-center">
+            <DialogDescription className="text-md text-center hidden">
                 Complete connection with Planning Center
             </DialogDescription>
         </DialogHeader>
@@ -60,24 +60,26 @@ function OauthDialog({ onOpenChange }) {
                 </div>
                 <div className="grid gap-4 py-4 text-center">
                     <div className="grid grid-cols-all items-center gap-4">
-                        <p>Connecting with Planning Center will:</p>
-                        <ul>
-                            <li>Allow people in your organization to login using their email address</li>
-                            <li>Allow those people to be recipients, coordinators, and providers of benevolence</li>
-                            <li>Allow current PCO People admins to be admins in the app</li>
+                        <p>Connecting with Planning Center will allow:</p>
+                        <ul className="list-disc ml-3">
+                            <li className="text-left">People in your organization can login using their email address</li>
+                            <li className="text-left">People can be recipients, coordinators, and providers of benevolence</li>
+                            <li className="text-left">Current PCO People admins to be admins in the app</li>
                         </ul>
+                        <p className="text-gray-500 text-sm">Information we collect: Name, Email, Phone Number</p>
                     </div>
                 </div>
             </>
         ) : (
             <div className="grid gap-4 py-4 text-center">
                 <div className="grid grid-cols-all items-center gap-4">
-                    <p>Connecting with Planning Center will:</p>
-                    <ul>
-                        <li>Allow people in your organization to login using their email address</li>
-                        <li>Allow those people to be recipients, coordinators, and providers of benevolence</li>
-                        <li>Allow current PCO People admins to be admins in the app</li>
+                    <p>Connecting with Planning Center will allow:</p>
+                    <ul className="list-disc ml-3">
+                        <li className="text-left">People in your organization can login using their email address</li>
+                        <li className="text-left">People can be recipients, coordinators, and providers of benevolence</li>
+                        <li className="text-left">Current PCO People admins to be admins in the app</li>
                     </ul>
+                    <p className="text-gray-500 text-sm">Information we collect: Name, Email, Phone Number</p>
                 </div>
             </div>
         )}

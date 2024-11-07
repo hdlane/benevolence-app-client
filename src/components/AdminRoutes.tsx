@@ -9,8 +9,7 @@ function AdminRoutes() {
     const { toast } = useToast();
     const location = useLocation();
     const dispatch = useAppDispatch();
-    const isAdmin = useAppSelector((state) => state.user.is_admin);
-    // const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
+    const isAdmin = useAppSelector((state) => state.user.is_admin) || (localStorage.getItem("is_admin") === "true");
     // check backend to get permissions and update cookies
     useEffect(() => {
         async function checkPermissions() {

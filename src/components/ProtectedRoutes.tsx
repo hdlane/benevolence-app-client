@@ -2,14 +2,14 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setIsAdmin, setIsLoggedIn } from "@/features/users/userSlice";
 import { useToast } from "@/hooks/use-toast";
 import getPermissions from "@/lib/getPermissions";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 function ProtectedRoutes() {
     const { toast } = useToast();
     const location = useLocation();
     const dispatch = useAppDispatch();
-    const isLoggedIn = useAppSelector((state) => state.user.logged_in);
+    const isLoggedIn = useAppSelector((state) => state.user.logged_in) || (localStorage.getItem("logged_in") === "true");
     // check backend to get permissions and update cookies
     useEffect(() => {
         async function checkPermissions() {
@@ -40,7 +40,7 @@ function ProtectedRoutes() {
     }
 
     return (
-        (localStorage.getItem("logged_in") === "true" || isLoggedIn === true) ? <Outlet /> : <Navigate to={"/login"} replace state={{ path: location.pathname }} />
+        isLoggedIn === true ? <Outlet /> : <Navigate to={"/login"} replace state={{ path: location.pathname }} />
     )
 }
 

@@ -2,11 +2,20 @@ import OauthDialog from "@/components/dialogs/OauthDialog";
 import TitleBar from "@/components/TitleBar";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 function Oauth() {
+    const navigate = useNavigate();
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [searchParams,] = useSearchParams();
+    const code = searchParams.get("code");
 
+    useEffect(() => {
+        if (!code) {
+            navigate("/login");
+        }
+    }, [code])
 
     return <>
         <TitleBar title={"Authorize Planning Center"} />

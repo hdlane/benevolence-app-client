@@ -7,8 +7,8 @@ import { useAppSelector } from "@/app/hooks";
 
 function Navbar() {
     const [dialogOpen, setDialogOpen] = useState(false);
-    const isAdmin = useAppSelector((state) => state.user.is_admin);
-    const isLoggedIn = useAppSelector((state) => state.user.logged_in);
+    const isAdmin = useAppSelector((state) => state.user.is_admin) || (localStorage.getItem("is_admin") === "true");
+    const isLoggedIn = useAppSelector((state) => state.user.logged_in) || (localStorage.getItem("logged_in") === "true");
 
     return <nav className="navbar">
         <Link to="/" className="flex">

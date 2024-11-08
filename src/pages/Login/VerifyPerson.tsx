@@ -79,8 +79,9 @@ function VerifyPerson() {
                     description: `${json.errors.detail}`
                 });
             } else {
-                dispatch(setUser({ id: json.data.id, name: json.data.name, is_admin: json.data.is_admin, logged_in: json.data.logged_in }));
+                dispatch(setUser({ id: json.data.id, organization_name: json.data.organization_name, name: json.data.name, is_admin: json.data.is_admin, logged_in: json.data.logged_in }));
                 localStorage.setItem("user_id", json.data.id);
+                localStorage.setItem("organization_name", json.data.organization_name);
                 localStorage.setItem("name", json.data.name);
                 localStorage.setItem("is_admin", json.data.is_admin);
                 localStorage.setItem("logged_in", json.data.logged_in);

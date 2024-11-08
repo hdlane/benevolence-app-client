@@ -3,6 +3,7 @@ import RequestActions from "./RequestActions";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
+import SyncBanner from "./SyncBanner";
 
 interface TitleBarProps {
     title?: string | null;
@@ -13,6 +14,7 @@ function TitleBar({ title, subTitle = null }: TitleBarProps) {
     const is_admin = (localStorage.getItem("is_admin") === "true");
     const location = useLocation();
     const navigate = useNavigate();
+    const syncedAt = localStorage.getItem("synced_at");
 
     return <>
         <div className="title-bar flex justify-between">
@@ -35,6 +37,11 @@ function TitleBar({ title, subTitle = null }: TitleBarProps) {
                 )
             }
         </div>
+        {
+            syncedAt === "null" ? (
+                <SyncBanner />
+            ) : null
+        }
     </>
 }
 

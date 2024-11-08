@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import TitleBar from "@/components/TitleBar";
-import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "@/app/hooks";
 import { z } from "zod";
 import createApi from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
 function Login() {
     const { toast } = useToast();
-
+    const isLoggedIn = useAppSelector((state) => state.user.logged_in) || (localStorage.getItem("logged_in") === "true");
     const [email, setEmail] = useState<string>("");
 
     const submitButton = document.getElementById("submit-button");
@@ -71,6 +71,10 @@ function Login() {
         }
     }
 
+    async function handleAuthorize() {
+        window.location.href = "http://localhost:3000/api/v1/oauth";
+    }
+
     return <>
         <TitleBar title={"Login"} />
         <div className="content flex items-center justify-center h-full">
@@ -87,7 +91,17 @@ function Login() {
                         required
                         className="border border-gray-300 rounded px-3 py-2 w-full"
                     />
-                    <div className="flex justify-end py-2">
+                    <div className="flex justify-between items-center py-2">
+                        {
+                            !isLoggedIn ? (
+                                <a
+                                    href="#"
+                                    onClick={handleAuthorize}
+                                >
+                                    Authorize with Planning Center
+                                </a>
+                            ) : null
+                        }
                         <button
                             className="button-primary"
                             type="submit"

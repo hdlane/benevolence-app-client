@@ -17,6 +17,7 @@ function AdminRoutes() {
             if (response.ok) {
                 const json = await response.json();
                 localStorage.setItem("is_admin", json.is_admin);
+                localStorage.setItem("organization_name", json.organization_name);
                 localStorage.setItem("user_id", json.id);
                 localStorage.setItem("name", json.name);
                 localStorage.setItem("logged_in", json.logged_in);

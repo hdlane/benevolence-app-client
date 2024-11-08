@@ -29,9 +29,11 @@ function LogoutDialog({ onOpenChange }) {
                 });
             } else {
                 localStorage.removeItem("user_id");
+                localStorage.removeItem("organization_name");
                 localStorage.removeItem("is_admin");
                 localStorage.removeItem("name");
                 localStorage.removeItem("logged_in");
+                localStorage.removeItem("synced_at");
                 toast({
                     description: "Successfully logged out!"
                 });

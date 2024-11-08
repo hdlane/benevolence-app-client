@@ -18,8 +18,10 @@ function ProtectedRoutes() {
                 const json = await response.json();
                 localStorage.setItem("is_admin", json.is_admin);
                 localStorage.setItem("user_id", json.id);
+                localStorage.setItem("organization_name", json.organization_name);
                 localStorage.setItem("name", json.name);
                 localStorage.setItem("logged_in", json.logged_in);
+                localStorage.setItem("synced_at", json.synced_at);
                 dispatch(setIsLoggedIn({ logged_in: true }));
                 dispatch(setIsAdmin({ is_admin: json.is_admin }));
             } else {

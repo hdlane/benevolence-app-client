@@ -4,6 +4,7 @@ import { DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../u
 import { Loader } from "lucide-react";
 import createApi from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "../ui/button";
 
 function OauthDialog({ onOpenChange }) {
     const navigate = useNavigate();
@@ -27,6 +28,11 @@ function OauthDialog({ onOpenChange }) {
                     description: "Authorization Complete! Login with your admin email address and perform first sync",
                 });
                 navigate("/login");
+            } else if (response.status == 409) {
+                toast({
+                    description: `${json.errors.detail}`,
+                    action: <button className="button-primary" onClick={() => navigate("/login")}>Login</button>
+                });
             } else {
                 toast({
                     variant: "destructive",

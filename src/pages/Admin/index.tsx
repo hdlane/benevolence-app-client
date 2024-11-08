@@ -8,6 +8,7 @@ import createApi from "@/lib/api";
 import { RefreshCcw } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { format } from "date-fns";
+import { useAppSelector } from "@/app/hooks";
 
 const peopleChartConfig = {
     people: {
@@ -41,6 +42,7 @@ function Admin() {
     const [overviewDetails, setOverviewDetails] = useState<Overview>();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [reload, setReload] = useState(false);
+    const organizationName = useAppSelector((state) => state.user.organization_name) || localStorage.getItem("organization_name");
 
     useEffect(() => {
         const controller = new AbortController();
@@ -59,10 +61,14 @@ function Admin() {
         getOverview();
     }, [reload])
 
+    async function handleAuthorize() {
+        window.location.href = "http://localhost:3000/api/v1/oauth";
+    }
+
     return <>
         <TitleBar title={"Admin"} />
         <div className="content">
-            <p className="text-xl font-bold my-5">Overview of Organization</p>
+            <p className="text-xl font-bold my-5">Overview of Organization {organizationName ? ` - ${organizationName}` : null}</p>
             <Card className="flex flex-col p-5">
                 <p className="text-lg my-5">Sync with Planning Center People to keep our database up-to-date</p>
                 <div className="flex flex-col sm:flex-row items-center gap-2 mb-5">
@@ -75,6 +81,15 @@ function Admin() {
                         </DialogContent>
                     </Dialog>
                     <span className="text-gray-500 text-md">Last Sync: {overviewDetails?.last_sync ? format(overviewDetails.last_sync, "Pp") : "Never"}</span>
+                </div>
+                <div>
+                    <p className="text-gray-500">Having issues syncing? Re-authorize the Benevolence App with Planning Center</p>
+                    <a
+                        href="#"
+                        onClick={handleAuthorize}
+                    >
+                        Authorize with Planning Center
+                    </a>
                 </div>
             </Card>
             <hr className="mb-5" />

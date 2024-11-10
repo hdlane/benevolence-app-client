@@ -33,7 +33,6 @@ function DashboardDataTable<TData, TValue>({
     data,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([{ id: "start_date", desc: false }]);
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
     const table = useReactTable({
         data,
@@ -42,11 +41,9 @@ function DashboardDataTable<TData, TValue>({
         getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
-        onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         state: {
             sorting,
-            columnFilters,
         },
     })
 
@@ -55,7 +52,7 @@ function DashboardDataTable<TData, TValue>({
             <div className="flex items-center justify-between py-4">
                 <Select defaultValue="Filter" onValueChange={(value) => {
                     if (value == "View All") {
-                        setColumnFilters([])
+                        table.getColumn("request_type")?.setFilterValue(null)
                     } else {
                         table.getColumn("request_type")?.setFilterValue(value)
                     }

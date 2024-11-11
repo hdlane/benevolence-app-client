@@ -74,7 +74,11 @@ function Admin() {
                 <div className="flex flex-col sm:flex-row items-center gap-2 mb-5">
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                         <DialogTrigger asChild>
-                            <button className="button-primary max-w-xs" type="button">Sync Now <RefreshCcw className="h-4 inline" /></button>
+                            <button
+                                className="button-primary max-w-xs"
+                                type="button">
+                                Sync Now <RefreshCcw className="h-4 inline" />
+                            </button>
                         </DialogTrigger>
                         <DialogContent>
                             <SyncDialog onOpenChange={setDialogOpen} onReloadChange={setReload} />
@@ -101,7 +105,7 @@ function Admin() {
                     dataKey="people"
                     title="People Count"
                     description="People for Organization"
-                    label="People"
+                    label={overviewDetails?.people === 1 ? "Person" : "People"}
                     count={overviewDetails?.people}
                 />
                 <CountDonutChart
@@ -111,7 +115,7 @@ function Admin() {
                     dataKey="requests"
                     title="Total Requests"
                     description="Requests for Organization"
-                    label="Requests"
+                    label={overviewDetails?.requests === 1 ? "Request" : "Requests"}
                     count={overviewDetails?.requests}
                 />
                 <CountDonutChart
@@ -121,7 +125,7 @@ function Admin() {
                     dataKey="unfulfilled"
                     title="Unfulfilled Requests"
                     description="Unfulfilled Requests for Organization"
-                    label="Requests"
+                    label={overviewDetails?.unfulfilled === 1 ? "Request" : "Requests"}
                     count={overviewDetails?.unfulfilled}
                 />
                 <RequestTypeChart

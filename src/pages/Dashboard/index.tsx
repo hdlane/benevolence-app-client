@@ -56,7 +56,7 @@ function Dashboard() {
     return <>
         <TitleBar title={"Dashboard"} />
         <div className="content">
-            <h2 className="m-5 text-xl">{requests ? `${requests.length} active requests` : "Loading..."}</h2>
+            <h2 className="m-5 text-xl">{requests ? `${requests.length} Request${requests.length !== 1 ? "s" : ""}` : "Loading..."}</h2>
             <hr />
             {requests ? <DashboardDataTable columns={requestColumns} data={requests} /> : <p>Loading...</p>}
         </div>

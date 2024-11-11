@@ -40,8 +40,8 @@ function RequestUpdateDonationServiceForm({ request, people }) {
     const navigate = useNavigate();
     const { toast } = useToast();
 
-    const [selectedRecipient, setSelectedRecipient] = useState(people.filter((person) => person.id == request.recipient_id)[0]);
-    const [selectedCoordinator, setSelectedCoordinator] = useState(people.filter((person) => person.id == request.coordinator_id)[0]);
+    const [selectedRecipient, setSelectedRecipient] = useState(people.find((person) => person.id == request.recipient_id));
+    const [selectedCoordinator, setSelectedCoordinator] = useState(people.find((person) => person.id == request.coordinator_id));
     // TODO: make popovers close after selecting date
     const [openRecipientSearch, setOpenRecipientSearch] = useState(false);
     const [openCoordinatorSearch, setOpenCoordinatorSearch] = useState(false);

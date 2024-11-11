@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -22,6 +22,11 @@ import {
 
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAppDispatch } from "@/app/hooks";
+import createApi from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { setRequests } from "@/features/requests/requestsSlice";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -32,7 +37,11 @@ function DashboardDataTable<TData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const { toast } = useToast();
     const [sorting, setSorting] = useState<SortingState>([{ id: "start_date", desc: false }]);
+    const [view, setView] = useState("Past");
 
     const table = useReactTable({
         data,
@@ -47,9 +56,53 @@ function DashboardDataTable<TData, TValue>({
         },
     })
 
+    async function handleViewChange() {
+        const controller = new AbortController();
+        let endpoint = "";
+
+        view === "Current" ? setView("Past") : setView("Current");
+
+        if (view === "Past") {
+            endpoint = "/requests/archive";
+        } else {
+            endpoint = "/requests/current";
+        }
+        const api = createApi({ endpoint: endpoint });
+
+        try {
+            if (endpoint === "") {
+                return
+            }
+            const response = await api.get({ controller: controller });
+            const json = await response.json();
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    toast({
+                        variant: "destructive",
+                        description: `${json.errors.detail}`
+                    });
+                    navigate("/login");
+                }
+                toast({
+                    variant: "destructive",
+                    description: `${json.errors.detail}`
+                });
+            } else {
+                dispatch(setRequests(json.data));
+            }
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                description: `${error}`,
+            });
+        }
+    }
+
+
     return (
         <div>
-            <div className="flex items-center justify-between py-4">
+            <div className="flex flex-col sm:flex-row items-left sm:items-center justify-between gap-4 py-4">
                 <Select defaultValue="Filter" onValueChange={(value) => {
                     if (value == "View All") {
                         table.getColumn("request_type")?.setFilterValue(null)
@@ -58,7 +111,7 @@ function DashboardDataTable<TData, TValue>({
                     }
                 }}
                 >
-                    <SelectTrigger className="max-w-xs">
+                    <SelectTrigger className="sm:max-w-xs">
                         <SelectValue defaultValue={"Filter"}>
                             {(table.getColumn("request_type")?.getFilterValue() as string) ?? "Filter"}
                         </SelectValue>
@@ -71,12 +124,12 @@ function DashboardDataTable<TData, TValue>({
                     </SelectContent>
                 </Select>
                 <Input
+                    className="sm:max-w-sm"
                     placeholder="Search"
                     value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
                         table.getColumn("title")?.setFilterValue(event.target.value)
                     }
-                    className="max-w-sm"
                 />
             </div>
             <div className="rounded-md border">
@@ -123,21 +176,26 @@ function DashboardDataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
-                <button
-                    className="button-primary"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                >
-                    Previous
-                </button>
-                <button
-                    className="button-primary"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                >
-                    Next
-                </button>
+            <div className="flex flex-col sm:flex-row items-left sm:items-center justify-between gap-4 py-5">
+                <div>
+                    <a href="#" onClick={handleViewChange}>View {view}</a>
+                </div>
+                <div className="flex gap-4">
+                    <button
+                        className="button-primary"
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        Previous
+                    </button>
+                    <button
+                        className="button-primary"
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
         </div>
     )

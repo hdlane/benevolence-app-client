@@ -16,7 +16,7 @@ function Dashboard() {
 
     useEffect(() => {
         const controller = new AbortController();
-        const api = createApi({ endpoint: "/requests" });
+        const api = createApi({ endpoint: "/requests/current" });
 
         async function getData() {
             try {

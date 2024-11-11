@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
+import NotFound from "./pages/NotFound";
 import Verify from "./pages/Login/Verify";
 import VerifyPerson from "./pages/Login/VerifyPerson";
 import VerifyOrganization from "./pages/Login/VerifyOrganization";
@@ -19,6 +20,7 @@ function App() {
         <>
             <Navbar />
             <Routes>
+                <Route path="*" element={<NotFound />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/login/verify" element={<Verify />} />
                 <Route path="/login/verify/organization" element={<VerifyOrganization />} />

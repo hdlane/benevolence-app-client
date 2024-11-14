@@ -60,6 +60,7 @@ function RequestUpdateMealForm({ request, people }) {
     function onSubmit(values: z.infer<typeof MealUpdateSchema>) {
         const results = {
             request: {
+                id: request.id,
                 recipient_id: values.recipient_id,
                 coordinator_id: values.coordinator_id,
                 request_type: request.request_type,

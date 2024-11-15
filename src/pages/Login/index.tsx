@@ -4,6 +4,7 @@ import { useAppSelector } from "@/app/hooks";
 import { z } from "zod";
 import createApi from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { API_URL } from "@/constants";
 
 function Login() {
     const { toast } = useToast();
@@ -72,7 +73,7 @@ function Login() {
     }
 
     async function handleAuthorize() {
-        window.location.href = "http://localhost:3000/api/v1/oauth";
+        window.location.href = `${API_URL}/oauth`;
     }
 
     return <>

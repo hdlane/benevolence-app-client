@@ -1,5 +1,6 @@
+import { API_URL } from "@/constants";
+
 function createApi({ endpoint }) {
-    const API_URL = "http://localhost:3000/api/v1";
     return {
         get: async ({ options = {}, controller }) => {
             try {

@@ -4,9 +4,9 @@ import { useAppSelector } from "@/app/hooks";
 import { z } from "zod";
 import createApi from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
-import { API_URL } from "@/constants";
 
 function Login() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const { toast } = useToast();
     const isLoggedIn = useAppSelector((state) => state.user.logged_in) || (localStorage.getItem("logged_in") === "true");
     const [email, setEmail] = useState<string>("");

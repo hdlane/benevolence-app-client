@@ -7,9 +7,9 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import createApi from "@/lib/api";
-import { API_URL } from "@/constants";
 
 function LogoutDialog({ onOpenChange }) {
+    const API_URL = import.meta.env.VITE_API_URL;
     const { toast } = useToast();
 
     async function handleLogout(e) {

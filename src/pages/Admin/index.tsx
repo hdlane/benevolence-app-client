@@ -9,7 +9,6 @@ import { RefreshCcw } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { useAppSelector } from "@/app/hooks";
-import { API_URL } from "@/constants";
 
 const peopleChartConfig = {
     people: {
@@ -40,6 +39,7 @@ interface Overview {
 }
 
 function Admin() {
+    const API_URL = import.meta.env.VITE_API_URL;
     const [overviewDetails, setOverviewDetails] = useState<Overview>();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [reload, setReload] = useState(false);

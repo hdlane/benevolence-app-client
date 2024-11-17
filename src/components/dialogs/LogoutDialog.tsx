@@ -7,9 +7,10 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import createApi from "@/lib/api";
+import { useNavigate } from "react-router-dom";
 
 function LogoutDialog({ onOpenChange }) {
-    const API_URL = import.meta.env.VITE_API_URL;
+    const navigate = useNavigate();
     const { toast } = useToast();
 
     async function handleLogout(e) {
@@ -36,7 +37,7 @@ function LogoutDialog({ onOpenChange }) {
                 toast({
                     description: "Successfully logged out!"
                 });
-                window.location.href = `${API_URL}/login`;
+                navigate("/login");
             }
         } catch (error) {
             toast({

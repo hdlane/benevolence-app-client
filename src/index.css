@@ -62,7 +62,6 @@ a:hover {
 }
 
 .navbar {
-  display: flex;
   align-items: center;
   background-color: var(--secondary-color);
   padding: 1rem;

@@ -25,6 +25,13 @@ function ProtectedRoutes() {
                 dispatch(setIsLoggedIn({ logged_in: true }));
                 dispatch(setIsAdmin({ is_admin: json.is_admin }));
             } else {
+                localStorage.removeItem("is_admin");
+                localStorage.removeItem("user_id");
+                localStorage.removeItem("organization_name");
+                localStorage.removeItem("name");
+                localStorage.removeItem("logged_in");
+                localStorage.removeItem("synced_at");
+                dispatch(setIsAdmin({ is_admin: false }));
                 dispatch(setIsLoggedIn({ logged_in: false }));
                 const json = await response.json();
                 toast({

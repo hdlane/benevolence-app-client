@@ -92,17 +92,7 @@ function Login() {
                         required
                         className="border border-gray-300 rounded px-3 py-2 w-full"
                     />
-                    <div className="flex justify-between items-center py-2">
-                        {
-                            !isLoggedIn ? (
-                                <a
-                                    href="#"
-                                    onClick={handleAuthorize}
-                                >
-                                    Authorize with Planning Center
-                                </a>
-                            ) : null
-                        }
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:flex-row-reverse sm:items-center py-2">
                         <button
                             className="button-primary"
                             type="submit"
@@ -111,6 +101,17 @@ function Login() {
                         >
                             Sign In
                         </button>
+                        {
+                            !isLoggedIn ? (
+                                <a
+                                    href="#"
+                                    onClick={handleAuthorize}
+                                    className="mt-4 sm:mt-0"
+                                >
+                                    Authorize with Planning Center
+                                </a>
+                            ) : null
+                        }
                     </div>
                 </form>
             </div>

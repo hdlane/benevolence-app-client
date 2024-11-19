@@ -17,62 +17,60 @@ function Navbar() {
 
     return (
         <nav className="navbar">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
-                    {/* Logo */}
-                    <Link to="/" className="flex">
-                        <img src={logo} alt="Logo" id="logo" />
-                        <span className="text-2xl">benevolence</span>
-                    </Link>
+            <div className="flex items-center justify-between h-16">
+                {/* Logo */}
+                <Link to="/" className="flex">
+                    <img src={logo} alt="Logo" id="logo" />
+                    <span className="text-2xl">benevolence</span>
+                </Link>
 
-                    {/* Menu button (for mobile) */}
-                    <div className="sm:hidden">
-                        <button
-                            onClick={toggleMenu}
-                            type="button"
-                            className="inline-flex items-center justify-center p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-white"
-                            aria-controls="mobile-menu"
-                            aria-expanded={isOpen}
+                {/* Menu button (for mobile) */}
+                <div className="sm:hidden">
+                    <button
+                        onClick={toggleMenu}
+                        type="button"
+                        className="inline-flex items-center justify-center p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-white"
+                        aria-controls="mobile-menu"
+                        aria-expanded={isOpen}
+                    >
+                        <svg
+                            className="block h-6 w-6"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
                         >
-                            <svg
-                                className="block h-6 w-6"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                {isOpen ? (
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                ) : (
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                )}
-                            </svg>
-                        </button>
-                    </div>
+                            {isOpen ? (
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            ) : (
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M4 6h16M4 12h16M4 18h16"
+                                />
+                            )}
+                        </svg>
+                    </button>
+                </div>
 
-                    {/* Navbar links (visible on larger screens) */}
-                    <div className="hidden sm:flex space-x-4">
-                        <Link to="/" className="hover:text-[#a2cd5a]">Home</Link>
-                        {isAdmin ? <Link to="/admin" className="hover:text-[#a2cd5a]">Admin</Link> : null}
-                        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                            <DialogTrigger>
-                                <a href="#" className="hover:text-[#a2cd5a]">Logout</a>
-                            </DialogTrigger>
-                            <DialogContent>
-                                <LogoutDialog onOpenChange={setDialogOpen} />
-                            </DialogContent>
-                        </Dialog>
-                    </div>
+                {/* Navbar links (visible on larger screens) */}
+                <div className="hidden sm:flex space-x-4">
+                    <Link to="/" className="hover:text-[#a2cd5a]">Home</Link>
+                    {isAdmin ? <Link to="/admin" className="hover:text-[#a2cd5a]">Admin</Link> : null}
+                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                        <DialogTrigger>
+                            <a href="#" className="hover:text-[#a2cd5a]">Logout</a>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <LogoutDialog onOpenChange={setDialogOpen} />
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </div>
 

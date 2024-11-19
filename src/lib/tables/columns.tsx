@@ -141,7 +141,6 @@ export const donationColumns: ColumnDef<Donation>[] = [
     },
     {
         id: "actions",
-        header: "ACTIONS",
         cell: ({ row }) => {
             const userId = localStorage.getItem("user_id");
             const resource = row.original;
@@ -203,7 +202,6 @@ export const mealColumns: ColumnDef<Meal>[] = [
     },
     {
         id: "actions",
-        header: "ACTIONS",
         cell: ({ row }) => {
             const userId = localStorage.getItem("user_id");
             const resource = row.original;
@@ -242,7 +240,6 @@ export const serviceColumns: ColumnDef<Service>[] = [
     },
     {
         id: "actions",
-        header: "ACTIONS",
         cell: ({ row }) => {
             const userId = localStorage.getItem("user_id");
             const resource = row.original;

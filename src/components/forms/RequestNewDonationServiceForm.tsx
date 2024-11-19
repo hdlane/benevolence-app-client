@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "../ui/calendar";
 import { Input } from "@/components/ui/input"
-import { CalendarIcon, Plus } from "lucide-react";
+import { CalendarIcon, ChevronDown, Plus } from "lucide-react";
 import TimePicker from "../TimePicker";
 import { Textarea } from "../ui/textarea";
 import { useNavigate } from "react-router-dom";
@@ -149,7 +149,15 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                             <PopoverTrigger asChild>
                                 <FormControl>
                                     <Button className="w-full" variant={"outline"} role={"combobox"} >
-                                        {selectedRecipient ? selectedRecipient.name : "Select Recipient"}
+                                        {
+                                            selectedRecipient ? selectedRecipient.name :
+                                                (
+                                                    <>
+                                                        Select Recipient
+                                                        <ChevronDown className="h-4 w-4" />
+                                                    </>
+                                                )
+                                        }
                                     </Button>
                                 </FormControl>
                             </PopoverTrigger>
@@ -188,7 +196,15 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                             <PopoverTrigger asChild>
                                 <FormControl>
                                     <Button className="w-full" variant={"outline"} role={"combobox"} >
-                                        {selectedCoordinator ? selectedCoordinator.name : "Select Coordinator"}
+                                        {
+                                            selectedCoordinator ? selectedCoordinator.name :
+                                                (
+                                                    <>
+                                                        Select Coordinator
+                                                        <ChevronDown className="h-4 w-4" />
+                                                    </>
+                                                )
+                                        }
                                     </Button>
                                 </FormControl>
                             </PopoverTrigger>

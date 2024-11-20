@@ -63,8 +63,10 @@ function Navbar() {
 
                             {/* Navbar links (visible on larger screens) */}
                             <div className="hidden sm:flex space-x-4">
+                                <Link to="/" className="hover:text-[#84A296]">Home</Link>
                                 <Link to="/dashboard" className="hover:text-[#84A296]">Dashboard</Link>
                                 {isAdmin ? <Link to="/admin" className="hover:text-[#84A296]">Admin</Link> : null}
+                                <Link to="/help" className="hover:text-[#84A296]">Help</Link>
                                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                                     <DialogTrigger>
                                         <a href="#" className="hover:text-[#84A296]">Logout</a>
@@ -84,6 +86,13 @@ function Navbar() {
                 <div className="sm:hidden" id="mobile-menu">
                     <div className="px-2 pt-2 pb-3 space-y-1">
                         <Link
+                            to="/"
+                            className="block px-3 py-2 rounded-md text-base font-medium hover:text-[#84A296]"
+                            onClick={() => toggleMenu()}
+                        >
+                            Home
+                        </Link>
+                        <Link
                             to="/dashboard"
                             className="block px-3 py-2 rounded-md text-base font-medium hover:text-[#84A296]"
                             onClick={() => toggleMenu()}
@@ -98,6 +107,13 @@ function Navbar() {
                             >
                                 Admin
                             </Link> : null}
+                        <Link
+                            to="/help"
+                            className="block px-3 py-2 rounded-md text-base font-medium hover:text-[#84A296]"
+                            onClick={() => toggleMenu()}
+                        >
+                            Help
+                        </Link>
                         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                             <DialogTrigger className="w-full hover:text-[#84A296]">
                                 <button

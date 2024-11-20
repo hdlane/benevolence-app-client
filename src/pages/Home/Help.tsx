@@ -36,8 +36,6 @@ function Help() {
                     </p>
                     <p>You will be redirected to <strong>Planning Center</strong> to confirm the authorization. Allow access and click <strong>"Authorize for Benevolence App"</strong>.</p>
 
-                    <hr className="my-6" />
-
                     <h4 className="text-lg font-semibold mt-4">2. Log In</h4>
                     <p>After authorization, log in to the app by following these steps:</p>
                     <ul className="list-disc pl-8">
@@ -48,8 +46,6 @@ function Help() {
                     <p>
                         <img loading="lazy" src="https://github.com/user-attachments/assets/2c84b4a6-5739-44ca-9c8f-67604777f497" className="w-full max-w-md mx-auto my-4 border" />
                     </p>
-
-                    <hr className="my-6" />
 
                     <h4 className="text-lg font-semibold mt-4">3. Sync Data</h4>
                     <p>Once logged in, perform an <strong>initial sync</strong> to pull the latest data from Planning Center People:</p>
@@ -142,9 +138,7 @@ function Help() {
                         <img loading="lazy" src="https://github.com/user-attachments/assets/fbb28c02-d400-46a3-b757-c1e26e534edb" className="w-full max-w-md mx-auto my-4 border" />
                     </p>
 
-                    <hr className="my-6" />
-
-                    <h3 className="text-xl font-semibold">Signing Up for Requests</h3>
+                    <h3 className="text-xl font-semibold mt-4">2. Signing Up for Requests</h3>
                     <p>Requests are categorized as Donations, Meals, and Services. Here’s how you can sign up:</p>
                     <ul className="list-disc pl-8">
                         <li>Go to the <strong>Dashboard</strong>.</li>
@@ -153,7 +147,7 @@ function Help() {
                     </ul>
                     <p>You will receive an email notification confirming your participation.</p>
 
-                    <h3 className="text-xl font-semibold mt-4">Cancelling an Assignment</h3>
+                    <h3 className="text-xl font-semibold mt-4">3. Cancelling an Assignment</h3>
                     <p>If you need to cancel your participation:</p>
                     <ul className="list-disc pl-8">
                         <li>Go to your <strong>Dashboard</strong>.</li>
@@ -162,7 +156,7 @@ function Help() {
                         <li>You will receive a confirmation email once removed.</li>
                     </ul>
 
-                    <h3 className="text-xl font-semibold mt-4">Viewing Details</h3>
+                    <h3 className="text-xl font-semibold mt-4">4. Viewing Details</h3>
                     <p>To see more details about a request:</p>
                     <ul className="list-disc pl-8">
                         <li>For <strong>Donations</strong>: Click <strong>Actions</strong> and select <strong>Details</strong> to see a breakdown of who signed up and what items are needed.</li>
@@ -183,13 +177,6 @@ function Help() {
                     <h4 className="text-lg font-semibold mt-4">How do I view the details of a request?</h4>
                     <p>Click on <strong>Actions</strong> next to any request and select <strong>Details</strong> to see all the information about what is needed and who has already signed up.</p>
 
-                </section>
-
-                <hr className="my-6" />
-
-                <section>
-                    <h2 className="text-2xl font-semibold mb-4">Conclusion</h2>
-                    <p>The Benevolence App streamlines the process of managing donations, meals, and services within your organization. Whether you're an admin creating and tracking requests, or a user fulfilling those requests, Benevolence App helps foster a spirit of giving and community. If you have any questions, please reach out to support.</p>
                 </section>
             </div>
         </div>

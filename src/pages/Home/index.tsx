@@ -17,6 +17,8 @@ function Home() {
                     </ul>
                 </section>
 
+                <hr className="my-6" />
+
                 <section className="my-6">
                     <h3 className="text-xl font-semibold mb-4">Key Features</h3>
                     <ul className="list-disc pl-5">
@@ -26,6 +28,8 @@ function Home() {
                         <li><strong>Analytics for Admins:</strong> Track the status of your requests, view unfulfilled slots, and monitor overall progress.</li>
                     </ul>
                 </section>
+
+                <hr className="my-6" />
 
                 <section className="my-6">
                     <h3 className="text-xl font-semibold mb-4">How It Works</h3>
@@ -37,6 +41,8 @@ function Home() {
                     </ol>
                 </section>
 
+                <hr className="my-6" />
+
                 <section className="my-6">
                     <h3 className="text-xl font-semibold mb-4">For Users</h3>
                     <ul className="list-disc pl-5">
@@ -45,6 +51,8 @@ function Home() {
                         <li><strong>Cancel or Modify:</strong> Need to cancel? It's easy to unassign yourself with a few clicks.</li>
                     </ul>
                 </section>
+
+                <hr className="my-6" />
 
                 <section className="my-6">
                     <h3 className="text-xl font-semibold mb-4">For Admins</h3>
@@ -56,6 +64,8 @@ function Home() {
                     </ul>
                 </section>
 
+                <hr className="my-6" />
+
                 <section className="my-6">
                     <h3 className="text-xl font-semibold mb-4">Get Started Today</h3>
                     <ol className="list-decimal pl-5 space-y-2">
@@ -65,10 +75,14 @@ function Home() {
                     </ol>
                 </section>
 
+                <hr className="my-6" />
+
                 <section className="my-6">
                     <h3 className="text-xl font-semibold mb-4">Ready to Help? Start Now!</h3>
                     <a href="/dashboard" style={{ textDecoration: "none", color: "#ffffff" }} className="button-primary">Sign up / Log in</a>
                 </section>
+
+                <hr className="my-6" />
 
                 <section className="my-6">
                     <h3 className="text-xl font-semibold mb-4">FAQs</h3>
@@ -81,6 +95,8 @@ function Home() {
                     <h4 className="font-semibold mt-4">How can I track my organization’s progress?</h4>
                     <p>Admins can view key metrics like total synced users, the number of requests, and the fulfillment status from the Admin page.</p>
                 </section>
+
+                <hr className="my-6" />
 
                 <section className="my-6">
                     <h3 className="text-xl font-semibold mb-4">Use Benevolence App to Make a Difference</h3>

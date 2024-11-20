@@ -101,7 +101,7 @@ function VerifyOrganization() {
     return <>
         <div className="content flex items-center justify-center h-full">
             <div className="flex flex-col space-y-4 bg-white p-6 rounded text-center w-full max-w-md">
-                <p><strong>We found {organizations.length} church{organizations.length > 1 ? "es" : ""} that match{organizations.length < 2 ? "es" : ""} that email address.</strong></p>
+                <p><strong>We found {organizations.length} organization{organizations.length == 1 ? "" : "s"} that match{organizations.length < 2 ? "es" : ""} that email address.</strong></p>
                 <p>Login to:</p>
                 <div className="flex flex-wrap gap-4 p-6 rounded text-center w-full max-w-md">
                     {message ? <span className="p-3 bg-orange-200">{message}</span> : ""}

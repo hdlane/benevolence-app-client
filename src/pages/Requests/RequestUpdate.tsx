@@ -114,13 +114,16 @@ function RequestUpdate() {
         <TitleBar title={"Update Request"} subTitle={request?.title ? `${request?.title}` : ""} />
         <div className="content">
             {
-                !isLoading ? (
+                isLoading ? (
+                    <div className="flex flex-col text-center">
+                        <Loader className="animate-spin self-center" />
+                        <p className="text-lg">Loading...</p>
+                    </div>
+                ) : (
                     <RequestUpdateForm />
-                ) : <>
-                    <div style={{ minHeight: "50vh" }} className="flex items-center justify-center"><Loader className="animate-spin" /></div>
-                </>
+                )
             }
-        </div>
+        </div >
     </>
 }
 

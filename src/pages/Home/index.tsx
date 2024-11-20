@@ -79,7 +79,7 @@ function Home() {
 
                 <section className="my-6">
                     <h3 className="text-xl font-semibold mb-4">Ready to Help? Start Now!</h3>
-                    <a href="/dashboard" style={{ textDecoration: "none", color: "#ffffff" }} className="button-primary">Sign up / Log in</a>
+                    <a href="/signup" style={{ textDecoration: "none", color: "#ffffff" }} className="button-primary">Sign up</a>
                 </section>
 
                 <hr className="my-6" />

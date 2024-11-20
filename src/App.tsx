@@ -2,7 +2,6 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import AdminRoutes from "./components/AdminRoutes";
 import ProtectedRoutes from "./components/ProtectedRoutes";
-import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
@@ -14,6 +13,7 @@ import VerifyOrganization from "./pages/Login/VerifyOrganization";
 import RequestDetails from "./pages/Requests/RequestDetails";
 import RequestCreate from "./pages/Requests/RequestCreate";
 import RequestUpdate from "./pages/Requests/RequestUpdate";
+import Signup from "./pages/Signup";
 import Oauth from "./pages/Oauth";
 import NavbarLayout from "./components/NavbarLayout";
 import HomeLayout from "./components/HomeLayout";
@@ -26,6 +26,7 @@ function App() {
                 <Route element={<HomeLayout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/help" element={<Help />} />
+                    <Route path="/signup" element={<Signup />} />
                 </Route>
                 <Route element={<NavbarLayout />}>
                     <Route path="*" element={<NotFound />} />

@@ -28,7 +28,7 @@ function Help() {
                     <p>Before using the app, you need to authorize Benevolence App with your <strong>Planning Center</strong> account. Follow these steps:</p>
                     <ul className="list-disc pl-8">
                         <li>Log in to your <strong>Planning Center</strong> account as an administrator, Manager, or Editor.</li>
-                        <li>Go to the <a href="https://app.benevolenceapp.com/login" className="text-[#396056]">Benevolence App Login Page</a>.</li>
+                        <li>Go to the <a href="/signup" className="text-[#396056]">Benevolence App Signup Page</a>.</li>
                         <li>Click on <strong>"Authorize with Planning Center"</strong>.</li>
                     </ul>
                     <p>

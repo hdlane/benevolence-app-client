@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import TitleBar from "@/components/TitleBar";
-import { useAppSelector } from "@/app/hooks";
 import { z } from "zod";
 import createApi from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
 function Login() {
-    const API_URL = import.meta.env.VITE_API_URL;
     const { toast } = useToast();
-    const isLoggedIn = useAppSelector((state) => state.user.logged_in) || (localStorage.getItem("logged_in") === "true");
     const [email, setEmail] = useState<string>("");
 
     const submitButton = document.getElementById("submit-button");
@@ -72,10 +69,6 @@ function Login() {
         }
     }
 
-    async function handleAuthorize() {
-        window.location.href = `${API_URL}/oauth`;
-    }
-
     return <>
         <TitleBar title={"Login"} />
         <div className="content flex items-center justify-center h-full">
@@ -101,17 +94,6 @@ function Login() {
                         >
                             Sign In
                         </button>
-                        {
-                            !isLoggedIn ? (
-                                <a
-                                    href="#"
-                                    onClick={handleAuthorize}
-                                    className="mt-4 sm:mt-0"
-                                >
-                                    Authorize with Planning Center
-                                </a>
-                            ) : null
-                        }
                     </div>
                 </form>
             </div>

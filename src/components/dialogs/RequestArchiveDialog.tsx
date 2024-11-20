@@ -49,7 +49,7 @@ function RequestArchiveDialog({ request, onOpenChange }) {
                 toast({
                     description: "Request has been archived",
                 });
-                navigate("/");
+                navigate("/dashboard");
             }
         } catch (error) {
             console.error(error)

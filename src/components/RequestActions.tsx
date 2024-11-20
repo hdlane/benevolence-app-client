@@ -50,7 +50,7 @@ function RequestActions() {
                                 <DropdownMenuItem className="p-0">
                                     <DialogTrigger
                                         className="p-2 w-full text-left"
-                                        onClick={() => navigate("/")}
+                                        onClick={() => navigate("/dashboard")}
                                     >
                                         Go Back
                                     </DialogTrigger>

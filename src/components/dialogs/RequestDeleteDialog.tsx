@@ -41,7 +41,7 @@ function RequestDeleteDialog({ request, onOpenChange }) {
                 toast({
                     description: "Request has been deleted",
                 });
-                navigate("/");
+                navigate("/dashboard");
             }
         } catch (error) {
             console.error(error)

@@ -63,7 +63,7 @@ function Navbar() {
 
                             {/* Navbar links (visible on larger screens) */}
                             <div className="hidden sm:flex space-x-4">
-                                <Link to="/" className="hover:text-[#84A296]">Home</Link>
+                                <Link to="/dashboard" className="hover:text-[#84A296]">Dashboard</Link>
                                 {isAdmin ? <Link to="/admin" className="hover:text-[#84A296]">Admin</Link> : null}
                                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                                     <DialogTrigger>
@@ -84,11 +84,11 @@ function Navbar() {
                 <div className="sm:hidden" id="mobile-menu">
                     <div className="px-2 pt-2 pb-3 space-y-1">
                         <Link
-                            to="/"
+                            to="/dashboard"
                             className="block px-3 py-2 rounded-md text-base font-medium hover:text-[#84A296]"
                             onClick={() => toggleMenu()}
                         >
-                            Home
+                            Dashboard
                         </Link>
                         {isAdmin ?
                             <Link

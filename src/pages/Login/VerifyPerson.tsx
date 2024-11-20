@@ -88,7 +88,7 @@ function VerifyPerson() {
                 toast({
                     description: `${json.message}`,
                 });
-                navigate("/");
+                navigate("/dashboard");
             }
         } catch (error) {
             toast({

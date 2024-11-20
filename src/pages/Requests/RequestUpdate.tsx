@@ -38,13 +38,13 @@ function RequestUpdate() {
                             variant: "destructive",
                             description: `${json.errors.detail}`
                         });
-                        navigate("/");
+                        navigate("/dashboard");
                     } else if (response.status == 404) {
                         toast({
                             variant: "destructive",
                             description: "Request does not exist"
                         });
-                        navigate("/");
+                        navigate("/dashboard");
                     } else {
                         toast({
                             variant: "destructive",
@@ -81,7 +81,7 @@ function RequestUpdate() {
                             variant: "destructive",
                             description: `${json.errors.detail}`
                         });
-                        navigate("/");
+                        navigate("/dashboard");
                     } else {
                         toast({
                             variant: "destructive",

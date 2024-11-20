@@ -42,7 +42,7 @@ function RequestNewForm() {
                             variant: "destructive",
                             description: `${json.errors.detail}`
                         });
-                        navigate("/");
+                        navigate("/dashboard");
                     } else {
                         toast({
                             variant: "destructive",

@@ -32,7 +32,7 @@ function Help() {
                         <li>Click on <strong>"Authorize with Planning Center"</strong>.</li>
                     </ul>
                     <p>
-                        <img loading="lazy" src="https://github.com/user-attachments/assets/ef7775a6-6e78-4eae-82a3-747783bc001d" className="w-full max-w-md mx-auto my-4 border" />
+                        <img loading="lazy" src="https://github.com/user-attachments/assets/51aaf0ab-2050-419f-9f2b-e06150fb22d3" className="w-full max-w-md mx-auto my-4 border" />
                     </p>
                     <p>You will be redirected to <strong>Planning Center</strong> to confirm the authorization. Allow access and click <strong>"Authorize for Benevolence App"</strong>.</p>
 

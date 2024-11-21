@@ -38,7 +38,7 @@ View videos of the app in action here: [https://github.com/hdlane/benevolence-ap
 - shadcn for components
 
 ## Usage
-- Ensure the Benevolence App API is running.
+- Ensure the [Benevolence App API](https://github.com/hdlane/benevolence-app-api) is running.
 - Update the .env file with the API URL:
    ```bash
    VITE_API_BASE_URL=http://localhost:3000

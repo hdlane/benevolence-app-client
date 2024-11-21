@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 
 function Home() {
-
     return <>
         <div className="content flex flex-col h-full m-4 p-4 bg-white rounded-lg">
             <img loading="lazy" alt="Benevolence App" src="https://github.com/user-attachments/assets/ef388283-4b4d-41a5-83fb-079928fe3e06" className="w-full max-w-md mx-auto my-4" />
-            <div className="max-w-screen-lg mx-auto px-4 py-8">
+            <div className="max-w-screen-lg mx-auto px-4 py-4">
                 <section className="my-6">
                     <h1 className="text-center text-3xl font-semibold">Welcome To Benevolence App</h1>
-                    <h2 className="text-center text-lg font-semibold mb-8">A Tool for Managing Donations, Meals, and Services</h2>
+                    <h2 className="text-center text-lg font-semibold">A Tool for Managing Donations, Meals, and Services</h2>
+                    <div className="text-center">
+                        <a href="/signup" style={{ textDecoration: "none", color: "#ffffff" }} className="button-primary my-6 inline-block">Sign up</a>
+                    </div>
                     <p>The <strong>Benevolence App</strong> helps your organization provide meals, services, and item donations to those in need—seamlessly integrated with Planning Center. If you're already using Planning Center, you can easily sync your users, create requests, and keep track of everything in one place.</p>
                     <ul className="list-disc pl-5 pt-4">
-                        <li><strong>Seamless Integration with Planning Center:</strong> Automatically sync users, admins, and data with Planning Center People.</li>
+                        <li><strong>Seamless Integration with Planning Center:</strong> Sync users, admins, and data with Planning Center People.</li>
                         <li><strong>Intuitive Request Management:</strong> Easily create, track, and fulfill requests for donations, meals, and services.</li>
                         <li><strong>Get Notified:</strong> Admins and users get notifications, keeping everyone on the same page.</li>
                     </ul>
@@ -88,10 +90,8 @@ function Home() {
                     <h3 className="text-xl font-semibold mb-4">FAQs</h3>
                     <h4 className="font-semibold">How do I sign up or cancel my participation in a request?</h4>
                     <p>Go to your Dashboard, select a request, and sign up for the available slots. To cancel, simply unassign yourself.</p>
-
                     <h4 className="font-semibold mt-4">How do I view the details of a request?</h4>
                     <p>Admins can view the details of all requests, while users can check the request description to see who’s already signed up and what’s needed.</p>
-
                     <h4 className="font-semibold mt-4">How can I track my organization’s progress?</h4>
                     <p>Admins can view key metrics like total synced users, the number of requests, and the fulfillment status from the Admin page.</p>
                 </section>

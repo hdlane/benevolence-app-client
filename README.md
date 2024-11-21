@@ -39,7 +39,7 @@ View videos of the app in action here: [https://github.com/hdlane/benevolence-ap
 
 ## Usage
 - Ensure the [Benevolence App API](https://github.com/hdlane/benevolence-app-api) is running.
-- Update the .env file with the API URL:
+- Create the .env.development and .env.production files with the API URL (at the root of the project). Vite reads from these depending on the running environment.
    ```bash
    VITE_API_BASE_URL=http://localhost:3000
 

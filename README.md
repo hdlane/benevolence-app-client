@@ -8,7 +8,9 @@ The Benevolence App is a solution that integrates with Planning Center to provid
 
 In order to use this solution your organization needs a Planning Center account. Don't have one? Sign up for a free here: [https://www.planningcenter.com/](https://www.planningcenter.com/)
 
-View the app here: <a href="https://app.benevolenceapp.com/" target="_blank">https://app.benevolenceapp.com</a>
+View the app here: [https://app.benevolenceapp.com/](https://app.benevolenceapp.com)
+
+View videos of the app in action here: [https://github.com/hdlane/benevolence-app-demo](https://github.com/hdlane/benevolence-app-demo)
 
 ## Features
 

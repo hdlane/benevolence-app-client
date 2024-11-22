@@ -480,7 +480,13 @@ function RequestNewMealForm({ requestType, people }) {
                                 <p>
                                     Date Range:<br />
                                     <strong>
-                                        {format(form.getValues("date_range.start_date"), "PP")} to {format(form.getValues("date_range.end_date"), "PP")}
+                                        {
+                                            (form.getValues("date_range.start_date") && form.getValues("date_range.end_date")) ? (
+                                                <>
+                                                    {format(form.getValues("date_range.start_date"), "PP")} to {format(form.getValues("date_range.end_date"), "PP")}
+                                                </>
+                                            ) : <span>Select a date range</span>
+                                        }
                                     </strong>
                                 </p>
                                 <div>

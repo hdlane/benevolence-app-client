@@ -34,6 +34,7 @@ import { useNavigate } from "react-router-dom";
 import { DonationServiceSchema } from "@/lib/schemas/donationServiceSchema";
 import { useToast } from "@/hooks/use-toast";
 import createApi from "@/lib/api";
+import { start } from "repl";
 
 function RequestNewDonationServiceForm({ requestType, people }) {
     const navigate = useNavigate();
@@ -352,13 +353,23 @@ function RequestNewDonationServiceForm({ requestType, people }) {
                                         mode="single"
                                         selected={field.value}
                                         onSelect={(date) => {
-                                            const tempFrom = form.getValues("start_date");
-                                            const tempTo = form.getValues("end_date");
-                                            const start_date = new Date(tempFrom.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
-                                            const end_date = new Date(tempTo.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
-                                            form.setValue("date_single_day", date);
-                                            form.setValue("start_date", start_date);
-                                            form.setValue("end_date", end_date);
+                                            if (date == undefined) {
+                                                const tempFrom = form.getValues("start_date");
+                                                const tempTo = form.getValues("end_date");
+                                                const start_date = new Date(tempFrom.setFullYear(today?.getFullYear(), today?.getMonth(), today?.getDate()))
+                                                const end_date = new Date(tempTo.setFullYear(today?.getFullYear(), today?.getMonth(), today?.getDate()))
+                                                form.setValue("date_single_day", today);
+                                                form.setValue("start_date", start_date);
+                                                form.setValue("end_date", end_date);
+                                            } else {
+                                                const tempFrom = form.getValues("start_date");
+                                                const tempTo = form.getValues("end_date");
+                                                const start_date = new Date(tempFrom.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
+                                                const end_date = new Date(tempTo.setFullYear(date?.getFullYear(), date?.getMonth(), date?.getDate()))
+                                                form.setValue("date_single_day", date);
+                                                form.setValue("start_date", start_date);
+                                                form.setValue("end_date", end_date);
+                                            }
                                         }}
                                         disabled={(date) =>
                                             date < today || date > endDateRange

@@ -128,11 +128,11 @@ function Home() {
                 <section className="bg-[#84A296]">
                     <div className="max-w-screen-lg mx-auto">
                         <h3 className="text-3xl font-semibold mb-4">Frequently Asked Questions</h3>
-                        <h4 className="font-semibold">How do I sign up or cancel my participation in a request?</h4>
+                        <h4 className="text-xl font-semibold">How do I sign up or cancel my participation in a request?</h4>
                         <p>Go to your Dashboard, select a request, and sign up for the available slots. To cancel, simply unassign yourself.</p>
-                        <h4 className="font-semibold mt-4">How do I view the details of a request?</h4>
+                        <h4 className="text-xl font-semibold mt-4">How do I view the details of a request?</h4>
                         <p>Admins can view the details of all requests, while users can check the request description to see who’s already signed up and what’s needed.</p>
-                        <h4 className="font-semibold mt-4">How can I track my organization’s progress?</h4>
+                        <h4 className="text-xl font-semibold mt-4">How can I track my organization’s progress?</h4>
                         <p>Admins can view key metrics like total synced users, the number of requests, and the fulfillment status from the Admin page.</p>
                     </div>
                 </section>

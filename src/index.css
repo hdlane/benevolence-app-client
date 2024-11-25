@@ -55,6 +55,19 @@ a:hover {
   background-color: #F5F5F5;
 }
 
+.homepage-content p {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.homepage-content section {
+  padding: 6rem 1rem 6rem 1rem;
+}
+
+.homepage-content h3 {
+  margin-bottom: 2rem;
+}
+
 .content {
   display: flex;
   flex-direction: column;

@@ -115,9 +115,9 @@ function Navbar() {
                             Help
                         </Link>
                         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                            <DialogTrigger className="w-full hover:text-[#84A296]">
+                            <DialogTrigger asChild className="w-full hover:text-[#84A296]">
                                 <button
-                                    className="block px-3 py-2 rounded-md text-base font-medium"
+                                    className="block px-3 py-2 pl-2 rounded-md text-base text-left font-medium"
                                     onClick={() => toggleMenu()}
                                 >
                                     Logout

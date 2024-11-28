@@ -55,6 +55,7 @@ function HomeNavbar() {
                 {/* Navbar links (visible on larger screens) */}
                 <div className="hidden sm:flex space-x-4">
                     <Link to="/" className="hover:text-[#84A296]">Home</Link>
+                    <Link to="/login" className="hover:text-[#84A296]">Login</Link>
                     <Link to="/dashboard" className="hover:text-[#84A296]">Dashboard</Link>
                     <Link to="/signup" className="hover:text-[#84A296]">Signup</Link>
                     <Link to="/help" className="hover:text-[#84A296]">Help</Link>
@@ -71,6 +72,13 @@ function HomeNavbar() {
                             onClick={() => toggleMenu()}
                         >
                             Home
+                        </Link>
+                        <Link
+                            to="/login"
+                            className="block px-3 py-2 rounded-md text-base font-medium hover:text-[#84A296]"
+                            onClick={() => toggleMenu()}
+                        >
+                            Login
                         </Link>
                         <Link
                             to="/dashboard"
